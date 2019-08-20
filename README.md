@@ -1,7 +1,6 @@
 # apac_rh_forum_19
 Demo deployment scripts for Red Hat APAC Forum 2019
 
-cluster-akl-24fd.sandbox489.opentlc.com:6443
 Currently the deployment needs to be staged due to pod/container dependencies.
 
 The scripts make use of “watch” to keep an eye on the environment and you’ll have to occasionally press CTRL-C to continue.
