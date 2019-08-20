@@ -21,6 +21,12 @@ Then validate that our OCP credentials are correct and copies any other GIT repo
 ./setup.sh
 ```
 
+### Optional
+copy your ssh-key to the bastion host
+```
+ssh-copy-id <lab-user> <bastion node>
+```
+
 ## Stage 1 - Deploy Storage
 This takes approx 20 minutes
 ```
@@ -44,4 +50,36 @@ This can also take about 20 minutes but the Istio deployment can happen in paral
 This requires Istio / Service Mesh to be deployed
 ```
 ./booking_app.sh
+```
+
+# Clean up Deployment
+Ideally we recommend you start with a new OpenShift cluster cleaning up
+all of the services can be difficult, particularly the storgae deployed
+on physical nodes
+
+We also recommend you remove all services that are consuming storage before
+removing the ocs components
+
+
+Remove Istio / Service Mesh
+```
+./cleanup_service_mesh.sh
+```
+
+
+Confirm all storage PVs have been remove
+```
+oc get pv
+
+# If there are any still present
+#  NOTE - this might take some time to return
+oc delete pv --all
+
+# And confirm we're clean
+oc get pv
+```
+
+Remove the storage nodes and rook-ceph
+```
+./cleanup_ocs.sh
 ```
