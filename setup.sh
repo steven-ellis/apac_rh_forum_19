@@ -16,3 +16,10 @@ if [ ! -d "content" ]; then
     #git clone https://github.com/openshift/openshift-cns-testdrive.git -b ocp4-prod content
     git clone git@github.com:openshift/openshift-cns-testdrive.git -b ocp4-prod content
 fi
+
+
+# Clone the git repo for rook
+if [ ! -d "rook.master" ]; then
+    #git clone https://github.com/openshift/openshift-cns-testdrive.git -b ocp4-prod content
+    git clone git@github.com:rook/rook.git -b master rook.master
+fi
