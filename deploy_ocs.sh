@@ -59,13 +59,12 @@ create_ceph_storage_cluster ()
     sleep 10s
 
     # We now need to wait for them to all be created
-    watch oc get machinesets -n openshift-machine-api
+    watch "echo 'wait for our new machines to be READY'; oc get machinesets -n openshift-machine-api"
 
     # Confirm we've got the environment
-    watch oc get nodes -l node-role.kubernetes.io/worker
+    watch "echo 'wait for the rest of the nodes to reach Ready'; oc get nodes -l node-role.kubernetes.io/worker"
 }
 
-#create_ceph_storage_cluster
 
 
 deploy_rook_lab_version ()
@@ -75,7 +74,11 @@ oc get nodes --show-labels | grep storage-node
 
 oc create -f ./content/support/common.yaml
 oc create -f ./content/support/operator-openshift.yaml
-watch oc get pods -n rook-ceph
+oc get pods -n rook-ceph
+
+confirm_pods_running rook-ceph-operator
+
+
 OPERATOR=$(oc get pod -l app=rook-ceph-operator -n rook-ceph -o jsonpath='{.items[0].metadata.name}')
 echo $OPERATOR
 oc logs $OPERATOR -n rook-ceph | grep "get clusters.ceph.rook.io"
@@ -100,6 +103,8 @@ exit
 
 
 # Use the Upstream where possible
+# https://github.com/rook/rook/blob/master/Documentation/ceph-quickstart.md
+#
 deploy_rook_csi_version ()
 {
 
@@ -111,13 +116,16 @@ oc create -f ./rook.master/cluster/examples/kubernetes/ceph/common.yaml
 
 # If we are on master this has CSI support
 oc create -f ./rook.master/cluster/examples/kubernetes/ceph/operator-openshift.yaml
-watch oc get pods -n rook-ceph
+
+oc get pods -n rook-ceph
+
+confirm_pods_running rook-ceph-operator
 
 OPERATOR=$(oc get pod -l app=rook-ceph-operator -n rook-ceph -o jsonpath='{.items[0].metadata.name}')
 echo $OPERATOR
-oc logs $OPERATOR -n rook-ceph | grep "get clusters.ceph.rook.io"
+oc logs $OPERATOR -n rook-ceph | tail -20
 
-echo "Lets pause for a 10 seconds"
+echo "Lets pause for  10 seconds"
 sleep 10s
 
 echo "Create the cluster using the lab definiton but with ceph v14.2.2-20190722"
@@ -125,13 +133,13 @@ echo "Create the cluster using the lab definiton but with ceph v14.2.2-20190722"
 cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.2-20190722/ > cluster.yaml
 oc create -f ./cluster.yaml
 
-watch "oc get pods -n rook-ceph | egrep -v -e rook-discover -e rook-ceph-agent"
+watch "echo 'wait for the osd pods to be Running'; oc get pods -n rook-ceph | egrep -v -e rook-discover -e rook-ceph-agent"
 
 #
 echo "We might need 20-60 seconds for the OSDs to activate"
 
 # Deploy Toolbox
-oc create -f ./content/support/toolbox.yaml
+oc create -f ./rook.master/cluster/examples/kubernetes/ceph/toolbox.yaml
 
 export toolbox=$(oc -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}')
 echo "Now Run"
@@ -145,8 +153,10 @@ oc -n rook-ceph rsh $toolbox
 }
 
 
- deploy_rook_csi_version 
 
+# Reference
+# https://github.com/rook/rook/blob/master/Documentation/ceph-block.md
+#
 enable_rbd ()
 {
 
@@ -167,6 +177,9 @@ oc get sc
 sleep 2
 }
 
+# Reference
+# https://github.com/rook/rook/blob/master/Documentation/ceph-filesystem.md
+#
 enable_cephfs ()
 {
 
@@ -189,5 +202,12 @@ oc -n  rook-ceph create -f cephfs_pvc.yaml
 
 }
 
+create_ceph_storage_cluster
 
+# Only use one of the rook deploy calls
+#deploy_rook_lab_version
+deploy_rook_csi_version 
+
+enable_rbd
+enable_cephfs
 
