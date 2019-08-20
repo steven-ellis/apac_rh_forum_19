@@ -107,10 +107,10 @@ oc create namespace rook-ceph
 
 oc get nodes --show-labels | grep storage-node
 
-oc create -f ./rook/cluster/examples/kubernetes/ceph/common.yaml
+oc create -f ./rook.master/cluster/examples/kubernetes/ceph/common.yaml
 
 # If we are on master this has CSI support
-oc create -f ./rook/cluster/examples/kubernetes/ceph/operator-openshift.yaml
+oc create -f ./rook.master/cluster/examples/kubernetes/ceph/operator-openshift.yaml
 watch oc get pods -n rook-ceph
 
 OPERATOR=$(oc get pod -l app=rook-ceph-operator -n rook-ceph -o jsonpath='{.items[0].metadata.name}')
@@ -151,7 +151,7 @@ enable_rbd ()
 {
 
 # Use the CSI RBD Storage Class
-oc -n rook-ceph create -f ./rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass.yaml
+oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/csi/rbd/storageclass.yaml
 
 
 
@@ -171,7 +171,7 @@ enable_cephfs ()
 {
 
 # Createthe Ceph myfs filesystem
-oc -n rook-ceph create -f ./rook/cluster/examples/kubernetes/ceph/filesystem.yaml
+oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/filesystem.yaml
 
 # Check the mds pods have started
 oc -n rook-ceph get pod -l app=rook-ceph-mds
@@ -182,7 +182,7 @@ sleep 2s
 
 
 # Use the CSI CephFS Storage Class
-oc -n rook-ceph create -f ./rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
+oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
 
 # Test the storage
 oc -n  rook-ceph create -f cephfs_pvc.yaml
