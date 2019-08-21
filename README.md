@@ -49,7 +49,7 @@ This can also take about 20 minutes but the Istio deployment can happen in paral
 ## Stage 4 - Deploy Application
 This requires Istio / Service Mesh to be deployed
 ```
-./booking_app.sh
+./bookinfo_app.sh
 ```
 
 # Clean up Deployment
