@@ -19,7 +19,7 @@ oc apply -n istio-operator -f https://raw.githubusercontent.com/Maistra/istio-op
 
 # verify deployment to see if the pods are created
 
-watch "echo 'Wait for Istio pods to be Running';oc get pods -n istio-operator -l name=istio-operator -w"
+watch "echo 'Wait for Istio pods to be Running';oc get pods -n istio-operator -l name=istio-operator"
 
 # deploy control plane
 
@@ -31,5 +31,5 @@ oc apply -n istio-system -f https://raw.githubusercontent.com/redhat-developer-d
 
 # Wait for all the Istio Pods to be available, estimated ~10 mins.
 
-watch "echo 'Wait for the Isto System pods to be running'; oc -n istio-system get pods -w"
+watch "echo 'Wait for the Isto System pods to be running'; oc -n istio-system get pods"
 
