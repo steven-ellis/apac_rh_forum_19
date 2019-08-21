@@ -66,6 +66,10 @@ Remove Istio / Service Mesh
 ./cleanup_service_mesh.sh
 ```
 
+Remove the Bookinfo app
+```
+./cleanup_bookinfo.sh
+```
 
 Confirm all storage PVs have been remove
 ```
