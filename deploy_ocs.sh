@@ -130,8 +130,8 @@ sleep 10s
 
 echo "Create the cluster using the lab definiton but with ceph v14.2.2-20190722"
 #oc create -f ./content/support/cluster.yaml
-cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.2-20190722/ > cluster.yaml
-oc create -f ./cluster.yaml
+cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.2-20190722/ > ./storage_cluster/cluster.yaml
+oc create -f ./storage_cluster/cluster.yaml
 
 watch "echo 'wait for the osd pods to be Running'; oc get pods -n rook-ceph | egrep -v -e rook-discover -e rook-ceph-agent"
 
