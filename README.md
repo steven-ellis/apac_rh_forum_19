@@ -61,6 +61,11 @@ We also recommend you remove all services that are consuming storage before
 removing the ocs components
 
 
+Remove 3scale
+```
+./cleanup_3scale.sh
+```
+
 Remove Istio / Service Mesh
 ```
 ./cleanup_service_mesh.sh
@@ -73,11 +78,13 @@ Remove the Bookinfo app
 
 Confirm all storage PVs have been remove
 ```
-oc get pv
+oc get pvc --all-namespaces 
+oc get pv --all-namespaces 
 
 # If there are any still present
 #  NOTE - this might take some time to return
-oc delete pv --all
+oc delete pvc --all-namespaces
+oc delete pv --all-namespaces
 
 # And confirm we're clean
 oc get pv
