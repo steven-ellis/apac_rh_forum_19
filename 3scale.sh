@@ -8,7 +8,34 @@ source ./3scale.env
 
 # And login as the kubeadmin user
 
-oc login -u ${OCP__USER} -p ${OCP__PASS} ${OCP__ENDPOINT} --insecure-skip-tls-verify=false
+oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+
+OCP_NAMESPACE=$API_MANAGER_NS
+
+# Need a way to make sure pods are running before we continue
+#
+# $1 = app-name
+#
+# EG
+#    confirm_pods_running rook-ceph-mon
+#
+confirm_pods_running ()
+{
+
+   for i in {1..12}
+   do
+      echo "checking status of pod $1 attempt $i"
+      status=` oc get pods -o json --selector=app=${1} -n ${OCP_NAMESPACE} |\
+               jq ".items[].status.phase" | uniq`
+      if [ ${status} == '"Running"' ] ; then
+         return;
+      fi
+      sleep 10s
+   done
+   echo "Pod $1 not in Running state" >&2
+   exit
+}
+
 
 # Step2: A Cluster Admin of a production OpenShift environment typically applies clusterquotas and limitranges.
 # NOTE Not needed for our Demo Environment
@@ -98,10 +125,16 @@ oc new-app \
   -p "WILDCARD_DOMAIN=$OCP_WILDCARD_DOMAIN" \
   -p "WILDCARD_POLICY=Subdomain" \
   -n $API_MANAGER_NS \
-  --as=system:admin > ~/3scale_amp_provision_details.txt
+  --as=system:admin | tee ./3scale_amp_provision_details.txt
+
+
+echo 'You should see  - deploymentconfig "zync-database" created
+--> Success'
+sleep 10s
+
 
 # Check on the deployment
-watch oc status
+oc status -n $API_MANAGER_NS
 
 # Step 8:Resume the database tier deployments: 
 
@@ -115,7 +148,7 @@ done
 
 # check our pods are running
 
-watch "oc get pods -n $API_MANAGER_NS --as=system:admin|grep Running|grep -v -i deploy"
+watch "echo 'wait for all pods to be running'; oc get pods -n $API_MANAGER_NS --as=system:admin|grep Running|grep -v -i deploy"
 
 # Step 9:Resume backend listener and worker deployments:
  
@@ -131,8 +164,10 @@ done
 oc rollout resume dc system-app -n $API_MANAGER_NS --as=system:admin;
 
 # Confirm pods are running
-
+# Could automate this one
 watch "echo 'Look for running system-app'; oc get pods -n $API_MANAGER_NS | grep system-app|grep Running| grep -v -i deploy"
+# This should be the preferred approach
+# confirm_pods_running system-app
 
 # Look at logs
 sleep 10s
@@ -167,7 +202,7 @@ done
 
 # Step 14: Verify the state of the 3scale pods:
 
-watch "oc get pods -n $API_MANAGER_NS --as=system:admin | grep Running | grep -v -i deploy"
+watch "echo 'Confirm state of 3scale pods'; oc get pods -n $API_MANAGER_NS --as=system:admin | grep Running | grep -v -i deploy"
 
 # Step 15: Accessing the Admin console:
 
