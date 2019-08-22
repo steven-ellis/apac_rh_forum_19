@@ -39,20 +39,23 @@ confirm_pods_running ()
    exit
 }
 
-# Wait for a pod/node to become running
-#
 # $1 = [pod|node]
 # $2 = app-name
+# $3 = [app|role] - defaults to app
+# $4 = namespace - defailts to ${OCP_NAMESPACE}
 #
 # EG
 #    oc_wait_for pod rook-ceph-mon
 #
 oc_wait_for ()
 {
-    echo "Waiting for the ${1}s tagged ${2} = ready"
-    oc wait --for condition=ready  ${1}-l app=${2} -n ${OCP_NAMESPACE} --timeout=1200s
-}
+    TYPE=${3:-app}
+    NAMESPACE=${4:-$OCP_NAMESPACE}
 
+    echo "Waiting for the ${1}s tagged ${2} = ready"
+    #oc wait --for condition=ready  nodes -n openshift-machine-api  -l "role=storage-node"
+    oc wait --for condition=ready ${1} -l ${TYPE}=${2} -n ${NAMESPACE} --timeout=1200s
+}
 
 
 # Create the storage cluster
@@ -76,17 +79,22 @@ create_ceph_storage_cluster ()
     oc get machines -n openshift-machine-api
     sleep 10s
 
+    # See if we've got the storage nodes
+    # This is too early as we need the machines to be present
+    #oc_wait_for node storage-node role openshift-machine-api
+    #sleep 10s
+
     # We now need to wait for them to all be created
     watch "echo 'wait for our new machines to be READY'; oc get machinesets -n openshift-machine-api"
 
     # We should be able to use something like this but need to confirm the syntax
     # oc wait --for condition=complete  machines -n openshift-machine-api  -l "machine.openshift.io/cluster-api-machine-type=workerocs" 
-
     # Confirm we've got the environment
-    echo "Waiting for the nodes tagged storage-node = ready"
-    oc wait --for condition=ready  node -l role=storage-node  --timeout=1200s
+    oc_wait_for node storage-node role openshift-machine-api
+
     oc get node -l role=storage-node
-    watch "echo 'wait for the rest of the nodes to reach Ready'; oc get nodes -l node-role.kubernetes.io/worker"
+    sleep 2s
+    #watch "echo 'wait for the rest of the nodes to reach Ready'; oc get nodes -l node-role.kubernetes.io/worker"
 
 
 
@@ -104,7 +112,8 @@ oc create -f ./content/support/common.yaml
 oc create -f ./content/support/operator-openshift.yaml
 oc get pods -n rook-ceph
 
-confirm_pods_running rook-ceph-operator
+#confirm_pods_running rook-ceph-operator
+oc_wait_for  pod rook-ceph-operator
 
 
 OPERATOR=$(oc get pod -l app=rook-ceph-operator -n rook-ceph -o jsonpath='{.items[0].metadata.name}')
@@ -148,12 +157,10 @@ oc create -f ./rook.master/cluster/examples/kubernetes/ceph/operator-openshift.y
 oc get pods -n rook-ceph
 
 #confirm_pods_running rook-ceph-operator
-echo "Waiting for rook-ceph-operator = Ready"
-oc wait --for condition=ready  pod -l app=rook-ceph-operator -n ${OCP_NAMESPACE} --timeout=1200s
+oc_wait_for  pod rook-ceph-operator
 
 sleep 5s
-echo "Waiting for rook-ceph-discover = Ready"
-oc wait --for condition=ready  pod -l app=rook-discover -n ${OCP_NAMESPACE} --timeout=1200s
+oc_wait_for  pod rook-discover
 
 OPERATOR=$(oc get pod -l app=rook-ceph-operator -n rook-ceph -o jsonpath='{.items[0].metadata.name}')
 echo $OPERATOR
@@ -167,30 +174,29 @@ echo "Create the cluster using the lab definiton but with ceph v14.2.2-20190722"
 cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.2-20190722/ > ./storage_cluster/cluster.yaml
 oc create -f ./storage_cluster/cluster.yaml
 
-echo "Waiting for rook-ceph-agent = Ready"
-oc wait --for condition=ready  pod -l app=rook-ceph-agent -n ${OCP_NAMESPACE} --timeout=1200s
+oc_wait_for  pod rook-ceph-agent
 
-echo "Waiting for csi-cephfsplugin = Ready"
-oc wait --for condition=ready  pod -l app=csi-cephfsplugin -n ${OCP_NAMESPACE} --timeout=1200s
-echo "Waiting for csi-rbdplugin = Ready"
-oc wait --for condition=ready  pod -l app=csi-rbdplugin -n ${OCP_NAMESPACE} --timeout=1200s
+oc_wait_for  pod csi-cephfsplugin
+oc_wait_for  pod csi-rbdplugin
 
 
-echo "Waiting for rook-ceph-mon = Ready"
-oc wait --for condition=ready  pod -l app=rook-ceph-mon -n ${OCP_NAMESPACE} --timeout=1200s
-echo "Waiting for rook-ceph-osd = Ready"
-oc wait --for condition=ready  pod -l app=rook-ceph-osd -n ${OCP_NAMESPACE} --timeout=1200s
+# Need a more reliable way to run this as we've got a bit
+# of a race condition on pod startup
+echo "We might need 20-60 seconds for the OSDs to activate"
+oc_wait_for  pod rook-ceph-mgr
+sleep 5s
+oc_wait_for  pod rook-ceph-mon
+sleep 5s
+oc_wait_for  pod rook-ceph-osd
 sleep 10s
 watch "echo 'wait for the osd pods to be Running'; oc get pods -n rook-ceph | egrep -v -e rook-discover -e rook-ceph-agent"
 
 #
-echo "We might need 20-60 seconds for the OSDs to activate"
 
 # Deploy Toolbox
 oc create -f ./rook.master/cluster/examples/kubernetes/ceph/toolbox.yaml
 sleep 2s
-echo "Waiting for rook-ceph-tools = Ready"
-oc wait --for condition=ready  pod -l app=rook-ceph-tools -n ${OCP_NAMESPACE} --timeout=1200s
+oc_wait_for  pod rook-ceph-tools
 
 export toolbox=$(oc -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}')
 echo "Now Run"
@@ -241,6 +247,7 @@ oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/filesys
 oc -n rook-ceph get pod -l app=rook-ceph-mds
 
 sleep 10s
+oc_wait_for  pod rook-ceph-mds
 oc -n rook-ceph get pod -l app=rook-ceph-mds
 sleep 2s
 
