@@ -30,7 +30,7 @@ ssh-copy-id <lab-user> <bastion node>
 ## Stage 1 - Deploy Storage
 This takes approx 20 minutes
 ```
-./deploy_ocs.sh
+./deploy_ocs.sh base
 ```
 You’ll need to press CTRL-C a couple of times once some of the pods have started
 

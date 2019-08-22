@@ -261,12 +261,68 @@ oc -n  rook-ceph create -f cephfs_pvc.yaml
 
 }
 
-create_ceph_storage_cluster
+# Reference
+#  - https://github.com/rook/rook/blob/master/Documentation/ceph-examples.md
+#  - https://github.com/rook/rook/blob/master/Documentation/ceph-object.md
+# And guide from
+#  - https://medium.com/@karansingh010/rook-ceph-deployment-on-openshift-4-2b34dfb6a442
+#
+enable_object ()
+{
 
-# Only use one of the rook deploy calls
-#deploy_rook_lab_version
-deploy_rook_csi_version 
+# Use the CSI Object Storage Class
+oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/object-openshift.yaml
 
-enable_rbd
-enable_cephfs
+sleep 4s
+oc_wait_for  pod rook-ceph-rgw
+
+oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/object-user.yaml
+
+oc get sc
+
+echo "You can confirm the S3 credentials via"
+echo "oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user"
+oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user
+
+
+sleep 2
+}
+
+case "$1" in
+  all)
+        create_ceph_storage_cluster
+        deploy_rook_csi_version 
+        enable_rbd
+        enable_cephfs
+        enable_object
+        ;;
+  base)
+        create_ceph_storage_cluster
+        deploy_rook_csi_version 
+        enable_rbd
+        enable_cephfs
+        ;;
+  storage)
+        create_ceph_storage_cluster
+        ;;
+  rook)
+        deploy_rook_csi_version 
+        ;;
+  rbd)
+        enable_rbd
+        ;;
+  cephfs)
+        enable_cephfs
+        ;;
+  object)
+        enable_object
+        ;;
+  *)
+        echo "Usage: $N {all:base:storage:rook:rbd:cephfs:object}" >&2
+        echo " all - perform all storage setup tasks" >&2
+        echo " base - excludes object storage setup" >&2
+        echo " storage and rook are a pre-requisite for rbd/cephfs/object" >&2
+        exit 1
+        ;;
+esac
 
