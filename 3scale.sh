@@ -2,6 +2,7 @@
 
 # Step 0 - Our master environment
 source ./ocp.env
+source ./functions
 
 # Step 1 - 3scale specific settings
 source ./3scale.env
@@ -147,8 +148,10 @@ done
 
 
 # check our pods are running
+oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+#oc_wait_for  pod zync-database name ${API_MANAGER_NS}
 
-watch "echo 'wait for all pods to be running'; oc get pods -n $API_MANAGER_NS --as=system:admin|grep Running|grep -v -i deploy"
+#watch "echo 'wait for all pods to be running'; oc get pods -n $API_MANAGER_NS --as=system:admin|grep Running|grep -v -i deploy"
 
 # Step 9:Resume backend listener and worker deployments:
  
@@ -161,17 +164,24 @@ done
 
 # Step 10: Resume the system-app and its two containers
 
-oc rollout resume dc system-app -n $API_MANAGER_NS --as=system:admin;
+oc rollout resume dc system-app -n $API_MANAGER_NS --as=system:admin
 
 # Confirm pods are running
 # Could automate this one
+sleep 30s
+oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+sleep 10s
 watch "echo 'Look for running system-app'; oc get pods -n $API_MANAGER_NS | grep system-app|grep Running| grep -v -i deploy"
+
 # This should be the preferred approach
-# confirm_pods_running system-app
+#confirm_pods_running system-app
+oc_wait_for  pod system-app name ${API_MANAGER_NS}
+#oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 
 # Look at logs
+echo "Wait 10 seconds and then look at the logs"
 sleep 10s
-oc logs -f $(oc get pod | grep system-app | grep Running | awk '{print $1}')  -c system-developer
+oc logs $(oc get pod -l app=3scale-api-management | grep system-app | grep Running | awk '{print $1}')  -c system-developer | tail -200
 
 
 # Step 11: Resume additional system and backend application utilities.
@@ -201,8 +211,9 @@ for x in apicast-wildcard-router zync; do
 done
 
 # Step 14: Verify the state of the 3scale pods:
-
-watch "echo 'Confirm state of 3scale pods'; oc get pods -n $API_MANAGER_NS --as=system:admin | grep Running | grep -v -i deploy"
+sleep 30s
+oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+#watch "echo 'Confirm state of 3scale pods'; oc get pods -n $API_MANAGER_NS --as=system:admin | grep Running | grep -v -i deploy"
 
 # Step 15: Accessing the Admin console:
 
