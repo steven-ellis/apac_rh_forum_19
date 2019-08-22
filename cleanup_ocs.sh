@@ -56,6 +56,7 @@ delete_ceph_storage ()
     oc -n rook-ceph delete -f cephfs_pvc.yaml
 
     # Delete any provisioned storage
+    oc delete pvc --all
     oc delete pv --all
 
 }
