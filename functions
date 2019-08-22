@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# oc_wait_for 
+#
+# $1 = [pod|node]
+# $2 = app-name
+# $3 = [app|name|role] - defaults to app
+# $4 = namespace - defailts to ${OCP_NAMESPACE}
+#
+# EG
+#    oc_wait_for pod rook-ceph-mon
+#
+oc_wait_for ()
+{
+    TYPE=${3:-app}
+    NAMESPACE=${4:-$OCP_NAMESPACE}
+
+    echo "Waiting for the ${1}s tagged ${2} = ready"
+    oc wait --for condition=ready ${1} -l ${TYPE}=${2} -n ${NAMESPACE} --timeout=1200s
+}
+
+
