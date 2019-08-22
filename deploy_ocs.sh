@@ -183,13 +183,14 @@ oc_wait_for  pod csi-rbdplugin
 # Need a more reliable way to run this as we've got a bit
 # of a race condition on pod startup
 echo "We might need 20-60 seconds for the OSDs to activate"
-oc_wait_for  pod rook-ceph-mgr
-sleep 5s
 oc_wait_for  pod rook-ceph-mon
 sleep 5s
-oc_wait_for  pod rook-ceph-osd
-sleep 10s
+oc_wait_for  pod rook-ceph-mgr
+sleep 5s
+
 watch "echo 'wait for the osd pods to be Running'; oc get pods -n rook-ceph | egrep -v -e rook-discover -e rook-ceph-agent"
+# We need the watch here has the OSD pods can take quite a while to appear
+oc_wait_for  pod rook-ceph-osd
 
 #
 
