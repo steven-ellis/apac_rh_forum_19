@@ -10,6 +10,7 @@
 #
 
 source ocp.env
+source functions
 
 OCP_NAMESPACE=rook-ceph
 
@@ -38,25 +39,6 @@ confirm_pods_running ()
    echo "Pod $1 not in Running state" >&2
    exit
 }
-
-# $1 = [pod|node]
-# $2 = app-name
-# $3 = [app|role] - defaults to app
-# $4 = namespace - defailts to ${OCP_NAMESPACE}
-#
-# EG
-#    oc_wait_for pod rook-ceph-mon
-#
-oc_wait_for ()
-{
-    TYPE=${3:-app}
-    NAMESPACE=${4:-$OCP_NAMESPACE}
-
-    echo "Waiting for the ${1}s tagged ${2} = ready"
-    #oc wait --for condition=ready  nodes -n openshift-machine-api  -l "role=storage-node"
-    oc wait --for condition=ready ${1} -l ${TYPE}=${2} -n ${NAMESPACE} --timeout=1200s
-}
-
 
 # Create the storage cluster
 create_ceph_storage_cluster ()
@@ -245,9 +227,9 @@ enable_cephfs ()
 oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/filesystem.yaml
 
 # Check the mds pods have started
-oc -n rook-ceph get pod -l app=rook-ceph-mds
+#oc -n rook-ceph get pod -l app=rook-ceph-mds
 
-sleep 10s
+sleep 12s
 oc_wait_for  pod rook-ceph-mds
 oc -n rook-ceph get pod -l app=rook-ceph-mds
 sleep 2s
@@ -273,15 +255,20 @@ enable_object ()
 # Use the CSI Object Storage Class
 oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/object-openshift.yaml
 
-sleep 4s
-oc_wait_for  pod rook-ceph-rgw
+echo "wait 40 seconds for pod startup"
+sleep 40s
+oc_wait_for pod rook-ceph-rgw
 
 oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/object-user.yaml
 
-oc get sc
+echo "Confirming the enties are valid"
+oc get CephObjectStore -n rook-ceph
+oc get CephObjectStoreUser -n rook-ceph
 
 echo "You can confirm the S3 credentials via"
 echo "oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user"
+
+#oc -n rook-ceph get secrets
 oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user
 
 
