@@ -47,17 +47,28 @@ delete_ceph_storage_cluster ()
 
 
 
+delete_ceph_object ()
+{
+
+
+oc -n rook-ceph delete -f ./rook.master/cluster/examples/kubernetes/ceph/object-user.yaml
+oc -n rook-ceph delete -f ./rook.master/cluster/examples/kubernetes/ceph/object-openshift.yaml
+
+
+}
+
+
 delete_ceph_storage ()
 {
+
+    # Delete any provisioned storage
+    oc -n rook-ceph delete pvc --all
+    oc delete pv --all
 
     oc -n rook-ceph delete -f ./rook.master/cluster/examples/kubernetes/ceph/csi/rbd/storageclass.yaml
     oc -n rook-ceph delete -f ./rook.master/cluster/examples/kubernetes/ceph/filesystem.yaml
     oc -n rook-ceph delete -f ./rook.master/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
     oc -n rook-ceph delete -f cephfs_pvc.yaml
-
-    # Delete any provisioned storage
-    oc delete pvc --all
-    oc delete pv --all
 
 }
 
@@ -68,6 +79,8 @@ delete_operator ()
     oc delete -f ./content/support/operator-openshift.yaml
     oc delete -f ./content/support/common.yaml
 }
+
+delete_ceph_object
 
 delete_ceph_storage
 
