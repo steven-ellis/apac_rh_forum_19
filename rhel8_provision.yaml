@@ -1,0 +1,27 @@
+- hosts: localhost
+  gather_facts: False
+
+  vars:
+    instance_type: t3a.micro
+    security_group: sg-245ef447
+    ami_id: ami-0520e698dd500b1d1
+    region: us-east-2
+
+  tasks:
+  - name: Provision a set of instances
+    ec2:
+       key_name: "{{key_name}}"
+       group_id: "{{security_group}}"
+       instance_type: "{{instance_type}}"
+       image: "{{ ami_id }}"
+       wait: true
+       region: "{{ region }}"
+       #assign_public_ip: yes
+       instance_tags:
+          Name: "RHEL8 Demo"
+          Owner: "{{email}}"
+    register: ec2
+
+# - name: Add all instance public IPs to host group
+#   add_host: hostname={{ item.public_ip }} groups=ec2hosts
+#   loop: "{{ ec2.instances }}"

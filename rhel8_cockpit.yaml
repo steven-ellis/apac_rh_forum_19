@@ -1,0 +1,37 @@
+#
+# Configure key mailserver components
+#  postfix
+#  dovecot
+#  fetchmail
+#
+# In addition enable anti-virus via
+#  amavisd-new
+#  spamassassin
+#  clamav
+---
+- hosts: cockpit_demo
+  become: True
+  become_user: root
+  vars:
+    ansible_user: ec2-user
+    remote_user: ec2-user
+  tasks:
+
+  - name: Install the cockpit software and dependancies
+    yum: name={{item}} state=present
+    with_items :
+     - cockpit
+
+  - name: Cockpit needs to be running
+    systemd:
+      name: cockpit
+      state: started
+      enabled: yes
+      masked: no
+
+  #- name: Firewalld
+    #firewalld:
+      #service: cockpit
+      #immediate: true
+      #permanent: true
+      #state: enabled
