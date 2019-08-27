@@ -1,3 +1,6 @@
+#
+# ansible-playbook  ./rhel8_provision.yaml  -e @./secrets.yaml
+# 
 - hosts: localhost
   gather_facts: False
 
@@ -20,6 +23,7 @@
        instance_tags:
           Name: "RHEL8 Demo"
           Owner: "{{email}}"
+          Demo: "killme"
     register: ec2
 
 # - name: Add all instance public IPs to host group
