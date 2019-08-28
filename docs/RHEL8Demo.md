@@ -19,6 +19,9 @@ Copy `secrets.yaml.sample` to `secrets.yaml` and update with
 * [optional] RHN credentials (subject to AMI being used)
 * Private Key details for SSH access
 * AWS Region
+* cockpit_root_pwd in a crypted hash for cockpit acces
+    * https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
+
 
 
 Create / Update ```hosts``` file with and entry for cockpit_demo

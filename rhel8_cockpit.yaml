@@ -45,6 +45,12 @@
      - 'lorax-composer.socket'
      - 'cockpit.socket'
 
+
+  - name: Change the password for the root user
+    user:
+      name: root
+      password: "{{cockpit_root_pw}}"
+
   #- name: Firewalld
     #firewalld:
       #service: cockpit
