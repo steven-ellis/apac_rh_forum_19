@@ -42,12 +42,12 @@ ansible-playbook rhel8_provision.yaml -e @./secrets.yaml -e "demo_tag=mytest"
 ```
 
 ## Stage 2 - Install Demo Requirements
-You need to confirm the external name of the new instance and update the ansible inventory
+The deployment script will return with the public address details of your new RHEL8 instance
 ```
-aws ec2 describe-instances --filters "Name=tag:Name,Values=RHEL8 APAC RH Forum Demo" | grep PublicDnsName
+"Deployed Instance: ec2-18-99-33-255.us-east-2.compute.amazonaws.com available over SSH"
 ```
 
-Add the PublicDnsName to the ```hosts``` file
+Add this public name to the ```hosts``` file for our [cockpit_demo] group
 ```
 [cockpit_demo]
 ec2-AAA-BBB-CCC-DDD.us-east-2.compute.amazonaws.com
@@ -67,5 +67,5 @@ ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml
 
 or delete instances with a specific "Demo" tag
 
-ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml -e "demo_tag=killme"
+ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml -e "demo_tag=mytest"
 
