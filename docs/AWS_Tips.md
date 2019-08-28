@@ -21,7 +21,7 @@ aws ec2 describe-instances
 
 List tagged instances
 ```
-aws ec2 describe-instances --filters "Name=tag:Name,Values=RHEL8 Demo"
+aws ec2 describe-instances --filters "Name=tag:Name,Values=RHEL8 APAC RH Forum Demo"
 ```
 
 Shutdown specific instance

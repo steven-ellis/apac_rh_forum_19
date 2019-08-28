@@ -1,20 +1,12 @@
 #
-# Configure key mailserver components
-#  postfix
-#  dovecot
-#  fetchmail
-#
-# In addition enable anti-virus via
-#  amavisd-new
-#  spamassassin
-#  clamav
+# ansible-playbook  -i ./hosts ./rhel8_cockpit.yaml  -e @./secrets.yaml
+# 
 ---
 - hosts: cockpit_demo
   become: True
   become_user: root
   vars:
     ansible_user: ec2-user
-    remote_user: ec2-user
   tasks:
 
   - name: Install the cockpit software and dependancies
