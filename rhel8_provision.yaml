@@ -9,6 +9,7 @@
     security_group: sg-245ef447
     ami_id: ami-0520e698dd500b1d1
     region: us-east-2
+    demo_tag: cockpit
 
   tasks:
   - name: Provision a set of instances
@@ -21,9 +22,9 @@
        region: "{{ region }}"
        #assign_public_ip: yes
        instance_tags:
-          Name: "RHEL8 Demo"
+          Name: "RHEL8 APAC RH Forum Demo"
           Owner: "{{email}}"
-          Demo: "killme"
+          Demo: "{{demo_tag}}"
     register: ec2
 
 # - name: Add all instance public IPs to host group

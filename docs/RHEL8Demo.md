@@ -22,5 +22,13 @@ ansible-playbook rhel8_provision.yaml -e @./secrets.env
 ## Stage 2 - 
 
 # Clean up Deployment
-Delete AWS Instances
+Delete cockpit tagged AWS Instances
+
+```
+ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml 
+```
+
+Delete instances with a specific "Demo" tag
+
+ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml -e "demo_tag=killme"
 

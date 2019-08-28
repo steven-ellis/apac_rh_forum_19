@@ -8,6 +8,7 @@
 
   vars:
     region: us-east-2
+    demo_tag: cockpit
 
   tasks:
   - name: Terminate tagged instances
@@ -15,4 +16,4 @@
       state: absent
       region: "{{ region }}"
       filters:
-        tag:Demo: killme
+        tag:Demo: "{{demo_tag}}"
