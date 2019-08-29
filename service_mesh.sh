@@ -16,7 +16,7 @@ oc delete clusterresourcequotas.quota.openshift.io clusterquota-opentlc-mgr
 
 oc new-project istio-operator
 
-oc apply -n istio-operator -f https://raw.githubusercontent.com/Maistra/istio-operator/maistra-0.11/deploy/maistra-operator.yaml
+oc apply -n istio-operator -f https://raw.githubusercontent.com/jumperwire/servicemesh/master/maistra-operator.yaml
 
 # verify deployment to see if the pods are created
 
@@ -29,7 +29,7 @@ oc_wait_for  pod istio-operator name istio-operator
 oc new-project istio-system
 
 #oc apply -n istio-system -f config/basic-install.yaml
-oc apply -n istio-system -f https://raw.githubusercontent.com/redhat-developer-demos/guru-night/master/config/basic-install.yaml
+oc apply -n istio-system -f https://raw.githubusercontent.com/jumperwire/servicemesh/master/basic-install.yaml
 
 # We need to make sure some of the later pods are running
 # We could user something like this
