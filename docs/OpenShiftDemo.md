@@ -60,7 +60,7 @@ This can also take about 20 minutes but the Istio deployment can happen in paral
 ## Stage 4 - Deploy Application
 This requires Istio / Service Mesh to be deployed
 ```
-./bookinfo_app.sh
+./productinfo_app.sh
 ```
 
 # Clean up Deployment
@@ -82,9 +82,9 @@ Remove Istio / Service Mesh
 ./cleanup_service_mesh.sh
 ```
 
-Remove the Bookinfo app
+Remove the Product info app
 ```
-./cleanup_bookinfo.sh
+./cleanup_productinfo.sh
 ```
 
 Confirm all storage PVs have been remove

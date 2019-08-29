@@ -8,6 +8,6 @@ source ./ocp.env
 oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
 
 #  This has a simple cleanup
-echo "Deleting the project bookinfo"
+echo "Deleting the project productinfo"
 echo "This might take a couple of minutes to return"
-oc delete project bookinfo
+oc delete project productinfo
