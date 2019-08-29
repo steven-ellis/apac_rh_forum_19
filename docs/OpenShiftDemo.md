@@ -14,7 +14,10 @@ Currently the deployment needs to be staged due to pod/container dependencies.
 The scripts make use of “watch” to keep an eye on the environment and you’ll have to occasionally press CTRL-C to continue.
 
 ## Pre-requisites
-1. RHPDS deployed "OCP and Container Storage for Admins"
+1. OpenShift 4.x instance
+    * RHPDS deployed "OCP and Container Storage for Admins"
+    * openshift-installer deployed environment
+    * AgnosticD deployed OCP4 environment
 1. Updated `ocp.env` with login details for above environment
     * use `ocp.env.sample` as an example of the data required
 1. Valid `3scale.env` for the 3scale deployment 
