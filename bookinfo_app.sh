@@ -27,17 +27,21 @@ confirm_app_running ()
 }
 
 
-oc new-project bookinfo
+oc new-project productinfo
 
-oc adm policy add-scc-to-user anyuid -z default -n bookinfo
+oc adm policy add-scc-to-user anyuid -z default -n productinfo
 
-oc adm policy add-scc-to-user privileged -z default -n bookinfo
+oc adm policy add-scc-to-user privileged -z default -n productinfo
 
-oc -n bookinfo apply -f https://raw.githubusercontent.com/Maistra/bookinfo/maistra-0.12/bookinfo.yaml
+oc -n productinfo apply -f https://raw.githubusercontent.com/jumperwire/productinfo/master/productinfo.yaml
 
-oc -n bookinfo apply -f https://raw.githubusercontent.com/Maistra/bookinfo/maistra-0.12/bookinfo-gateway.yaml
+oc -n productinfo apply -f https://raw.githubusercontent.com/jumperwire/productinfo/master/productinfo-gateway.yaml
 
-# confirm Bookinfo is running
+oc -n productinfo apply -f https://raw.githubusercontent.com/jumperwire/productinfo/master/destination-rule.yaml
+
+oc -n productinfo apply -f https://raw.githubusercontent.com/jumperwire/productinfo/master/virtual-service-all-v1.yaml
+
+# confirm Productinfo is running
 confirm_app_running 
 #export GATEWAY_URL=$(oc -n istio-system get route istio-ingressgateway -o jsonpath='{.spec.host}')
 # you should get 200 as a response.
