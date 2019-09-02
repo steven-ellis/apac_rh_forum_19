@@ -175,8 +175,10 @@ watch "echo 'Look for running system-app'; oc get pods -n $API_MANAGER_NS | grep
 
 # This should be the preferred approach
 #confirm_pods_running system-app
-oc_wait_for  pod system-app name ${API_MANAGER_NS}
-#oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+oc_wait_for  pod system-app deploymentconfig ${API_MANAGER_NS}
+
+# Make sure the other pods are all running
+oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 
 # Look at logs
 echo "Wait 10 seconds and then look at the logs"

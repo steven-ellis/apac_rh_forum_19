@@ -14,7 +14,10 @@ Currently the deployment needs to be staged due to pod/container dependencies.
 The scripts make use of “watch” to keep an eye on the environment and you’ll have to occasionally press CTRL-C to continue.
 
 ## Pre-requisites
-1. RHPDS deployed "OCP and Container Storage for Admins"
+1. OpenShift 4.x instance
+    * RHPDS deployed "OCP and Container Storage for Admins"
+    * openshift-installer deployed environment
+    * AgnosticD deployed OCP4 environment
 1. Updated `ocp.env` with login details for above environment
     * use `ocp.env.sample` as an example of the data required
 1. Valid `3scale.env` for the 3scale deployment 
@@ -57,7 +60,7 @@ This can also take about 20 minutes but the Istio deployment can happen in paral
 ## Stage 4 - Deploy Application
 This requires Istio / Service Mesh to be deployed
 ```
-./bookinfo_app.sh
+./productinfo_app.sh
 ```
 
 # Clean up Deployment
@@ -79,9 +82,9 @@ Remove Istio / Service Mesh
 ./cleanup_service_mesh.sh
 ```
 
-Remove the Bookinfo app
+Remove the Product info app
 ```
-./cleanup_bookinfo.sh
+./cleanup_productinfo.sh
 ```
 
 Confirm all storage PVs have been remove
