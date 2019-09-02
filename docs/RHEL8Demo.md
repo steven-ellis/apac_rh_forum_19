@@ -17,9 +17,12 @@ Copy `secrets.yaml.sample` to `secrets.yaml` and update with
 
 * your AWS credentials
 * [optional] RHN credentials (subject to AMI being used)
+    * We are using Activation Keys - https://access.redhat.com/articles/1378093
+    * rh_org_id: "UPDATE"
+    * rh_org_activationkey: "UPDATE"
 * Private Key details for SSH access
 * AWS Region
-* cockpit_root_pwd in a crypted hash for cockpit acces
+* cockpit_root_pwd in a crypted hash for cockpit access
     * https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
 
 
