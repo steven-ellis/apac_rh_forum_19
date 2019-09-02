@@ -1,0 +1,10 @@
+---
+# Code based on
+#  - https://www.redhat.com/sysadmin/register-rhel-attach-subscription-ansible
+# tasks file for register-rhel-subscription
+# Register System and add Subcription
+- name: Register system and add subscription
+  redhat_subscription:
+    activationkey: "{{ rh_org_activationkey }}"
+    org_id: "{{ rh_org_id }}"
+    state: present

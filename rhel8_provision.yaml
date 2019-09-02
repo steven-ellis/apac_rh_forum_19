@@ -1,6 +1,10 @@
 #
 # ansible-playbook  ./rhel8_provision.yaml  -e @./secrets.yaml
 # 
+# Additional AMIs
+#  ami-0639904607e0eeb10 - Cloud Access RHEL-8.0.0_HVM-20190520-x86_64-1-Access2-GP2
+#   ansible-playbook  ./rhel8_provision.yaml  -e @./secrets.yaml -e "ami_id=ami-0639904607e0eeb10"
+# 
 - hosts: localhost
   gather_facts: False
 

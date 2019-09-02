@@ -10,6 +10,7 @@ oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verif
 
 oc get clusterversion
 oc get nodes
+oc get whoami
 
 # Clone the git repo for the storage test drive if it isn't already present
 if [ ! -d "content" ]; then
