@@ -1,0 +1,30 @@
+- hosts: localhost
+  gather_facts: False
+
+  vars:
+    instance_type: t3a.micro
+    security_group: webservers_sg
+    ami_id: ami-0520e698dd500b1d1
+    keypair: "{{key_name}}" 
+    region: us-east-2
+    count: 1
+
+  tasks:
+
+
+    - name: Provision a set of instances
+      ec2:
+         key_name: my_key
+         group: test
+         instance_type: "{{instance_type}}"
+         image: "{{ ami_id }}"
+         wait: true
+         exact_count: 1
+         instance_tags:
+            Name: Demo
+            Owner: "{{owner}}"
+      register: ec2
+
+   - name: Add all instance public IPs to host group
+     add_host: hostname={{ item.public_ip }} groups=ec2hosts
+     loop: "{{ ec2.instances }}"
