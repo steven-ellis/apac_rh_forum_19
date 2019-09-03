@@ -23,6 +23,11 @@ The scripts make use of “watch” to keep an eye on the environment and you’
 1. Valid `3scale.env` for the 3scale deployment 
 1. Valid `amps3.yml` for the 3scale deployment
 
+## Known Issues
+* Cannot deploy cleanly onto vanilla OCP4 Workshop environment
+from OPEN / RHPDS due to permission issues
+    * opentlc-mgr doesn't appear to have the same permissions as kubeadmin
+
 
 ## Stage 0 - Validate Environment
 Copy `ocp.env.sample` to `ocp.env` and update with your lab credentials
