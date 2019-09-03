@@ -66,70 +66,85 @@ echo "Currently refer to documentation"
 echo "https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.6/html/operating_3scale/backup-restore#backup_procedures"
 exit 1
 
-# This is a framework but I need to automate the config map changes
+
+# Basically We need a way to patch the config map
+
+# This is a framework but I need a more elegant way to modify the config map
+# and make sure the deployments have completed before moving on
 #
 # $1 = system|backend
 restore_redis ()
 {
 
-    if [ $1 != 'system' && $1 != 'backup' ]; then
+    if [ "${1}" != "system" ] && [ "${1}" != "backend" ]; then
 	echo "restore_redis only supports the arguments" >&2
-	echo "system | backup" >&2
+	echo "system | backend" >&2
 	exit 1
     fi
 
     echo "Restore ${1}-redis"
-    echo "Edit the redis-config configmap:"
+    echo "Current ${1}-redis pods"
+    oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r
+    echo "Modify the redis-config configmap:"
 
-    oc edit configmap redis-config
-
-    echo "Comment SAVE commands in the redis-config configmap:"
-
-     #save 900 1
-     #save 300 10
-     #save 60 10000
-
-    echo "Set appendonly to no in the redis-config configmap:"
-
-    appendonly no
+    oc get --export configmap redis-config -o yaml > redis-config.orig.yaml
+    cat redis-config.orig.yaml | sed "s/ save / #save /g;s/ appendonly yes/ appendonly no/" > redis-config.new.yaml
+    oc apply -f redis-config.new.yaml
 
     echo "Redeploy ${1}-redis to load the new configurations:"
 
     oc rollout latest dc/${1}-redis
 
+    echo "Sleep 20s while the rollout actions"
+    sleep 20s
+    oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+    oc_wait_for  pod ${1}-redis deploymentconfig ${API_MANAGER_NS}
+
+    echo "Current ${1}-redis pods"
+    oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r
+    echo "Sleep 10s while the container stabilises"
+    sleep 10s
+    echo "Current ${1}-redis pods"
+    oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r
+
     echo "Rename the dump.rb file:"
 
-    oc rsh $(oc get pods -l 'deploymentConfig=${1}-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/dump.rdb ${HOME}/data/dump.rdb-old'
+    oc rsh $(oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/dump.rdb ${HOME}/data/dump.rdb-old'
 
     echo "Rename the appendonly.aof file:"
 
-    oc rsh $(oc get pods -l 'deploymentConfig=${1}-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/appendonly.aof ${HOME}/data/appendonly.aof-old'
+    oc rsh $(oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/appendonly.aof ${HOME}/data/appendonly.aof-old'
 
     echo "Move the Backup file to the POD:"
 
-    oc cp ./${1}-redis-dump.rdb $(oc get pods -l 'deploymentConfig=${1}-redis' -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb
+    oc cp ./${1}-redis-dump.rdb $(oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb
 
     echo "Redeploy ${1}-redis to load the backup:"
 
     oc rollout latest dc/${1}-redis
 
-    echo "Edit the redis-config configmap:"
+    echo "Sleep 20s while the rollout actions"
+    sleep 20s
+    oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+    oc_wait_for  pod ${1}-redis deploymentconfig ${API_MANAGER_NS}
 
-    oc edit configmap redis-config
-
-    echo "Uncomment SAVE commands in the redis-config configmap:"
-
-     save 900 1
-     save 300 10
-     save 60 10000
-
-    echo "Set appendonly to yes in the redis-config configmap:"
-
-    appendonly yes
+    echo "Modify the redis-config configmap back to its original settings:"
+    oc apply -f redis-config.orig.yaml
 
     echo "Redeploy ${1}-redis to reload the default configurations:"
 
     oc rollout latest dc/${1}-redis
+    echo "Sleep 20s while the rollout actions"
+    sleep 20s
+    oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+    oc_wait_for  pod ${1}-redis deploymentconfig ${API_MANAGER_NS}
+
+    echo "Current ${1}-redis pods"
+    oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r
+    echo "Sleep 10s while the container stabilises"
+    sleep 10s
+    echo "Current ${1}-redis pods"
+    oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r
 }
 
 restore_redis backend
