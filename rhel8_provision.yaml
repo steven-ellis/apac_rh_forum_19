@@ -68,6 +68,19 @@
       state: started
     with_items: "{{ ec2.instances }}"
 
+  - name: Add Route53
+    route53:
+      state: present
+      zone: "{{route53_zone}}"
+      record: "{{demo_tag}}.{{route53_zone}}"
+      type: CNAME
+      ttl: 30
+      value: "{{ item.public_dns_name }}"
+      wait: yes
+      overwrite: true
+    with_items: "{{ ec2.instances }}"
+    when: route53_zone is defined
+
   - name: Display the Public Instance
     debug: 
       msg: "Deployed Instance: {{ item.public_dns_name }} available over SSH"

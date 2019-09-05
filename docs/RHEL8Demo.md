@@ -9,7 +9,7 @@ The RHEL 8 demo includes technologies like
 1. Amazon AWS account
 2. Ansible installed with boto support
 3. Local ansible inventory file - ```hosts```
-3. Security Group with SSH (22) and Cockpit (9090) access
+4. Security Group with SSH (22) and Cockpit (9090) access
 
 
 ## Stage 0 - Validate Environment
@@ -24,7 +24,12 @@ Copy `secrets.yaml.sample` to `secrets.yaml` and update with
 * AWS Region
 * cockpit_root_pwd in a crypted hash for cockpit access
     * https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
+* [optional] Route53 ZoneId and domain in secrets.yaml
+```
+route53_zone: my.domain
+HostedZoneId:   DDdOO111kkk222
 
+```
 
 
 Create / Update ```hosts``` file with and entry for cockpit_demo
