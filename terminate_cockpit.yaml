@@ -1,6 +1,6 @@
 #
 # Example execution
-# ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml 
+# ansible-playbook ./terminate_cockpit.yaml 
 #
 
 - hosts: localhost
@@ -9,6 +9,9 @@
   vars:
     region: us-east-2
     demo_tag: cockpit
+
+  vars_files:
+    - ./secrets.yaml
 
   tasks:
   - name: Terminate tagged instances

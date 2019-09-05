@@ -1,5 +1,5 @@
 #
-# ansible-playbook  -i ./hosts ./rhel8_add_keys.yaml  -e @./secrets.yaml
+# ansible-playbook  -i ./hosts ./rhel8_add_keys.yaml
 #
 # Pulls in additional variables from ./secrets.yaml
 #
@@ -8,6 +8,7 @@
 # 
 ---
 - hosts: all
+  gather_facts: False
   become: True
   become_user: root
   vars:

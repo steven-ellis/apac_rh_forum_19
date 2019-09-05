@@ -36,12 +36,12 @@ Create / Update ```hosts``` file with and entry for cockpit_demo
 ## Stage 1 - Deploy AWS Instance
 This takes approx 2 minutes
 ```
-ansible-playbook rhel8_provision.yaml -e @./secrets.yaml
+ansible-playbook rhel8_provision.yaml
 ```
 
 You can provision with a different Demo tag via
 ```
-ansible-playbook rhel8_provision.yaml -e @./secrets.yaml -e "demo_tag=mytest"
+ansible-playbook rhel8_provision.yaml -e "demo_tag=mytest"
 ```
 
 ## Stage 2 - Install Demo Requirements
@@ -58,20 +58,20 @@ ec2-AAA-BBB-CCC-DDD.us-east-2.compute.amazonaws.com
 
 Deploy the Cockpit requirements
 ```
-ansible-playbook  -i ./hosts ./rhel8_cockpit.yaml  -e @./secrets.yaml
+ansible-playbook  -i ./hosts ./rhel8_cockpit.yaml
 ```
 
 # Clean up Deployment
 Delete cockpit tagged AWS Instances
 
 ```
-ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml 
+ansible-playbook ./terminate_cockpit.yaml 
 ```
 
 or delete instances with a specific "Demo" tag
 
 ```
-ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml -e "demo_tag=mytest"
+ansible-playbook  ./terminate_cockpit.yaml -e "demo_tag=mytest"
 ```
 
 ## Stage 3 - Add additional ssh-keys for your demo team
@@ -86,7 +86,7 @@ ssh_keys_list:
 ```
 Then run
 ```
-ansible-playbook  -i ./hosts ./rhel8_add_keys.yaml  -e @./secrets.yaml
+ansible-playbook  -i ./hosts ./rhel8_add_keys.yaml
 ```
 All of your team should now have access over ssh
 ```
