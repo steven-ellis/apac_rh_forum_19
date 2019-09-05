@@ -22,7 +22,7 @@ The scripts make use of “watch” to keep an eye on the environment and you’
     * use `ocp.env.sample` as an example of the data required
 1. Valid `3scale.env` for the 3scale deployment 
 1. Valid `amps3.yml` for the 3scale deployment
-
+1. Admin OpenShift [username/password](./OpenShiftUserAuth.md)
 
 ## Stage 0 - Validate Environment
 Copy `ocp.env.sample` to `ocp.env` and update with your lab/admin/kubeadmin credentials
@@ -36,6 +36,24 @@ Then validate that our OCP credentials are correct and copies any other GIT repo
 copy your ssh-key to the bastion host
 ```
 ssh-copy-id <lab-user> <bastion node>
+```
+
+### Recommended
+Switch from using the **kubeadmin** default user to an **admin** user setup
+via an [OpenShift Auth Provider](./OpenShiftUserAuth.md)
+```
+./ocp_htpass.sh
+```
+
+Update ocp.env to use
+```
+OCP_USER=admin
+OCP_PASS=<your new password>
+```
+
+Re-Run Setup to confirm our login works and your user is **admin**
+``` 
+./setup.sh
 ```
 
 ## Stage 1 - Deploy Storage
