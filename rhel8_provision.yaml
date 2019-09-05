@@ -2,7 +2,10 @@
 # ansible-playbook  ./rhel8_provision.yaml  -e @./secrets.yaml
 # 
 # Additional AMIs
+#  ami-0520e698dd500b1d1 - Default RHEL 8.0 On Demand AMI
 #  ami-0639904607e0eeb10 - Cloud Access RHEL-8.0.0_HVM-20190520-x86_64-1-Access2-GP2
+#
+# Building with a specific AMI
 #   ansible-playbook  ./rhel8_provision.yaml  -e @./secrets.yaml -e "ami_id=ami-0639904607e0eeb10"
 #   
 # Note on instance_types
@@ -15,7 +18,7 @@
   vars:
     instance_type: t3a.large # Could also be a t3.large for Intel
     security_group: sg-245ef447
-    ami_id: ami-0520e698dd500b1d1 # Default RHEL 8.0 On Demand AMI
+    ami_id: ami-0639904607e0eeb10 # Cloud Access RHEL-8.0.0_HVM-20190520-x86_64-1-Access2-GP2
     region: us-east-2
     demo_tag: cockpit
 
