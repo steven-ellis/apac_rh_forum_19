@@ -1,0 +1,28 @@
+#
+# ansible-playbook  -i ./hosts ./rhel8_add_keys.yaml  -e @./secrets.yaml
+#
+# Pulls in additional variables from ./secrets.yaml
+#
+# Override ssh_keys_list with a list of SSH Pubkeys you want to upload
+#  - default is you own pubkey
+# 
+---
+- hosts: all
+  become: True
+  become_user: root
+  vars:
+    ansible_user: ec2-user
+    ssh_keys_list: 
+     - "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+  vars_files:
+    - ./secrets.yaml
+  tasks:
+
+  - name: Install additional ssh keys
+    authorized_key:
+      user: ec2-user
+      state: present
+      key: "{{item}}"
+    with_items :
+     - "{{ssh_keys_list}}"
+

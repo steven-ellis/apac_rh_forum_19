@@ -70,5 +70,30 @@ ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml
 
 or delete instances with a specific "Demo" tag
 
+```
 ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml -e "demo_tag=mytest"
+```
 
+## Stage 3 - Add additional ssh-keys for your demo team
+The deployment script will use the identity in your secrets.yaml. If you want to add additional
+SSH pubkeys to the remote ec2-user you can update your secrets.yaml with
+```
+ssh_keys_list:
+  - "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+  - "{{ lookup('file', lookup('env','HOME') + '/.ssh/OCP4.pub') }}"
+  - "{{ lookup('file', lookup('env','PWD') + '/.fred.id_rsa.pub') }}"
+  - "{{ lookup('file', lookup('env','PWD') + '/.bill.id_rsa.pub') }}"
+```
+Then run
+```
+ansible-playbook  -i ./hosts ./rhel8_add_keys.yaml  -e @./secrets.yaml
+```
+All of your team should now have access over ssh
+```
+ssh ec2-user@<public-aws-hostname>
+```
+
+## Stage 4 - Confirm Cockpit Access
+Browse to the url
+
+ - http://<public-aws-hostname\>:9090
