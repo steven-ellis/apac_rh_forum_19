@@ -1,0 +1,29 @@
+#
+# Example execution
+#  ansible-playbook ./shutdown_aws.yaml  -e "demo_tag=<TAG>"
+#
+
+- hosts: localhost
+  gather_facts: False
+
+  vars:
+    region: us-east-2
+#    demo_tag: dummy - We need to define this at runtime
+
+  vars_files:
+    - ./secrets.yaml
+
+  tasks:
+  - name: Shutdown tagged instances
+    ec2_instance:
+      state: stopped
+      region: "{{ region }}"
+      filters:
+        tag:Demo: "{{demo_tag}}"
+    when: demo_tag is defined
+    register: ec2
+
+  - name: Display the Public Instance
+    debug: 
+      msg: "Shutdown AWS Instance: {{ item.public_dns_name }} in region {{ region }}"
+    loop: "{{ ec2.instances }}"
