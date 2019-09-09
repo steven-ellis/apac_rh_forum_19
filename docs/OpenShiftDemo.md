@@ -24,6 +24,9 @@ The scripts make use of “watch” to keep an eye on the environment and you’
 1. Valid `amps3.yml` for the 3scale deployment
 1. Admin OpenShift [username/password](./OpenShiftUserAuth.md)
 
+
+=======
+
 ## Stage 0 - Validate Environment
 Copy `ocp.env.sample` to `ocp.env` and update with your lab/admin/kubeadmin credentials
 
@@ -123,3 +126,43 @@ Remove the storage nodes and rook-ceph
 ```
 ./cleanup_ocs.sh
 ```
+
+# Known Issues
+## Cannot deploy cleanly onto vanilla OCP4 Workshop environment from OPEN / RHPDS
+
+* Potential permission issues?
+    * opentlc-mgr doesn't appear to have the same permissions as kubeadmin
+    * This is an admin user so deployment **should** work
+* Only one worker is initially deployed
+    * https://docs.openshift.com/container-platform/4.1/machine_management/manually-scaling-machineset.html
+    * Example fix below
+```
+https://docs.openshift.com/container-platform/4.1/machine_management/manually-scaling-machineset.html
+oc get machinesets -n openshift-machine-api
+
+oc scale --replicas=1 machineset cluster-<GUID>-worker-us-east-1b -n openshift-machine-api
+oc scale --replicas=1 machineset cluster-<GUID>-worker-us-east-1c -n openshift-machine-api
+
+# Wait for them to become Ready
+oc get machinesets -n openshift-machine-api
+```
+
+* Error creating  instances
+```
+I0909 03:18:28.879446       1 controller.go:297] MachineSet "cluster-akl-849b-dsn89-workerocs-us-east-2a" in namespace "openshift-machine-api" doesn't specify "cluster.k8s.io/cluster-name" label, assuming nil cluster
+```
+
+* Looks like we can't find our subnet for deployment
+```
+E0909 03:58:55.710944       1 actuator.go:104] Machine error: error launching instance: error getting subnet IDs: no subnet IDs were found,
+E0909 03:58:55.710973       1 actuator.go:113] error creating machine: error launching instance: error getting subnet IDs: no subnet IDs were found,
+```
+
+* Appears we were deploying in the wrong region - change to us-east-1
+
+* New error appears to be due to AMI access issues in us-east-1
+```
+E0909 04:25:51.837081       1 instances.go:191] Error describing AMI: InvalidAMIID.NotFound: The image id '[ami-0eef624367320ec26]' does not exist
+	status code: 400, request id: 7f5f6378-e23f-4551-a501-a0206176e1cb
+```
+* escallate to Red Hat RHPDS Team

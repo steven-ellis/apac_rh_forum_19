@@ -13,6 +13,8 @@ source ocp.env
 source functions
 
 OCP_NAMESPACE=rook-ceph
+OCP_REGION=${OCP_REGION:-us-east-2}
+
 
 oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
 
@@ -53,6 +55,9 @@ create_ceph_storage_cluster ()
     cp ./content/support/cluster-workerocs-*.yaml --target-directory=./storage_cluster/
     
     sed -i "s/cluster-28cf-t22gs/$CLUSTERID/g" ./storage_cluster/cluster-workerocs-*.yaml
+    sed -i "s/us-east-2/$OCP_REGION/g" ./storage_cluster/cluster-workerocs-*.yaml
+    # example if we need to override the AMI
+    #sed -i "s/ami-0eef624367320ec26/ami-046fe691f52a953f9/g" ./storage_cluster/cluster-workerocs-*.yaml
 
     oc create -f ./storage_cluster/cluster-workerocs-us-east-2a.yaml
     oc create -f ./storage_cluster/cluster-workerocs-us-east-2b.yaml
