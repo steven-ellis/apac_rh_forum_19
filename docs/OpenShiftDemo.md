@@ -84,6 +84,11 @@ This requires Istio / Service Mesh to be deployed
 ./productinfo_app.sh
 ```
 
+## Stage 5 - Configure environment for Couchbase
+```
+./couchbase.sh setup
+```
+
 # Clean up Deployment
 Ideally we recommend you start with a new OpenShift cluster cleaning up
 all of the services can be difficult, particularly the storgae deployed
@@ -92,6 +97,10 @@ on physical nodes
 We also recommend you remove all services that are consuming storage before
 removing the ocs components
 
+Remove Couchbase Operator and Instances
+```
+./couchbase.sh delete
+```
 
 Remove 3scale
 ```
