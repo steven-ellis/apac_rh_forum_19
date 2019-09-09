@@ -1,5 +1,5 @@
 #
-# ansible-playbook  -i ./hosts ./rhel8_cockpit.yaml  -e @./secrets.yaml
+# ansible-playbook  -i ./hosts ./rhel8_cockpit.yaml
 # 
 ---
 - hosts: cockpit_demo
@@ -7,6 +7,8 @@
   become_user: root
   vars:
     ansible_user: ec2-user
+  vars_files:
+    - ./secrets.yaml
   tasks:
 
   - name: Need to remove the AWS RHUI Config before installing ImageBuilder
@@ -36,6 +38,7 @@
     with_items :
      - cockpit-machines
      - virt-viewer
+     - virt-install
 
   - name: Install Image Builder and enable for Cockpit
     yum: name={{item}} state=present
