@@ -14,23 +14,25 @@ Currently the deployment needs to be staged due to pod/container dependencies.
 The scripts make use of “watch” to keep an eye on the environment and you’ll have to occasionally press CTRL-C to continue.
 
 ## Pre-requisites
-1. OpenShift 4.x instance
+1. OpenShift 4.1 instance created via
     * RHPDS deployed "OCP and Container Storage for Admins"
-    * openshift-installer deployed environment
     * AgnosticD deployed OCP4 environment
+    * [AWS deployed](./OpenShiftInstaller.md) vanilla environment via openshift-installer
 1. Updated `ocp.env` with login details for above environment
     * use `ocp.env.sample` as an example of the data required
 1. Valid `3scale.env` for the 3scale deployment 
 1. Valid `amps3.yml` for the 3scale deployment
+1. Admin OpenShift [username/password](./OpenShiftUserAuth.md)
 
 ## Known Issues
 * Cannot deploy cleanly onto vanilla OCP4 Workshop environment
 from OPEN / RHPDS due to permission issues
     * opentlc-mgr doesn't appear to have the same permissions as kubeadmin
 
+=======
 
 ## Stage 0 - Validate Environment
-Copy `ocp.env.sample` to `ocp.env` and update with your lab credentials
+Copy `ocp.env.sample` to `ocp.env` and update with your lab/admin/kubeadmin credentials
 
 Then validate that our OCP credentials are correct and copies any other GIT repos
 ```
@@ -41,6 +43,24 @@ Then validate that our OCP credentials are correct and copies any other GIT repo
 copy your ssh-key to the bastion host
 ```
 ssh-copy-id <lab-user> <bastion node>
+```
+
+### Recommended
+Switch from using the **kubeadmin** default user to an **admin** user setup
+via an [OpenShift Auth Provider](./OpenShiftUserAuth.md)
+```
+./ocp_htpass.sh
+```
+
+Update ocp.env to use
+```
+OCP_USER=admin
+OCP_PASS=<your new password>
+```
+
+Re-Run Setup to confirm our login works and your user is **admin**
+``` 
+./setup.sh
 ```
 
 ## Stage 1 - Deploy Storage

@@ -1,19 +1,32 @@
 #
-# ansible-playbook  ./rhel8_provision.yaml  -e @./secrets.yaml
+# ansible-playbook  ./rhel8_provision.yaml
 # 
 # Additional AMIs
+#  ami-0520e698dd500b1d1 - Default RHEL 8.0 On Demand AMI
 #  ami-0639904607e0eeb10 - Cloud Access RHEL-8.0.0_HVM-20190520-x86_64-1-Access2-GP2
-#   ansible-playbook  ./rhel8_provision.yaml  -e @./secrets.yaml -e "ami_id=ami-0639904607e0eeb10"
+#
+# Building with a specific AMI
+#   ansible-playbook  ./rhel8_provision.yaml  -e "ami_id=ami-0639904607e0eeb10"
+#
+# To override the demo tag
+#   ansible-playbook  ./rhel8_provision.yaml  -e "demo_tag=my_demo"
+#   
+# Note on instance_types
+#  - For running the Image Builder Demo we need more CPU/RAM
+#    than a t3.micro instance can offer
 # 
 - hosts: localhost
   gather_facts: False
 
   vars:
-    instance_type: t3a.micro # Could also be a t3.micro for Intel
+    instance_type: t3a.large # Could also be a t3.large for Intel
     security_group: sg-245ef447
-    ami_id: ami-0520e698dd500b1d1 # Default RHEL 8.0 On Demand AMI
+    ami_id: ami-0639904607e0eeb10 # Cloud Access RHEL-8.0.0_HVM-20190520-x86_64-1-Access2-GP2
     region: us-east-2
     demo_tag: cockpit
+
+  vars_files:
+    - ./secrets.yaml
 
   tasks:
   - name: Provision a set of instances
@@ -30,9 +43,11 @@
          - device_name: /dev/sda1
            volume_type: gp2
            volume_size: 30
+           delete_on_termination: true
          - device_name: /dev/sdb
            volume_type: gp2
            volume_size: 10
+           delete_on_termination: true
        instance_tags:
           Name: "RHEL8 APAC RH Forum Demo"
           Owner: "{{email}}"
@@ -52,6 +67,19 @@
       timeout: 320
       state: started
     with_items: "{{ ec2.instances }}"
+
+  - name: Add Route53
+    route53:
+      state: present
+      zone: "{{route53_zone}}"
+      record: "{{demo_tag}}.{{route53_zone}}"
+      type: CNAME
+      ttl: 30
+      value: "{{ item.public_dns_name }}"
+      wait: yes
+      overwrite: true
+    with_items: "{{ ec2.instances }}"
+    when: route53_zone is defined
 
   - name: Display the Public Instance
     debug: 
