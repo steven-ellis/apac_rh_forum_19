@@ -6,12 +6,9 @@
 source ./ocp.env
 source ./functions
 
-# And login as the kubeadmin user
-
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+# We only login as the kubeadmin user if we've got a valid command line
 
 OCP_NAMESPACE=couchbase
-
 
 setup_couchbase()
 {
@@ -55,9 +52,11 @@ cleanup_couchbase()
 
 case "$1" in
   setup)
+        oc_login
         setup_couchbase
         ;;
   delete|cleanup|remove)
+        oc_login
         cleanup_couchbase
         ;;
   *)
