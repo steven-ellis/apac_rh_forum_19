@@ -6,7 +6,7 @@ source ./functions
 
 # And login as the kubeadmin user
 
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+oc_login
 
 #  This has a simple cleanup
 echo "Deleting the project productinfo"
