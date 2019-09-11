@@ -117,7 +117,7 @@ Remove the Product info app
 ./cleanup_productinfo.sh
 ```
 
-Confirm all storage PVs have been remove
+Confirm all storage PVs have been removed 
 ```
 oc get pvc --all-namespaces 
 oc get pv --all-namespaces 
