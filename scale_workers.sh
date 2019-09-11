@@ -66,6 +66,11 @@ scale_down ()
 
 
 
+machineset_status ()
+{
+    watch "echo 'Look at our current machinesets'; oc get machinesets -n openshift-machine-api"
+}
+
 
 case "$1" in
   up)
@@ -88,8 +93,13 @@ case "$1" in
         pre_setup
         scale_up_az c
         ;;
+  status)
+        pre_setup
+        machineset_status
+        ;;
   *)
-        echo "Usage: $N {up|down|aza|azb|azc}" >&2
+        echo "Usage: $N {status|up|down|aza|azb|azc}" >&2
+        echo " status - Show the current status of our worker nodes" >&2
         echo " up - scale to 2 replicas for all worker nodes" >&2
         echo " down - scale to 1 replica for all worker nodes" >&2
         echo " aza - scale to 2 replicas for worker nodes in AZ ${OCP_REGION}a" >&2
