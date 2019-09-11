@@ -152,6 +152,27 @@ Remove the storage nodes and rook-ceph
 ```
 
 # Known Issues
+## Storage issues for Code Ready Workspaces demo
+This usually mans that CRW was deployed to use the default Storage Class which is Ceph RBD (RWO). We need to  update the config to utilise out CephFS (RWX) Storage class
+
+Default Config map for che
+```
+CHE_INFRA_KUBERNETES_PVC_STORAGE__CLASS__NAME: ""
+```
+
+To check your config
+```
+oc project codeready-workspaces
+oc get cm che -o yaml | grep PVC
+```
+
+
+Update configuration
+```
+CHE_INFRA_KUBERNETES_PVC_STORAGE__CLASS__NAME: "csi-cephfs"
+```
+
+
 ## Cannot deploy cleanly onto vanilla OCP4 Workshop environment from OPEN / RHPDS
 
 * Potential permission issues?
