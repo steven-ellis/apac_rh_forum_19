@@ -27,8 +27,13 @@ cleanup_couchbase()
     echo "Clean up our Couchbase environments and remove the Operator"
     echo "Don't worry if your see - No resources found"
     echo "Remove couchbase subscription"
-    oc delete subscriptions couchbase-enterprise-certified -n ${OCP_NAMESPACE}
+    #oc delete subscriptions couchbase-enterprise-certified -n ${OCP_NAMESPACE}
+    oc delete subscriptions -l csc-owner-name=installed-certified-couchbase -n ${OCP_NAMESPACE}
     oc delete clusterserviceversion couchbase-operator.v1.1.0 -n ${OCP_NAMESPACE}
+
+    echo "Make sure we've remove couchbase from our cataloge sources"
+    oc delete catalogsourceconfig -n openshift-marketplace installed-certified-couchbase
+
 
     echo "Remove couchbase operator"
     oc delete deployment -l app=couchbase-operator -n ${OCP_NAMESPACE}
