@@ -89,6 +89,11 @@ This requires Istio / Service Mesh to be deployed
 ./couchbase.sh setup
 ```
 
+## Stage 6 - Configure environment for Quarkus and Java Demo
+```
+./quarkus.sh setup
+```
+
 # Clean up Deployment
 Ideally we recommend you start with a new OpenShift cluster cleaning up
 all of the services can be difficult, particularly the storgae deployed
@@ -96,6 +101,16 @@ on physical nodes
 
 We also recommend you remove all services that are consuming storage before
 removing the ocs components
+
+Remove the Quarkus and Java environment
+```
+./quarkus.sh delete
+```
+
+Make sure we scale back down the compute workers
+```
+./scale_workers.sh down
+```
 
 Remove Couchbase Operator and Instances
 ```
