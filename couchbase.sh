@@ -27,23 +27,23 @@ cleanup_couchbase()
     echo "Clean up our Couchbase environments and remove the Operator"
     echo "Don't worry if your see - No resources found"
     echo "Remove couchbase subscription"
-    oc delete subscriptions couchbase-enterprise-certified
-    oc delete clusterserviceversion couchbase-operator.v1.1.0
+    oc delete subscriptions couchbase-enterprise-certified -n ${OCP_NAMESPACE}
+    oc delete clusterserviceversion couchbase-operator.v1.1.0 -n ${OCP_NAMESPACE}
 
     echo "Remove couchbase operator"
-    oc delete deployment -l app=couchbase-operator
-    oc delete replicaset -l app=couchbase-operator
-    oc delete all -l app=couchbase-operator
+    oc delete deployment -l app=couchbase-operator -n ${OCP_NAMESPACE}
+    oc delete replicaset -l app=couchbase-operator -n ${OCP_NAMESPACE}
+    oc delete all -l app=couchbase-operator -n ${OCP_NAMESPACE}
 
     echo "Remove all couchbase instances"
-    oc delete all -l app=couchbase
+    oc delete all -l app=couchbase -n ${OCP_NAMESPACE}
 
 
     echo "Remove our secret"
     oc delete -f cbauthsecret.yaml -n ${OCP_NAMESPACE}
 
     echo "Remove the Couchbase namespace"
-    oc delete namespace couchbase
+    oc delete namespace ${OCP_NAMESPACE}
 
 }
 
