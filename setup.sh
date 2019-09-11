@@ -5,8 +5,9 @@
 # Also Git clone the settings for deploying the storage
 
 source ocp.env
+source ./functions
 
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+oc_login
 
 oc get clusterversion
 oc get nodes
