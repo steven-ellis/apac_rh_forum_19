@@ -39,14 +39,23 @@ setup_quarkus()
     oc expose service supersonic-subatomic-java
 }
 
-cleanup_quarkus()
+delete_quarkus()
 {
-    echo "Clean up our Quarkus environments and remove the Operator"
-    echo "Scaling big fat java back to 1 pod"
-    oc scale --replicas=1 deployment.apps big-fat-java -n ${OCP_NAMESPACE}
+    echo "Remove the service routes"
+    oc delete service supersonic-subatomic-java -n ${OCP_NAMESPACE}
+    oc delete service big-fat-java  -n ${OCP_NAMESPACE}
+
+    echo "Then remove the project {OCP_NAMESPACE}"
+    oc delete namespace ${OCP_NAMESPACE}
+}
+
+scale_quarkus()
+{
+    echo "Scaling big fat java to ${1} pod(s)"
+    oc scale --replicas=${1} deployment.apps big-fat-java -n ${OCP_NAMESPACE}
     
-    echo "Scaling big fat java back to 1 pod"
-    oc scale --replicas=1 deployment.apps supersonic-subatomic-java -n ${OCP_NAMESPACE}
+    echo "Scaling big fat java to ${1} pod(s)"
+    oc scale --replicas=${1} deployment.apps supersonic-subatomic-java -n ${OCP_NAMESPACE}
 }
 
 
@@ -55,12 +64,20 @@ case "$1" in
         oc_login
         setup_quarkus
         ;;
-  cleanup)
+  scale_down)
         oc_login
-        cleanup_quarkus
+        scale_quarkus 1
+        ;;
+  scale_up)
+        oc_login
+        scale_quarkus 100
+        ;;
+  delete|remove)
+        oc_login
+        delete_quarkus
         ;;
   *)
-        echo "Usage: $N {setup|cleanup}" >&2
+        echo "Usage: $N {setup|scale_up|scale_down|delete}" >&2
         exit 1
         ;;
 esac
