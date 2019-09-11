@@ -5,6 +5,11 @@
 # If you want to create your own 
 #  htpasswd -c -B demo.admin.htpasswd admin
 
+source ocp.env
+source functions
+
+oc_login
+
 oc create secret generic htpass-secret --from-file=htpasswd=demo.admin.htpasswd  -n openshift-config
 
 oc apply -f ocp_htpass.yaml 

@@ -16,7 +16,7 @@ OCP_NAMESPACE=rook-ceph
 OCP_REGION=${OCP_REGION:-us-east-2}
 
 
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+oc_login
 
 # Need a way to make sure pods are running before we continue
 #
@@ -282,6 +282,7 @@ sleep 2
 
 case "$1" in
   all)
+        oc_login
         create_ceph_storage_cluster
         deploy_rook_csi_version 
         enable_rbd
@@ -289,24 +290,30 @@ case "$1" in
         enable_object
         ;;
   base)
+        oc_login
         create_ceph_storage_cluster
         deploy_rook_csi_version 
         enable_rbd
         enable_cephfs
         ;;
   storage)
+        oc_login
         create_ceph_storage_cluster
         ;;
   rook)
+        oc_login
         deploy_rook_csi_version 
         ;;
   rbd)
+        oc_login
         enable_rbd
         ;;
   cephfs)
+        oc_login
         enable_cephfs
         ;;
   object)
+        oc_login
         enable_object
         ;;
   *)

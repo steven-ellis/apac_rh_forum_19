@@ -2,10 +2,10 @@
 
 # Step 0 - Our master environment
 source ./ocp.env
+source ./functions
 
 # And login as the kubeadmin user
-
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+oc_login
 
 confirm_app_running ()
 {

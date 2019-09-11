@@ -9,7 +9,7 @@ source ./3scale.env
 
 # And login as the kubeadmin user
 
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+oc_login
 
 OCP_NAMESPACE=$API_MANAGER_NS
 

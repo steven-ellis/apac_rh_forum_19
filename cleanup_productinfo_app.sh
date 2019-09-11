@@ -2,6 +2,7 @@
 
 # Step 0 - Our master environment
 source ./ocp.env
+source ./functions
 
 # And login as the kubeadmin user
 
