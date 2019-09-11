@@ -12,6 +12,8 @@ oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verif
 
 OCP_NAMESPACE=supersonic-subatomic-java
 
+# Ideally we should be cloning the repo locally for better performance
+REPO_URL="https://raw.githubusercontent.com/jumperwire/supersonic-subatomic-java/master"
 
 setup_quarkus()
 {
@@ -19,16 +21,16 @@ setup_quarkus()
     oc new-project ${OCP_NAMESPACE}
 
     echo "Deploy big fat java"
-    oc apply -f https://raw.githubusercontent.com/jumperwire/supersonic-subatomic-java/master/deploy-big-fat-java.yaml
+    oc apply -f ${REPO_URL}/deploy-big-fat-java.yaml
     
     echo "Deploy supersonic-subatomic java"
-    oc apply -f https://raw.githubusercontent.com/jumperwire/supersonic-subatomic-java/master/deploy-supersonic-subatomic-java.yaml
+    oc apply -f ${REPO_URL}/deploy-supersonic-subatomic-java.yaml
     
     echo "Create big fat java service"
-    oc apply -f https://raw.githubusercontent.com/jumperwire/supersonic-subatomic-java/master/service-big-fat-java.yaml
+    oc apply -f ${REPO_URL}/service-big-fat-java.yaml
     
     echo "Create supersonic-subatomic java service"
-    oc apply -f https://raw.githubusercontent.com/jumperwire/supersonic-subatomic-java/master/service-supersonic-subatomic-java.yaml
+    oc apply -f ${REPO_URL}/service-supersonic-subatomic-java.yaml
     
     echo "Create big fat java route"
     oc expose service big-fat-java
