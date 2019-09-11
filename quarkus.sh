@@ -15,8 +15,8 @@ OCP_NAMESPACE=supersonic-subatomic-java
 
 setup_quarkus()
 {
-    echo "Create the supersonic-subatomic-java namespace"
-    oc new-project supersonic-subatomic-java
+    echo "Create the ${OCP_NAMESPACE} namespace"
+    oc new-project ${OCP_NAMESPACE}
 
     echo "Deploy big fat java"
     oc apply -f https://raw.githubusercontent.com/jumperwire/supersonic-subatomic-java/master/deploy-big-fat-java.yaml
@@ -41,10 +41,10 @@ cleanup_quarkus()
 {
     echo "Clean up our Quarkus environments and remove the Operator"
     echo "Scaling big fat java back to 1 pod"
-    oc scale --replicas=1 deployment.apps big-fat-java
+    oc scale --replicas=1 deployment.apps big-fat-java -n ${OCP_NAMESPACE}
     
     echo "Scaling big fat java back to 1 pod"
-    oc scale --replicas=1 deployment.apps supersonic-subatomic-java
+    oc scale --replicas=1 deployment.apps supersonic-subatomic-java -n ${OCP_NAMESPACE}
 }
 
 
