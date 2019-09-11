@@ -8,7 +8,7 @@ source ./functions
 
 # And login as the kubeadmin user
 
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+#oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
 
 OCP_NAMESPACE=supersonic-subatomic-java
 
@@ -52,13 +52,15 @@ cleanup_quarkus()
 
 case "$1" in
   setup)
+        oc_login
         setup_quarkus
         ;;
-  delete|cleanup|remove)
+  cleanup)
+        oc_login
         cleanup_quarkus
         ;;
   *)
-        echo "Usage: $N {setup|delete}" >&2
+        echo "Usage: $N {setup|cleanup}" >&2
         exit 1
         ;;
 esac
