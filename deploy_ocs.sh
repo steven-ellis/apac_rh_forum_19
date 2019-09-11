@@ -15,8 +15,7 @@ source functions
 OCP_NAMESPACE=rook-ceph
 OCP_REGION=${OCP_REGION:-us-east-2}
 
-
-oc_login
+#oc_login
 
 # Need a way to make sure pods are running before we continue
 #
