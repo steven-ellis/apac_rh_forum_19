@@ -1,5 +1,16 @@
 #!/bin/bash
+#
+# Setup Fuse 7.4 into our OpenShift envioronment
+#
+# Requirements
+# ocpfuse74.env - with additional registry requirements for the images
+#  DOCKER_REGISTRY_URL=
+#  DOCKER_SVCACCNT_USERNAME=
+#  DOCKER_SVCACCNT_PASSWORD=
+#
 
+source ./ocp.env
+source ./functions
 source ./ocpfuse74.env
 
 install_fuse_imagestream()
@@ -26,27 +37,32 @@ echo "Installing Fuse Templates"
 
 update_sample_operator_config()
 {
+        echo "Updating the sample Fuse Operator config"
 	cp ./backup/configs.samples.operator.openshift.io.original tmp.yaml
 	totalLines=`wc -l tmp.yaml | tr -dc '0-9'`
-	indexPos=`awk '/managementState: Managed/{ print NR; exit }' tmp.yaml`
-	cmd="sed -n '1,${indexPos}p' tmp.yaml > tmp1.yaml"
-	eval $cmd
+	indexPos=`awk "/managementState: Managed/{ print NR; exit }" tmp.yaml`
+	sed -n "1,${indexPos}p" tmp.yaml > tmp1.yaml
+	#cmd="sed -n "1,${indexPos}p" tmp.yaml > tmp1.yaml"
+	#eval $cmd
 	indexPos=$[indexPos+1]
-	cmd="sed -n '${indexPos},${totalLines}p' tmp.yaml > tmp3.yaml"
-	eval $cmd
+	sed -n "${indexPos},${totalLines}p" tmp.yaml > tmp3.yaml
+	#cmd="sed -n '${indexPos},${totalLines}p' tmp.yaml > tmp3.yaml"
+	#eval $cmd
 	cp additionalParams.yaml tmp2.yaml
 	cat tmp[1-3].yaml > tmp123.yaml
-	sed -i '.bak' '/resourceVersion/d' tmp123.yaml
-	sed -i '.bak' '/creationTimestamp/d' tmp123.yaml
-	sed -i '.bak' '/uid:/d' tmp123.yaml
-	sed -i '.bak' '/version:/d' tmp123.yaml
+	sed -i.bak "/resourceVersion/d" tmp123.yaml
+	sed -i.bak "/creationTimestamp/d" tmp123.yaml
+	sed -i.bak "/uid:/d" tmp123.yaml
+	sed -i.bak "/version:/d" tmp123.yaml
 	oc replace -f tmp123.yaml
 	rm tmp*yaml*
 }
 
 oc logout 2</dev/null
 
-oc login $OCP_ENDPOINT -u $OCP_USER -p $OCP_PASS
+oc_login
+
+mkdir -p backup
 
 oc project openshift
 
