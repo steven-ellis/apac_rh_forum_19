@@ -58,22 +58,46 @@ update_sample_operator_config()
 	rm tmp*yaml*
 }
 
-oc logout 2</dev/null
+login_to_namespace ()
+{
+    oc logout 2</dev/null
 
-oc_login
+    oc_login
 
-mkdir -p backup
+    oc project openshift
+}
 
-oc project openshift
+setup_secrets ()
+{
+    oc create -n openshift secret docker-registry imagestreamsecret --docker-server=${DOCKER_REGISTRY_URL} --docker-username=${DOCKER_SVCACCNT_USERNAME} --docker-password=${DOCKER_SVCACCNT_PASSWORD}
+}
 
-oc create -n openshift secret docker-registry imagestreamsecret --docker-server=$DOCKER_REGISTRY_URL --docker-username=DOCKER_SVCACCNT_USERNAME --docker-password=$DOCKER_SVCACCNT_PASSWORD 
+backup_fuse_environment ()
+{
+    mkdir -p backup
 
-oc get configs.samples.operator.openshift.io -n openshift-cluster-samples-operator -o yaml > ./backup/configs.samples.operator.openshift.io.original
+    oc get configs.samples.operator.openshift.io -n openshift-cluster-samples-operator -o yaml > ./backup/configs.samples.operator.openshift.io.original
+    oc get template -n openshift >./backup/octemplates.original
+}
 
-oc get template -n openshift >./backup/octemplates.original
 
-update_sample_operator_config;
+case "$1" in
+  setup)
+        login_to_namespace 
+        setup_secrets
+        backup_fuse_environment 
+        update_sample_operator_config
+        install_fuse_imagestream
+        install_fuse_templates
+        ;;
+  delete|cleanup|remove)
+        echo "WARNING - Fuse cleanup not implemented yet"
+        #login_to_namespace 
+        #cleanup_fuse
+        ;;
+  *)
+        echo "Usage: $N {setup|cleanup}" >&2
+        exit 1
+        ;;
+esac
 
-install_fuse_imagestream;
-
-install_fuse_templates;
