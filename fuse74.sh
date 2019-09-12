@@ -58,7 +58,7 @@ update_sample_operator_config()
 	rm tmp*yaml*
 }
 
-login_to_namespace ()
+pre_setup ()
 {
     oc logout 2</dev/null
 
@@ -83,7 +83,7 @@ backup_fuse_environment ()
 
 case "$1" in
   setup)
-        login_to_namespace 
+        pre_setup 
         setup_secrets
         backup_fuse_environment 
         update_sample_operator_config
@@ -92,7 +92,7 @@ case "$1" in
         ;;
   delete|cleanup|remove)
         echo "WARNING - Fuse cleanup not implemented yet"
-        #login_to_namespace 
+        #pre_setup 
         #cleanup_fuse
         ;;
   *)
