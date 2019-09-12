@@ -94,6 +94,13 @@ This requires Istio / Service Mesh to be deployed
 ./quarkus.sh setup
 ```
 
+## Stage 7 - Deploy Fuse 7.4 and BigPharm Demo Code
+```
+./fuse74.sh setup
+./bigpharmfusedeploy.sh setup
+```
+
+
 # Clean up Deployment
 Ideally we recommend you start with a new OpenShift cluster cleaning up
 all of the services can be difficult, particularly the storgae deployed
@@ -101,6 +108,11 @@ on physical nodes
 
 We also recommend you remove all services that are consuming storage before
 removing the ocs components
+
+Remove the bigpharm app - Can't currently clean up the Fuse deployment
+```
+./bigpharmfusedeploy.sh cleanup
+```
 
 Remove the Quarkus and Java environment
 ```

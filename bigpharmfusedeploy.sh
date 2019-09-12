@@ -22,8 +22,6 @@ load_drugs_data()
 update_svc_config()
 {
 	sleep 10
-	echo "Changing the SVC Port...."
-	sleep 5
 	clusterIp=`oc get svc | grep "bigpharm" | awk -F" " '{print $3}'`
 	cp bigpharmsvcconfig.yaml tmpsvc.yaml
 	sed -i.bak "s/clusterIP: 000.00.00.0/clusterIP: ${clusterIp}/g" tmpsvc.yaml
@@ -67,9 +65,7 @@ deploy_bigpharm()
     # Deploy the BigPharm Drugs Fuse image.
     oc new-app --docker-image="balajirb/bigpharm:latest" --name bigpharm
     echo "Deployment in Progress ...."
-    sleep 20
-    echo "Deployment is still in Progress ...."
-    sleep 20
+    sleep 10
     oc_wait_for  pod bigpharm app ${OCP_NAMESPACE}
     appPod=`oc get pods | grep Running | grep -v -i deploy | awk -F" " '{print $1}'`
 
