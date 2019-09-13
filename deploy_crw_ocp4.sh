@@ -1,7 +1,7 @@
 #!/bin/bash
 BASE_DIR=$(cd "$(dirname "$0")"; pwd)
 
-DEFAULT_OPENSHIFT_PROJECT="workspaces"
+DEFAULT_OPENSHIFT_PROJECT="crw"
 DEFAULT_ENABLE_OPENSHIFT_OAUTH="false"
 DEFAULT_TLS_SUPPORT="false"
 DEFAULT_SELF_SIGNED_CERT="true"
@@ -13,7 +13,7 @@ DEFAULT_NAMESPACE_CLEANUP="false"
 HELP="
 
 How to use this script:
--d,     --deploy              | deploy using settings in custom-resource.yaml
+-d,     --deploy              | deploy using settings in crw-custom-resource.yaml
 -p=,    --project=            | project namespace to deploy CodeReady Workspaces, default: ${DEFAULT_OPENSHIFT_PROJECT}
 -o, --oauth                   | enable Log into CodeReady Workspaces with OpenShift credentials, default: ${DEFAULT_ENABLE_OPENSHIFT_OAUTH}
 -s,     --secure              | tls support, default: ${DEFAULT_TLS_SUPPORT}
@@ -515,7 +515,7 @@ createCustomResource() {
     printWarning "${OC_BINARY} delete checlusters/codeready -n ${OPENSHIFT_PROJECT}"
   fi
   # ddoyle: moved from "oc new-app" to "oc process | oc create"
-  ${OC_BINARY} process -f ${BASE_DIR}/custom-resource.yaml \
+  ${OC_BINARY} process -f ${BASE_DIR}/crw-custom-resource.yaml \
                -p SERVER_IMAGE_NAME=${SERVER_IMAGE_NAME} \
                -p SERVER_IMAGE_TAG=${SERVER_IMAGE_TAG} \
                -p TLS_SUPPORT=${TLS_SUPPORT} \
