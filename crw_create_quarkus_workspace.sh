@@ -7,7 +7,7 @@ source ./functions
 OCP_NAMESPACE=codeready-workspaces
 
 # TODO: 2. Once TODO #1 is completed. Change start-after-create to true.
-CRW_API_ENDPOINTS=http://codeready-${OCP_NAMESPACE}.apps.${OCP_DOMAIN}/api/workspace?start-after-create=false
+CRW_API_ENDPOINTS=http://codeready-${OCP_NAMESPACE}.apps.${OCP_DOMAIN}/api/workspace?start-after-create=true
 
 
 AUTH_TOKEN=`curl -s --data "grant_type=password&client_id=codeready-public&username=admin&password=admin" http://keycloak-${OCP_NAMESPACE}.apps.${OCP_DOMAIN}/auth/realms/codeready/protocol/openid-connect/token | jq '.access_token' | sed s/\"//g`
