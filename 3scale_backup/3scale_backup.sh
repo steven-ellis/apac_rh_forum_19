@@ -8,10 +8,14 @@ BACKUP_DIR=${1:-backup}
 # Source our environment
 source ../ocp.env
 source ../functions
+source ../3scale.env
+
+OCP_NAMESPACE=${2:-$API_MANAGER_NS}
 
 # And login as the kubeadmin user
+oc_login
 
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+oc project ${OCP_NAMESPACE}
 
 echo "Creating a new 3scale backup into directory ${BACKUP_DIR}"
 
