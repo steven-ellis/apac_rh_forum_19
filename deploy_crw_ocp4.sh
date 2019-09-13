@@ -1,7 +1,7 @@
 #!/bin/bash
 BASE_DIR=$(cd "$(dirname "$0")"; pwd)
 
-DEFAULT_OPENSHIFT_PROJECT="crw"
+DEFAULT_OPENSHIFT_PROJECT="codeready-workspaces"
 DEFAULT_ENABLE_OPENSHIFT_OAUTH="false"
 DEFAULT_TLS_SUPPORT="false"
 DEFAULT_SELF_SIGNED_CERT="true"
