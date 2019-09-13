@@ -1,6 +1,6 @@
 #
 # Example execution
-# ansible-playbook  -e @secrets.yaml ./terminate_cockpit.yaml 
+# ansible-playbook ./terminate_cockpit.yaml 
 #
 
 - hosts: localhost
@@ -10,6 +10,9 @@
     region: us-east-2
     demo_tag: cockpit
 
+  vars_files:
+    - ./secrets.yaml
+
   tasks:
   - name: Terminate tagged instances
     ec2_instance:
@@ -17,3 +20,26 @@
       region: "{{ region }}"
       filters:
         tag:Demo: "{{demo_tag}}"
+
+  - name: get record
+    route53:
+      command: get
+      zone: "{{route53_zone}}"
+      record: "{{demo_tag}}.{{route53_zone}}"
+      type: CNAME
+    register: rec
+    when: route53_zone is defined
+
+  - name: Remove from Route53
+    route53:
+      state: absent
+      zone: "{{route53_zone}}"
+      record: "{{demo_tag}}.{{route53_zone}}"
+      value: "{{ rec.set.value }}"
+      type: CNAME
+      ttl: 30
+      wait: yes
+    when: 
+      - route53_zone is defined 
+      - rec.set.value is defined 
+

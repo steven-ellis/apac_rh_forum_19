@@ -1,0 +1,24 @@
+DrugSKUNo,drugClass,drugName,activeIngredient,administrationRoute,alcoholWarning,availableStrength,breastfeedingWarning,dosageForm,doseSchedule,drugUnit,foodWarning,interactingDrug,manufacturer,nonProprietaryName,overdosage,pregnancyWarning
+DR1000,Antibiotics,Augmentin,Amoxicillin,Oral,No,"250mg,500mg,875mg",No,"Tablet, Powder",12hrs,mg,No,Allopurinol,BioPharm,Amoxicillin-clavulanate,250mg/kg,No
+DR1001,Antidepressants,Stemetil,prochlorperazine maleate,Anal,Yes,"2mg, 3mg",Yes,Tablet,24 hours,mg,No,,,Lorazepam,150mg/kg,No
+DR1002,Statins,Rozerem,ramelteon,Oral,Yes,50mg,Yes,Powder,24 hours,mg,Yes,,,Prednisone USP,150mg/kg,Yes
+DR1003,Decongestant,Telfast D,"Fexofenadine HCl, pseudoephedrine HCl.",Oral,No,"60mg, 120mg, 180mg ",No,Tablet,12 hours,mg,No,,BigPharm,"Fexofenadine HCl, pseudoephedrine HCl.",250mg/kg,No
+DR1004,Antihistamine,Claritin,loratadine,Oral,No,10mg,No,Tablet,4 hours,mg,No,,BigPharm,loratadine,100mg/kg,No
+DR1005,Paracemol,Panadol,Phenylephrine Hydrochloride,Oral,No,50mg,Yes,Tablets,4 hours,mg,No,,BioNode,Phenylephrine Hydrochloride,100mg/kg,No
+DR1006,Sleeping Aid,Rozerem,ramelteon,Oral,No,15mg,Yes,Tablets,24 hours,mg,No,,BigPharm,Amoxicillin,150mg/kg,yes
+DR1007,Dizziness ,Stemetil,prochlorperazine maleate,Oral,Yes,5mg,Yes,Tablets,24 hours,mg,No,,,ramelteon,250mg/kg,
+DR1008,Hypertension,Amlodipine,amlodipine besylate,Oral,Yes,"5mg, 10mg, 15mg",No,Tablet,24 hours,mg,No,simvastatin,BigPharm,Amlodipine besylate,100mg/kg,No
+DR1009,Anxiety disorders,Lorazepam,Lorazepam,Oral,Yes,"2mg, 3mg",Yes,Tablet,8 hours,mg,No,benzodiazepines,BioPharm,AUROBINDO,50mg/kg,Yes
+DR1010,Allergic,Prednisone,Prednisone USP,Oral,Yes,20 mg; 10 mg; 2.5 mg; 5 mg,Yes,Tablet,24 hours,mg,No,amphotericin B,BioPharm,Prednisone,100mg/kg,Yes
+DR1011,Antibiotics,Panadol,Phenylephrine Hydrochloride,Oral,Yes,50mg,No,Tablet,12 hours,mg,Yes,,BigPharm,Lorazepam,250mg/kg,No
+DR1012,Antidepressants,Adderall,ramelteon,Oral,No,15mg,Yes,Powder,4 hours,mg,Yes,,BigPharm,Prednisone USP,250mg/kg,No
+DR1013,Statins,Amoxicillin,prochlorperazine maleate,Oral,Yes,5mg,,Tablet,4 hours,mg,No,,BioNode,"Fexofenadine HCl, pseudoephedrine HCl.",,Yes
+DR1014,Decongestant,Amlodipine,amlodipine besylate,Oral,No,"5mg, 10mg, 15mg",No,Tablet,24 hours,mg,No,,BigPharm,loratadine,250mg/kg,No
+DR1015,Antihistamine,Ciprofloxacin,Lorazepam,Oral,Yes,50mg,No,Tablet,,mg,Yes,,,Phenylephrine Hydrochloride,100mg/kg,No
+DR1016,Paracemol,Clindamycin,Prednisone USP,Oral,Yes,15mg,Yes,Liquid,24 hours,ml,Yes,,BigPharm,Amoxicillin,100mg/kg,No
+DR1017,Sleeping Aid,Cymbalta,"Fexofenadine HCl, pseudoephedrine HCl.",Oral,No,5mg,Yes,Tablet,8 hours,mg,No,,BioPharm,ramelteon,150mg/kg,yes
+DR1018,Dizziness ,Doxycycline,loratadine,Oral,Yes,"5mg, 10mg, 15mg",Yes,Powder,24 hours,mg,No,,BioPharm,Lorazepam,50mg/kg,
+DR1019,Hypertension,Metformin,Phenylephrine Hydrochloride,Oral,No,50mg,No,Tablet,24 hours,mg,No,,BigPharm,Prednisone USP,100mg/kg,No
+DR1020,Anxiety disorders,Naproxen,Amoxicillin,Oral,Yes,50mg,Yes,Tablet,8 hours,mg,Yes,,BigPharm,"Fexofenadine HCl, pseudoephedrine HCl.",50mg/kg,Yes
+DR1021,Allergic,Omeprazole,ramelteon,Oral,Yes,15mg,Yes,Tablet,24 hours,mg,Yes,,BioNode,loratadine,100mg/kg,Yes
+DR1022,Antidepressants,Tramadol,prochlorperazine maleate,Oral,No,5mg,Yes,Liquid,24 hours,ml,No,,BigPharm,Amoxicillin,50mg/kg,Yes

@@ -4,12 +4,11 @@
 #
 
 source ocp.env
+source functions
 
 OCP_NAMESPACE=rook-ceph
 
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
-
-
+oc_login
 
 # Create the storage cluster
 delete_ceph_storage_cluster ()

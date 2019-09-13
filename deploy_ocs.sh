@@ -13,8 +13,9 @@ source ocp.env
 source functions
 
 OCP_NAMESPACE=rook-ceph
+OCP_REGION=${OCP_REGION:-us-east-2}
 
-oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+#oc_login
 
 # Need a way to make sure pods are running before we continue
 #
@@ -53,6 +54,9 @@ create_ceph_storage_cluster ()
     cp ./content/support/cluster-workerocs-*.yaml --target-directory=./storage_cluster/
     
     sed -i "s/cluster-28cf-t22gs/$CLUSTERID/g" ./storage_cluster/cluster-workerocs-*.yaml
+    sed -i "s/us-east-2/$OCP_REGION/g" ./storage_cluster/cluster-workerocs-*.yaml
+    # example if we need to override the AMI
+    #sed -i "s/ami-0eef624367320ec26/ami-046fe691f52a953f9/g" ./storage_cluster/cluster-workerocs-*.yaml
 
     oc create -f ./storage_cluster/cluster-workerocs-us-east-2a.yaml
     oc create -f ./storage_cluster/cluster-workerocs-us-east-2b.yaml
@@ -277,6 +281,7 @@ sleep 2
 
 case "$1" in
   all)
+        oc_login
         create_ceph_storage_cluster
         deploy_rook_csi_version 
         enable_rbd
@@ -284,24 +289,30 @@ case "$1" in
         enable_object
         ;;
   base)
+        oc_login
         create_ceph_storage_cluster
         deploy_rook_csi_version 
         enable_rbd
         enable_cephfs
         ;;
   storage)
+        oc_login
         create_ceph_storage_cluster
         ;;
   rook)
+        oc_login
         deploy_rook_csi_version 
         ;;
   rbd)
+        oc_login
         enable_rbd
         ;;
   cephfs)
+        oc_login
         enable_cephfs
         ;;
   object)
+        oc_login
         enable_object
         ;;
   *)

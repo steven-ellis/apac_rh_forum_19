@@ -1,0 +1,28 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftNewApp
+  labels:
+    app: bigpharm
+  name: bigpharm
+  namespace: bigpharmfuse
+  selfLink: /api/v1/namespaces/bigpharmfuse/services/bigpharm
+spec:
+  clusterIP: 000.00.00.0
+  ports:
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: bigpharm
+    deploymentconfig: bigpharm
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
