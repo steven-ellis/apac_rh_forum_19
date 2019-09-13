@@ -29,9 +29,10 @@ We then import the Quarkus image we need for our workspace
 ./crw_imagestream.sh
 ```
 
-Then create a quarkus workspace
+Then create a quarkus  and nodejs workspaces
 ```
 ./crw_create_quarkus_workspace.sh
+./crw_create_nodejs_workspace.sh
 ```
 
 ## Deployment Scripts Reference
