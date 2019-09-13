@@ -6,11 +6,11 @@ source ./functions
 
 OCP_NAMESPACE=codeready-workspaces
 
-# TODO: 1. Change the CRW API endpoints to dynamic.
 # TODO: 2. Once TODO #1 is completed. Change start-after-create to true.
-CRW_API_ENDPOINTS=http://codeready-codeready-workspaces.apps.cluster-akl-aff2.sandbox335.opentlc.com/api/workspace?start-after-create=false
+CRW_API_ENDPOINTS=http://codeready-${OCP_NAMESPACE}.apps.${OCP_DOMAIN}/api/workspace?start-after-create=false
 
-AUTH_TOKEN=`curl --data "grant_type=password&client_id=codeready-public&username=admin&password=redhatdemo" http://keycloak-codeready-workspaces.apps.cluster-akl-aff2.sandbox335.opentlc.com/auth/realms/codeready/protocol/openid-connect/token | jq '.access_token' | sed s/\"//g`
+
+AUTH_TOKEN=`curl -s --data "grant_type=password&client_id=codeready-public&username=admin&password=admin" http://keycloak-${OCP_NAMESPACE}.apps.${OCP_DOMAIN}/auth/realms/codeready/protocol/openid-connect/token | jq '.access_token' | sed s/\"//g`
 
 WORKSPACE_SETTINGS='{
   "defaultEnv": "default",
@@ -137,4 +137,8 @@ WORKSPACE_SETTINGS='{
   ]
 }'
 
-curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" --header "Authorization: Bearer ${AUTH_TOKEN}" -d "${WORKSPACE_SETTINGS}" "${CRW_API_ENDPOINTS}"
+# Handy for debugging
+#echo AUTH ${AUTH_TOKEN}
+#echo CRW API ENDPOINT "${CRW_API_ENDPOINTS}"
+
+curl -s -X POST --header "Content-Type: application/json" --header "Accept: application/json" --header "Authorization: Bearer ${AUTH_TOKEN}" -d "${WORKSPACE_SETTINGS}" "${CRW_API_ENDPOINTS}"
