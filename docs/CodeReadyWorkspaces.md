@@ -24,6 +24,16 @@ Deploy CRW Operator into the required namespace/project
 
 The process should take approximately 5-10 minutes
 
+We then import the Quarkus image we need for our workspace
+```
+./crw_imagestream.sh
+```
+
+Then create a quarkus workspace
+```
+./crw_create_quarkus_workspace.sh
+```
+
 ## Deployment Scripts Reference
 Existing upstream script lives under
 
