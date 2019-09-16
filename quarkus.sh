@@ -17,47 +17,47 @@ REPO_URL="https://raw.githubusercontent.com/jumperwire/supersonic-subatomic-java
 
 setup_quarkus()
 {
-    echo "Create the ${OCP_NAMESPACE} namespace"
+    printInfo "Create the ${OCP_NAMESPACE} namespace"
     oc new-project ${OCP_NAMESPACE}
 
-    echo "Deploy big fat java"
+    printInfo "Deploy big fat java"
     oc apply -f ${REPO_URL}/deploy-big-fat-java.yaml
     
-    echo "Deploy supersonic-subatomic java"
+    printInfo "Deploy supersonic-subatomic java"
     oc apply -f ${REPO_URL}/deploy-supersonic-subatomic-java.yaml
     
-    echo "Create big fat java service"
+    printInfo "Create big fat java service"
     oc apply -f ${REPO_URL}/service-big-fat-java.yaml
     
-    echo "Create supersonic-subatomic java service"
+    printInfo "Create supersonic-subatomic java service"
     oc apply -f ${REPO_URL}/service-supersonic-subatomic-java.yaml
     
-    echo "Create big fat java route"
+    printInfo "Create big fat java route"
     oc expose service big-fat-java
     
-    echo "Create supersonic-subatomic java route"
+    printInfo "Create supersonic-subatomic java route"
     oc expose service supersonic-subatomic-java
 }
 
 delete_quarkus()
 {
-    echo "Remove the service routes"
+    printInfo "Remove the service routes"
     oc delete service supersonic-subatomic-java -n ${OCP_NAMESPACE}
     oc delete service big-fat-java  -n ${OCP_NAMESPACE}
 
-    echo "Then remove the project ${OCP_NAMESPACE}"
+    printInfo "Then remove the project ${OCP_NAMESPACE}"
     oc delete namespace ${OCP_NAMESPACE}
 }
 
 scale_java()
 {
-    echo "Scaling big fat java to ${1} pod(s)"
+    printInfo "Scaling big fat java to ${1} pod(s)"
     oc scale --replicas=${1} deployment.apps big-fat-java -n ${OCP_NAMESPACE}
 }
     
 scale_quarkus()
 {
-    echo "Scaling quarkus to ${1} pod(s)"
+    printInfo "Scaling quarkus to ${1} pod(s)"
     oc scale --replicas=${1} deployment.apps supersonic-subatomic-java -n ${OCP_NAMESPACE}
 }
 
