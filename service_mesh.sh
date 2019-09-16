@@ -8,7 +8,7 @@ source ./functions
 oc_login
 
 # a pre-cleanup
-echo "Depending on the OCS Lab you're using this might raise errors you can ignore"
+printWarning "Depending on the OCS Lab you're using this might raise errors you can ignore"
 oc delete clusterresourcequotas.quota.openshift.io clusterquota-opentlc-mgr
 
 # Install Service Mesh
@@ -47,7 +47,7 @@ oc apply -n istio-system -f https://raw.githubusercontent.com/jumperwire/service
 sleep 5s;
 oc_wait_for  pod istio release istio-system
 
-echo "Going to wait a minute for other Istio pods to start"
+printInfo "Going to wait a minute for other Istio pods to start"
 sleep 60s;
 oc_wait_for  pod istio release istio-system
 
