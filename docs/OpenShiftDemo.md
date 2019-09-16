@@ -75,7 +75,7 @@ This can also take about 20 minutes but the Istio deployment can happen in paral
 
 ## Stage 3 - Deploy Istio
 ```
-./service_mesh.sh
+./service_mesh.sh setup
 ```
 
 ## Stage 4 - Deploy Application
@@ -136,7 +136,7 @@ Remove the Product info app
 
 Remove Istio / Service Mesh
 ```
-./cleanup_service_mesh.sh
+./service_mesh.sh delete
 ```
 
 Remove 3scale

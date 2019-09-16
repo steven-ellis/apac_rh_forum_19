@@ -4,9 +4,10 @@
 source ./ocp.env
 source ./functions
 
-# And login as the kubeadmin user
-oc_login
+# We only login as the kubeadmin user if we've got a valid command line
 
+deploy_servicemesh ()
+{
 # a pre-cleanup
 printWarning "Depending on the OCS Lab you're using this might raise errors you can ignore"
 oc delete clusterresourcequotas.quota.openshift.io clusterquota-opentlc-mgr
@@ -53,4 +54,40 @@ oc_wait_for  pod istio release istio-system
 
 # Wait for all the Istio Pods to be available, estimated ~10 mins.
 watch "echo 'Wait for the Isto System pods to be running'; oc -n istio-system get pods"
+}
+
+
+cleanup_servicemesh()
+{
+
+# Remove the Operatgor istio-system
+oc delete -n istio-system -f https://raw.githubusercontent.com/redhat-developer-demos/guru-night/master/config/basic-install.yaml
+oc delete project istio-system
+
+# Remove Service Mesh
+oc delete -n istio-operator -f https://raw.githubusercontent.com/Maistra/istio-operator/maistra-0.11/deploy/maistra-operator.yaml
+oc delete project istio-operator
+
+# Confirm they are gone
+echo "Confirm istio has been removed"
+echo "Should return 'No resources found.'"
+oc get pods -n istio-system
+oc get pods -n istio-operator
+}
+
+
+case "$1" in
+  setup)
+        oc_login
+        deploy_servicemesh
+        ;;
+  delete|cleanup|remove)
+        oc_login
+        cleanup_servicemesh
+        ;;
+  *)
+        echo "Usage: $N {setup|delete|cleanup}" >&2
+        exit 1
+        ;;
+esac
 
