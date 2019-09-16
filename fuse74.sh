@@ -21,7 +21,7 @@ install_fuse_imagestream()
 
 install_fuse_templates()
 {
-echo "Installing Fuse Templates" 
+printInfo "Installing Fuse Templates" 
 	# Install Quick Start Templates.
 	for template in eap-camel-amq-template.json eap-camel-cdi-template.json eap-camel-cxf-jaxrs-template.json eap-camel-cxf-jaxws-template.json eap-camel-jpa-template.json   karaf-camel-amq-template.json karaf-camel-log-template.json karaf-camel-rest-sql-template.json karaf-cxf-rest-template.json spring-boot-camel-amq-template.json spring-boot-camel-config-template.json spring-boot-camel-drools-template.json spring-boot-camel-infinispan-template.json spring-boot-camel-rest-sql-template.json spring-boot-camel-template.json spring-boot-camel-xa-template.json spring-boot-camel-xml-template.json spring-boot-cxf-jaxrs-template.json spring-boot-cxf-jaxws-template.json;
 	do
@@ -37,7 +37,7 @@ echo "Installing Fuse Templates"
 
 update_sample_operator_config()
 {
-        echo "Updating the sample Fuse Operator config"
+        printInfo "Updating the sample Fuse Operator config"
 	cp ./backup/configs.samples.operator.openshift.io.original tmp.yaml
 	totalLines=`wc -l tmp.yaml | tr -dc '0-9'`
 	indexPos=`awk "/managementState: Managed/{ print NR; exit }" tmp.yaml`
@@ -91,7 +91,7 @@ case "$1" in
         install_fuse_templates
         ;;
   delete|cleanup|remove)
-        echo "WARNING - Fuse cleanup not implemented yet"
+        printError "WARNING - Fuse cleanup not implemented yet"
         #pre_setup 
         #cleanup_fuse
         ;;

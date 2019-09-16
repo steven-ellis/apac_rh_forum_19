@@ -12,9 +12,9 @@ load_drugs_data()
 	logstmt=`oc logs ${appPod} | tail -1`
         if [[ $logstmt == *"After Application Started"* ]]; then
 		oc rsync ./bigpharm_data/ "${appPod}":/deployments/inputdir
-		echo "Data loading is completed. Please check the logs"
+		printInfo "Data loading is completed. Please check the logs"
 	else
-		echo "Application has not started yet. Please load the data after the app is started."
+		printWarning "Application has not started yet. Please load the data after the app is started."
 	fi
 
 }
@@ -64,25 +64,25 @@ deploy_bigpharm()
 
     # Deploy the BigPharm Drugs Fuse image.
     oc new-app --docker-image="balajirb/bigpharm:latest" --name bigpharm
-    echo "Deployment in Progress ...."
+    printInfo "Deployment in Progress ...."
     sleep 10
     oc_wait_for  pod bigpharm app ${OCP_NAMESPACE}
     appPod=`oc get pods | grep Running | grep -v -i deploy | awk -F" " '{print $1}'`
 
     if [[ $appPod == *"bigpharm"* ]]; then
-      echo "Deployment is completed."
-      echo "Updating the Service to listen on port#8080"
+      printInfo "Deployment is completed."
+      printInfo "Updating the Service to listen on port#8080"
       update_svc_config
       sleep 2
-      echo "Creating Route for the Big Pharm service."
+      printInfo "Creating Route for the Big Pharm service."
       create_bigpharm_route
       sleep 2
-      echo "Load the drugs data..."
+      printInfo "Load the drugs data..."
       load_drugs_data
       sleep 2
       test_endpoint
     else
-      echo "Check the deployment status. oc get pods"
+      printWarning "Check the deployment status. oc get pods"
     fi 
 }
 
