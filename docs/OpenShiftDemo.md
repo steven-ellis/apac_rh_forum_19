@@ -129,9 +129,9 @@ Remove Couchbase Operator and Instances
 ./couchbase.sh delete
 ```
 
-Remove 3scale
+Remove the Product info app
 ```
-./cleanup_3scale.sh
+./cleanup_productinfo.sh
 ```
 
 Remove Istio / Service Mesh
@@ -139,9 +139,9 @@ Remove Istio / Service Mesh
 ./cleanup_service_mesh.sh
 ```
 
-Remove the Product info app
+Remove 3scale
 ```
-./cleanup_productinfo.sh
+./cleanup_3scale.sh
 ```
 
 Confirm all storage PVs have been removed 
