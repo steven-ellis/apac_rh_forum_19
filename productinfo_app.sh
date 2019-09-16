@@ -4,29 +4,38 @@
 source ./ocp.env
 source ./functions
 
-# And login as the kubeadmin user
-oc_login
+# And login late as the kubeadmin user
+# oc_login
 
 confirm_app_running ()
 {
 
    for i in {1..12}
    do
-      echo "checking for 200 status on booking app $1 attempt $i"
+      printInfo "checking for 200 status on booking app $1 attempt $i"
       GATEWAY_URL=$(oc -n istio-system get route istio-ingressgateway -o jsonpath='{.spec.host}')
       CHECK_URL="http://${GATEWAY_URL}/productpage"
       status=`curl -o /dev/null -s -w "%{http_code}\n" ${CHECK_URL}`
       if [ "${status}" == "200" ] ; then
-         echo "Application now available at at ${CHECK_URL}" >&2
+         printInfo "Application now available at at ${CHECK_URL}" >&2
          return;
       fi
       sleep 5s
    done
-   echo "ERROR: Application at ${CHECK_URL} not in Running state" >&2
+   printError "ERROR: Application at ${CHECK_URL} not in Running state" >&2
    exit
 }
 
+cleanup_app ()
+{
+    #  This has a simple cleanup
+    printInfo "Deleting the project productinfo"
+    printWarning "This might take a couple of minutes to return"
+    oc delete project productinfo
+}
 
+deploy_app ()
+{
 oc new-project productinfo
 
 oc adm policy add-scc-to-user anyuid -z default -n productinfo
@@ -46,4 +55,21 @@ confirm_app_running
 #export GATEWAY_URL=$(oc -n istio-system get route istio-ingressgateway -o jsonpath='{.spec.host}')
 # you should get 200 as a response.
 #curl -o /dev/null -s -w "%{http_code}\n" http://${GATEWAY_URL}/productpage
+}
+
+case "$1" in
+  setup)
+	oc_login
+	deploy_app
+	;;
+  delete|cleanup|remove)
+	oc_login
+	cleanup_app
+	;;
+  *)
+	echo "Usage: $N {setup|delete|cleanup|remove}" >&2
+	exit 1
+	;;
+esac
+
 

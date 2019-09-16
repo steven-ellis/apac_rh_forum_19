@@ -81,7 +81,7 @@ This can also take about 20 minutes but the Istio deployment can happen in paral
 ## Stage 4 - Deploy Application
 This requires Istio / Service Mesh to be deployed
 ```
-./productinfo_app.sh
+./productinfo_app.sh setup
 ```
 
 ## Stage 5 - Configure environment for Couchbase
@@ -131,7 +131,7 @@ Remove Couchbase Operator and Instances
 
 Remove the Product info app
 ```
-./cleanup_productinfo.sh
+./productinfo_app.sh cleanup
 ```
 
 Remove Istio / Service Mesh
