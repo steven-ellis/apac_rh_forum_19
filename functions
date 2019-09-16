@@ -1,5 +1,23 @@
 #!/bin/bash
 
+printInfo() {
+  green=`tput setaf 2`
+  reset=`tput sgr0`
+  echo "${green}[INFO]: ${1} ${reset}"
+}
+
+printWarning() {
+  yellow=`tput setaf 3`
+  reset=`tput sgr0`
+  echo "${yellow}[WARNING]: ${1} ${reset}"
+}
+
+printError() {
+  red=`tput setaf 1`
+  reset=`tput sgr0`
+  echo "${red}[ERROR]: ${1} ${reset}"
+}
+
 # oc_wait_for 
 #
 # $1 = [pod|node]
@@ -15,7 +33,7 @@ oc_wait_for ()
     TYPE=${3:-app}
     NAMESPACE=${4:-$OCP_NAMESPACE}
 
-    echo "Waiting for the ${1}s tagged ${2} = ready"
+    printInfo "Waiting for the ${1}s tagged ${2} = ready"
     oc wait --for condition=ready ${1} -l ${TYPE}=${2} -n ${NAMESPACE} --timeout=1200s
 }
 
@@ -28,5 +46,4 @@ oc_login ()
 {
     oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
 }
-
 
