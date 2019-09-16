@@ -48,6 +48,7 @@ remove_apps ()
     printWarning "Can't currently clean up the Fuse deployment"
 
     ./quarkus.sh delete
+    ./scale_workers.sh stop
     ./scale_workers.sh down
 
     ./couchbase.sh delete
