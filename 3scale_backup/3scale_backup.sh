@@ -23,11 +23,17 @@ if [ ! -d ${BACKUP_DIR} ]; then
     mkdir -p ${BACKUP_DIR}
 fi
 
+echo "Making sure key environment settings are captured about the backup environent into ${BACKUP_DIR}"
+echo "# Environment settings needed to re-write 3scale on recovery" > ${BACKUP_DIR}/backup.env
+echo "OLD_NAMESPACE=${OCP_NAMESPACE}" >> ${BACKUP_DIR}/backup.env
+echo "OLD_DOMAIN=${OCP_DOMAIN}" >> ${BACKUP_DIR}/backup.env
+
 echo "Backup mySQL"
 oc rsh $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysqldump --single-transaction -hsystem-mysql -uroot system' | gzip > ${BACKUP_DIR}/system-mysql-backup.gz
 
 
 echo "Backup System App"
+echo "Warning - we're currently getting an error on /opt/system/public/system"
 mkdir -p ${BACKUP_DIR}/system
 oc rsync $(oc get pods -l 'deploymentConfig=system-app' -o json | jq '.items[0].metadata.name' -r):/opt/system/public/system ${BACKUP_DIR}/system/
 
