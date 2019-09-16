@@ -67,7 +67,16 @@ This takes approx 20 minutes
 You’ll need to press CTRL-C a couple of times once some of the pods have started
 
 
-## Stage 2 - Deploy 3 Scale
+## Stage 2a - Deploy all the RH Forum demo workloads and apps
+This can also take about 40 minutes - and you'll need to interact occasionally
+```
+./deploy_workloads.sh setup
+```
+
+**Remaining deployment steps can then be ignored**
+
+
+## Stage 2b- Deploy 3 Scale
 This can also take about 20 minutes but the Istio deployment can happen in parallel.
 ```
 ./3scale.sh
