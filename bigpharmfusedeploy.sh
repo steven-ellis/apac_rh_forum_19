@@ -101,7 +101,9 @@ case "$1" in
         ;;
   delete|cleanup|remove)
         pre_setup 
-        cleanup_bigpharm
+        if projectExists ${OCP_NAMESPACE}; then
+            cleanup_bigpharm
+        fi
         ;;
   *)
         echo "Usage: $N {setup|cleanup}" >&2
