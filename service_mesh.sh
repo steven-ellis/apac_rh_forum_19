@@ -79,14 +79,20 @@ oc get pods -n istio-operator
 case "$1" in
   setup)
         oc_login
-        deploy_servicemesh
+        if ((projectExists istio-system) && (projectExists istio-operator)); then
+	    printWarning "Application istio-system and istio-operator are already deployed - Exiting"
+        else
+            deploy_servicemesh
+        fi
         ;;
   delete|cleanup|remove)
         oc_login
-        cleanup_servicemesh
+        if ((projectExists istio-system) || (projectExists istio-operator)); then
+            cleanup_servicemesh
+        fi
         ;;
   *)
-        echo "Usage: $N {setup|delete|cleanup}" >&2
+	echo "Usage: $1 {setup|delete|cleanup|remove}" >&2
         exit 1
         ;;
 esac

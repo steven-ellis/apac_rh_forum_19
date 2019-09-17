@@ -60,14 +60,20 @@ confirm_app_running
 case "$1" in
   setup)
 	oc_login
-	deploy_app
+        if projectExists productinfo; then
+	    printWarning "Application productinfo already deployed - Exiting"
+        else
+	    deploy_app
+        fi
 	;;
   delete|cleanup|remove)
 	oc_login
-	cleanup_app
+        if projectExists productinfo; then
+	    cleanup_app
+        fi
 	;;
   *)
-	echo "Usage: $N {setup|delete|cleanup|remove}" >&2
+	echo "Usage: $1 {setup|delete|cleanup|remove}" >&2
 	exit 1
 	;;
 esac
