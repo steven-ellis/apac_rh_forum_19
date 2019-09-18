@@ -3,3 +3,4 @@ rook.master
 storage_cluster
 ocp.env
 secrets.yaml
+quarkus_clusters

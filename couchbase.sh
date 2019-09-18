@@ -35,10 +35,13 @@ cleanup_couchbase()
     printInfo "Remove couchbase operator"
     oc delete deployment -l app=couchbase-operator -n ${OCP_NAMESPACE}
     oc delete replicaset -l app=couchbase-operator -n ${OCP_NAMESPACE}
-    oc delete all -l app=couchbase-operator -n ${OCP_NAMESPACE}
+    printInfo "Remove all apps in the ${OCP_NAMESPACE} namespace"
+    oc delete all --all  -n couchbase -n ${OCP_NAMESPACE}
 
-    printInfo "Remove all couchbase instances"
-    oc delete all -l app=couchbase -n ${OCP_NAMESPACE}
+    #oc delete all -l app=couchbase-operator -n ${OCP_NAMESPACE}
+
+    #printInfo "Remove all apps tagged couchbase"
+    #oc delete all -l app=couchbase -n ${OCP_NAMESPACE}
 
 
     printInfo "Remove our secret"
