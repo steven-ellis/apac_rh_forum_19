@@ -22,7 +22,7 @@ deploy_apps ()
     ./productinfo_app.sh setup
 
     # Keep bigpharmfuse fuse and 3scale together
-    ./3scale.sh
+    ./3scale.sh setup
     ./fuse74.sh setup
     ./bigpharmfusedeploy.sh setup
 
@@ -49,7 +49,7 @@ remove_apps ()
     ./bigpharmfusedeploy.sh cleanup
     printWarning "Can't currently clean up the Fuse deployment"
 
-    ./cleanup_3scale.sh
+    ./3scale.sh cleanup
 
     ./quarkus.sh delete
     ./scale_workers.sh stop
