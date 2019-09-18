@@ -60,6 +60,9 @@ worker_config()
           role: ${type}-node \\
           node-role.kubernetes.io/worker: \"\"" > ${OUT_DIR}/${clusterid}.${type}.yaml
 
+    if [ "${1}" == "ocs" ]; then
+        sed -i "s/m4.large/m5a.2xlarge/" ${OUT_DIR}/${clusterid}.${type}.yaml
+    fi
 }
 
 # create workers
@@ -74,7 +77,9 @@ create_workers ()
     printInfo "Creating two machine definitions for workload ${1}"
     worker_config ${1} ${CLUSTER_A}
     worker_config ${1} ${CLUSTER_B}
-    #worker_config ${1} ${CLUSTER_C}
+    if [ "${1}" == "ocs" ]; then
+        worker_config ${1} ${CLUSTER_C}
+    fi
 
 }
 
@@ -84,7 +89,7 @@ start_workers ()
 {
     for i in ${CLUSTER_A} ${CLUSTER_B} ${CLUSTER_C}
     do
-      for j in quarkus java
+      for j in quarkus java ocs
       do
         machine_set_file=${OUT_DIR}/${i}.${j}.yaml
         if [ -f ${machine_set_file} ]; then
@@ -106,6 +111,9 @@ start_workers ()
 
     oc_wait_for node java-node role openshift-machine-api
     oc get node -l role=java-node
+
+    oc_wait_for node ocs-node role openshift-machine-api
+    oc get node -l role=ocs-node
     sleep 5s
 }
 
@@ -115,7 +123,7 @@ stop_workers ()
 {
     for i in ${CLUSTER_A} ${CLUSTER_B} ${CLUSTER_C}
     do
-      for j in quarkus java
+      for j in quarkus java ocs
       do
         machine_set_file=${OUT_DIR}/${i}.${j}.yaml
         if [ -f ${machine_set_file} ]; then
@@ -194,6 +202,10 @@ case "$1" in
   azc)
         pre_setup
         scale_up_az c
+        ;;
+  ocs)
+        pre_setup
+        create_workers ocs
         ;;
   quarkus)
         pre_setup
