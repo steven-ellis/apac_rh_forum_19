@@ -14,7 +14,7 @@ deploy_apps ()
 {
 
     printInfo "Create our htpass based users on cluster ${OCP_DOMAIN}"
-    ocp_htpass.sh
+    ./ocp_htpass.sh
 
     printInfo "Deploying all apps and services into cluster ${OCP_DOMAIN}"
 
