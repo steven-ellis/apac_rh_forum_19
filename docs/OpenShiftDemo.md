@@ -129,7 +129,9 @@ Remove the Quarkus and Java environment
 ```
 
 Make sure we scale back down the compute workers
+including any custom workload nodes
 ```
+./scale_workers.sh stop
 ./scale_workers.sh down
 ```
 

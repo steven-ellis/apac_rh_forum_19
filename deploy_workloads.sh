@@ -52,6 +52,7 @@ remove_apps ()
     ./cleanup_3scale.sh
 
     ./quarkus.sh delete
+    ./scale_workers.sh stop
     ./scale_workers.sh down
 
     ./couchbase.sh delete
