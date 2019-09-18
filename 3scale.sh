@@ -114,7 +114,7 @@ oc annotate namespace $API_MANAGER_NS openshift.io/requester=$OCP_AMP_ADMIN_ID -
 oc adm policy add-role-to-user view $OCP_USERNAME -n $API_MANAGER_NS --as=system:admin
 
 
-#oc create secret docker-registry threescale-registry-auth --docker-server=registry.redhat.io --docker-username=$rht_service_token_user --docker-password=$rht_service_token_password -n $API_MANAGER_NS --as=system:admin
+oc create secret docker-registry threescale-registry-auth --docker-server=registry.redhat.io --docker-username=$rht_service_token_user --docker-password=$rht_service_token_password -n $API_MANAGER_NS --as=system:admin
 
 
 
