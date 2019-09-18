@@ -18,15 +18,16 @@ deploy_apps ()
 
     printInfo "Deploying all apps and services into cluster ${OCP_DOMAIN}"
 
-    ./3scale.sh
-
     ./service_mesh.sh setup
     ./productinfo_app.sh setup
-    ./couchbase.sh setup
-    ./quarkus.sh setup
 
+    # Keep bigpharmfuse fuse and 3scale together
+    ./3scale.sh
     ./fuse74.sh setup
     ./bigpharmfusedeploy.sh setup
+
+    ./couchbase.sh setup
+    ./quarkus.sh setup
 
 
     printInfo "Deploying all CRW elements into cluster ${OCP_DOMAIN}"
@@ -43,17 +44,20 @@ remove_apps ()
     printWarning "This does not remove any imported imagestreames"
     ./cleanup_crw_ocp4.sh -c -p=codeready-workspaces
 
+    # Keep bigpharmfuse fuse and 3scale together
     printInfo "Remove the bigpharm app"
     ./bigpharmfusedeploy.sh cleanup
     printWarning "Can't currently clean up the Fuse deployment"
+
+    ./cleanup_3scale.sh
 
     ./quarkus.sh delete
     ./scale_workers.sh down
 
     ./couchbase.sh delete
+
     ./productinfo_app.sh cleanup
     ./service_mesh.sh delete
-    ./cleanup_3scale.sh
 
 }
 
