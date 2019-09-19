@@ -60,8 +60,10 @@ rewrite_db_backup ()
 
     printInfo "  Re-write the cluster information for database ${1}"
     printInfo "  into file ${2}"
+    printInfo "  modify ${OLD_NAMESPACE} to ${OCP_NAMESPACE}"
+    printInfo "   and ${OLD_DOMAIN} to ${OCP_DOMAIN}" 
     gunzip -c ${1} | \
-    sed "s/${OLD_NAMESPACE}/${OCP_NAMESPACE}/g;s/${OLD_DOMAIN}=/${OCP_DOMAIN}/g" | \
+    sed "s/${OLD_NAMESPACE}/${OCP_NAMESPACE}/g;s/${OLD_DOMAIN}/${OCP_DOMAIN}/g" | \
     sed "s/\^\[\[Z-/-/g" | \
     gzip -c - > ${2}
 }
