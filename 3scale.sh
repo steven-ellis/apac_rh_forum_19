@@ -7,37 +7,12 @@ source ./functions
 # Step 1 - 3scale specific settings
 source ./3scale.env
 
-# And login as the kubeadmin user
-
-oc_login
+# We only login as the kubeadmin user if we've got a valid command line
 
 OCP_NAMESPACE=$API_MANAGER_NS
 
-# Need a way to make sure pods are running before we continue
-#
-# $1 = app-name
-#
-# EG
-#    confirm_pods_running rook-ceph-mon
-#
-confirm_pods_running ()
+deploy_3scale ()
 {
-
-   for i in {1..12}
-   do
-      echo "checking status of pod $1 attempt $i"
-      status=` oc get pods -o json --selector=app=${1} -n ${OCP_NAMESPACE} |\
-               jq ".items[].status.phase" | uniq`
-      if [ ${status} == '"Running"' ] ; then
-         return;
-      fi
-      sleep 10s
-   done
-   echo "Pod $1 not in Running state" >&2
-   exit
-}
-
-
 # Step2: A Cluster Admin of a production OpenShift environment typically applies clusterquotas and limitranges.
 # NOTE Not needed for our Demo Environment
 
@@ -101,17 +76,21 @@ spec:
     min:
       memory: 6Mi
     type: Pod
-"| oc create -n $API_MANAGER_NS -f -
+" | oc create --as=system:admin -n $API_MANAGER_NS -f -
+
 
 # Step 5: Annotate the API Manager project such that its resources are managed by a cluster quota
 
 
 oc annotate namespace $API_MANAGER_NS openshift.io/requester=$OCP_AMP_ADMIN_ID --overwrite --as=system:admin
 
-# Step 6: Provide the user, $OCP_USERNAME, with view access to this namespace
-
+# Step 6: Provide the user, $OCP_USERNAME, with view access to this namespace and create a secret
 
 oc adm policy add-role-to-user view $OCP_USERNAME -n $API_MANAGER_NS --as=system:admin
+
+
+oc create secret docker-registry threescale-registry-auth --docker-server=registry.redhat.io --docker-username=$rht_service_token_user --docker-password=$rht_service_token_password -n $API_MANAGER_NS --as=system:admin
+
 
 
 # Step 7: Install 3scale setup using the template amps3.yml.
@@ -120,11 +99,11 @@ oc new-app \
   -f ./amps3.yml \
   -p "MASTER_NAME=$API_MASTER_NAME" \
   -p "MASTER_PASSWORD=$API_MASTER_PASSWORD" \
+  -p "MASTER_ACCESS_TOKEN=$API_MASTER_ACCESS_TOKEN" \
   -p "ADMIN_PASSWORD=$API_TENANT_PASSWD" \
   -p "ADMIN_ACCESS_TOKEN=$API_TENANT_ACCESS_TOKEN" \
   -p "TENANT_NAME=$TENANT_NAME" \
   -p "WILDCARD_DOMAIN=$OCP_WILDCARD_DOMAIN" \
-  -p "WILDCARD_POLICY=Subdomain" \
   -n $API_MANAGER_NS \
   --as=system:admin | tee ./3scale_amp_provision_details.txt
 
@@ -176,6 +155,7 @@ watch "echo 'Look for running system-app'; oc get pods -n $API_MANAGER_NS | grep
 # This should be the preferred approach
 #confirm_pods_running system-app
 oc_wait_for  pod system-app deploymentconfig ${API_MANAGER_NS}
+oc_wait_for  pod system-app name ${API_MANAGER_NS}
 
 # Make sure the other pods are all running
 oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
@@ -194,28 +174,28 @@ for x in system-sidekiq backend-cron system-sphinx; do
   oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
 done
 
-
-# Step 12: Resume API gateway deployments: 
-
-for x in apicast-staging apicast-production; do
-  echo Resuming dc:  $x
-  sleep 2
-  oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
+#  Resume remaining deployments 
+for x in zync zync-que; do 
+	echo Resuming dc:  $x; 
+	sleep 2; 
+	oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin; 
 done
 
 
-# Step 13: Resume remaining deployments:
-
-for x in apicast-wildcard-router zync; do
-  echo Resuming dc:  $x
-  sleep 2
-  oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
-done
-
-# Step 14: Verify the state of the 3scale pods:
+# Step 13: Verify the state of the 3scale pods:
 sleep 30s
 oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 #watch "echo 'Confirm state of 3scale pods'; oc get pods -n $API_MANAGER_NS --as=system:admin | grep Running | grep -v -i deploy"
+
+# Step 14: Create the routes.
+
+# Create Admin Provider route
+
+oc create route edge $API_TENANT_USERNAME-system-provider-admin --service=system-provider --hostname=$API_TENANT_USERNAME-$API_MANAGER_NS-admin.$OCP_WILDCARD_DOMAIN -n $API_MANAGER_NS --as=system:admin
+
+# Create Developer Portal route
+oc create route edge $API_TENANT_USERNAME-system-developer --service=system-developer --hostname=$API_TENANT_USERNAME-$API_MANAGER_NS.$OCP_WILDCARD_DOMAIN -n $API_MANAGER_NS --as=system:admin
+
 
 # Step 15: Accessing the Admin console:
 
@@ -225,14 +205,45 @@ Execute the below commands to get the URL of the master and tenant admin console
 
 Master Admin console: "
 
-echo -en "\nhttps://`oc get route system-master -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
+echo -en "\nhttps://`oc get route | grep "^zync-3scale-master" | awk '{print $2}'` \n\n"
+
 
 echo "Credentials: master/master
 
 Tenant Admin Console:"
 
-echo -en "\nhttps://`oc get route system-provider-admin -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
+echo -en "\nhttps://`oc get route $API_TENANT_USERNAME-system-provider-admin -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
 
-echo "Credentials: admin/admin"
+echo "Credentials: admin/redhatdemo"
+}
 
+cleanup_3scale ()
+{
+    #  This has a simple cleanup
+    echo "Deleting the project ${OCP_NAMESPACE}"
+    echo "This might take a couple of minutes to return"
+
+    oc delete project ${OCP_NAMESPACE}
+}
+
+case "$1" in
+  setup)
+        oc_login
+        if (projectExists ${OCP_NAMESPACE}); then
+	    printWarning "Service 3scale already deployed in ${OCP_NAMESPACE} - Exiting"
+        else
+            deploy_3scale
+        fi
+        ;;
+  delete|cleanup|remove)
+        oc_login
+        if (projectExists ${OCP_NAMESPACE}); then
+            cleanup_3scale
+        fi
+        ;;
+  *)
+	echo "Usage: $1 {setup|delete|cleanup|remove}" >&2
+        exit 1
+        ;;
+esac
 

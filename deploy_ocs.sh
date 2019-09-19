@@ -29,7 +29,7 @@ confirm_pods_running ()
 
    for i in {1..12}
    do
-      echo "checking status of pod $1 attempt $i"
+      printInfo "checking status of pod $1 attempt $i"
       status=` oc get pods -o json --selector=app=${1} -n ${OCP_NAMESPACE} |\
                jq ".items[].status.phase" | uniq`
       if [ ${status} == '"Running"' ] ; then
@@ -37,7 +37,7 @@ confirm_pods_running ()
       fi
       sleep 10s
    done
-   echo "Pod $1 not in Running state" >&2
+   printError "Pod $1 not in Running state" >&2
    exit
 }
 
@@ -47,7 +47,7 @@ create_ceph_storage_cluster ()
     oc get machinesets -n openshift-machine-api
 
     CLUSTERID=$(oc get machineset -n openshift-machine-api -o jsonpath='{.items[0].metadata.labels.machine\.openshift\.io/cluster-api-cluster}')
-    echo $CLUSTERID
+    printInfo $CLUSTERID
 
     mkdir -p storage_cluster
 
@@ -103,7 +103,7 @@ oc_wait_for  pod rook-ceph-operator
 
 
 OPERATOR=$(oc get pod -l app=rook-ceph-operator -n rook-ceph -o jsonpath='{.items[0].metadata.name}')
-echo $OPERATOR
+printInfo $OPERATOR
 oc logs $OPERATOR -n rook-ceph | grep "get clusters.ceph.rook.io"
 
 oc create -f ./content/support/cluster.yaml
@@ -149,13 +149,13 @@ sleep 5s
 oc_wait_for  pod rook-discover
 
 OPERATOR=$(oc get pod -l app=rook-ceph-operator -n rook-ceph -o jsonpath='{.items[0].metadata.name}')
-echo $OPERATOR
+printInfo $OPERATOR
 oc logs $OPERATOR -n rook-ceph | tail -20
 
-echo "Lets pause for  10 seconds"
+printInfo "Lets pause for  10 seconds"
 sleep 10s
 
-echo "Create the cluster using the lab definiton but with ceph v14.2.2-20190722"
+printInfo "Create the cluster using the lab definiton but with ceph v14.2.2-20190722"
 #oc create -f ./content/support/cluster.yaml
 cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.2-20190722/ > ./storage_cluster/cluster.yaml
 oc create -f ./storage_cluster/cluster.yaml
@@ -168,7 +168,7 @@ oc_wait_for  pod csi-rbdplugin
 
 # Need a more reliable way to run this as we've got a bit
 # of a race condition on pod startup
-echo "We might need 20-60 seconds for the OSDs to activate"
+printInfo "We might need 20-60 seconds for the OSDs to activate"
 oc_wait_for  pod rook-ceph-mon
 sleep 5s
 oc_wait_for  pod rook-ceph-mgr
@@ -186,7 +186,7 @@ sleep 2s
 oc_wait_for  pod rook-ceph-tools
 
 export toolbox=$(oc -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}')
-echo "Now Run"
+printInfo "Now Run"
 echo "ceph status"
 echo "ceph osd status"
 echo "ceph osd tree"
@@ -259,18 +259,18 @@ enable_object ()
 # Use the CSI Object Storage Class
 oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/object-openshift.yaml
 
-echo "wait 40 seconds for pod startup"
+printInfo "wait 40 seconds for pod startup"
 sleep 40s
 oc_wait_for pod rook-ceph-rgw
 
 oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/object-user.yaml
 
-echo "Confirming the enties are valid"
+printInfo "Confirming the enties are valid"
 oc get CephObjectStore -n rook-ceph
 oc get CephObjectStoreUser -n rook-ceph
 
-echo "You can confirm the S3 credentials via"
-echo "oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user"
+printInfo "You can confirm the S3 credentials via"
+printInfo "oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user"
 
 #oc -n rook-ceph get secrets
 oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user
