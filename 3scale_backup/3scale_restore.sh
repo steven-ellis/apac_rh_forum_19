@@ -153,6 +153,9 @@ printInfo "zync database restore to ${PSQL_POD} completed"
 
 # This is a framework but I need a more elegant way to modify the config map
 # and make sure the deployments have completed before moving on
+# 
+# Note that the redis container will get re-deployed during the process
+# and the assiciated pod name will change
 #
 # $1 = system|backend
 restore_redis ()
@@ -177,9 +180,9 @@ restore_redis ()
 
     oc rollout latest dc/${1}-redis
 
-    printInfo "Sleep 20s while the rollout actions"
-    sleep 20s
-    oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+    printInfo "Sleep 30s while the rollout actions"
+    sleep 30s
+    ##oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
     oc_wait_for  pod ${1}-redis deploymentconfig ${API_MANAGER_NS}
 
     printInfo "Current ${1}-redis pods"
@@ -189,25 +192,26 @@ restore_redis ()
     printInfo "Current ${1}-redis pods"
     oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r
 
-    printInfo "Rename the dump.rb file:"
+    REDIS_POD=$(oc get pods -l "deploymentConfig=${1}-redis" -o json | jq -r '.items[0].metadata.name')
+    printInfo "Rename the dump.rb file on ${REDIS_POD}:"
 
-    oc rsh $(oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/dump.rdb ${HOME}/data/dump.rdb-old'
+    oc rsh ${REDIS_POD} bash -c 'mv ${HOME}/data/dump.rdb ${HOME}/data/dump.rdb-old'
 
     printInfo "Rename the appendonly.aof file:"
 
-    oc rsh $(oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/appendonly.aof ${HOME}/data/appendonly.aof-old'
+    oc rsh ${REDIS_POD} bash -c 'mv ${HOME}/data/appendonly.aof ${HOME}/data/appendonly.aof-old'
 
     printInfo "Move the Backup file to the POD:"
 
-    oc cp ./${1}-redis-dump.rdb $(oc get pods -l "deploymentConfig=${1}-redis" -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb
+    oc cp ${BACKUP_DIR}/${1}-redis-dump.rdb ${REDIS_POD}:/var/lib/redis/data/dump.rdb
 
     printInfo "Redeploy ${1}-redis to load the backup:"
 
     oc rollout latest dc/${1}-redis
 
-    printInfo "Sleep 20s while the rollout actions"
-    sleep 20s
-    oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+    printInfo "Sleep 30s while the rollout actions"
+    sleep 30s
+    ##oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
     oc_wait_for  pod ${1}-redis deploymentconfig ${API_MANAGER_NS}
 
     printInfo "Modify the redis-config configmap back to its original settings:"
@@ -216,9 +220,9 @@ restore_redis ()
     printInfo "Redeploy ${1}-redis to reload the default configurations:"
 
     oc rollout latest dc/${1}-redis
-    printInfo "Sleep 20s while the rollout actions"
-    sleep 20s
-    oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+    printInfo "Sleep 30s while the rollout actions"
+    sleep 30s
+    ##oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
     oc_wait_for  pod ${1}-redis deploymentconfig ${API_MANAGER_NS}
 
     printInfo "Current ${1}-redis pods"
@@ -234,6 +238,6 @@ restore_zync_database
 restore_system_app
 
 printInfo "Restore backend-redis"
-#restore_redis backend
-#restore_redis system
+restore_redis backend
+restore_redis system
 
