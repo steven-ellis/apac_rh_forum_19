@@ -22,6 +22,13 @@ OCP_NAMESPACE=${2:-$API_MANAGER_NS}
 
 oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
 
+if ( ! projectExists ${OCP_NAMESPACE}); then
+    printERROR "No 3scale service deployed under ${OCP_NAMESPACE} - ${1} Exiting"
+    exit -1
+fi  
+
+oc project ${OCP_NAMESPACE}
+
 echo "Restoring a new 3scale backup from directory ${BACKUP_DIR} into project ${OCP_NAMESPACE}"
 
 if [ ! -d ${BACKUP_DIR} ]; then

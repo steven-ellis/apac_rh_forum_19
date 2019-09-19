@@ -15,6 +15,11 @@ OCP_NAMESPACE=${2:-$API_MANAGER_NS}
 # And login as the kubeadmin user
 oc_login
 
+if ( ! projectExists ${OCP_NAMESPACE}); then
+    printERROR "No 3scale service deployed under ${OCP_NAMESPACE} - ${1} Exiting"
+    exit -1
+fi  
+
 oc project ${OCP_NAMESPACE}
 
 echo "Creating a new 3scale backup into directory ${BACKUP_DIR}"
