@@ -21,10 +21,10 @@ setup_quarkus()
     oc new-project ${OCP_NAMESPACE}
 
     printInfo "Deploy big fat java"
-    oc apply -f ${REPO_URL}/deploy-big-fat-java.yaml
+    oc apply -f ${REPO_URL}/deploy-big-fat-java-to-race-track.yaml
     
     printInfo "Deploy supersonic-subatomic java"
-    oc apply -f ${REPO_URL}/deploy-supersonic-subatomic-java.yaml
+    oc apply -f ${REPO_URL}/deploy-supersonic-subatomic-java-to-race-track.yaml
     
     printInfo "Create big fat java service"
     oc apply -f ${REPO_URL}/service-big-fat-java.yaml
