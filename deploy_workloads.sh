@@ -27,6 +27,16 @@ deploy_apps ()
     ./bigpharmfusedeploy.sh setup
 
     ./couchbase.sh setup
+
+    # Create additional machine-sets for quarkus and java
+    ./scale_workers.sh quarkus
+    ./scale_workers.sh java
+
+    # Start the new machines and monitor their creation
+    ./scale_workers.sh start
+    ./scale_workers.sh status
+
+    # Deploy the Quarkus Demo
     ./quarkus.sh setup
 
 
@@ -51,6 +61,7 @@ remove_apps ()
 
     ./3scale.sh cleanup
 
+    # Cleanup the quarkus deployment
     ./quarkus.sh delete
     ./scale_workers.sh stop
     ./scale_workers.sh down
