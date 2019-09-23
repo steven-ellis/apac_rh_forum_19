@@ -62,5 +62,7 @@ oc_wait_for ()
 oc_login ()
 {
     oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+    printInfo "Login to OpenShift at ${OCP_ENDPOINT}"
+    printInfo "Console access at https://console-openshift-console.apps.${OCP_DOMAIN}/"
 }
 
