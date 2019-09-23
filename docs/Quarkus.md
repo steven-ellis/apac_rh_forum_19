@@ -11,6 +11,17 @@ Deployment of the demo and resource scaling is all managed under
 
 * [quarkus.sh](../quarkus.sh)
 
+## Typical Demo
+
+* Scale additional worker nodes to isolate java and quarkus pods
+* Scale workload to 100 pods of java and quarkus, and monitor the output
+```
+./quarkus.sh scale 100
+```
+
+Java should fail to scale to 100 due to lack of compute resources,
+Quarkus should scale faster and be able to hit 100 pods
+
 
 ## Pre-requisites
 This is part of our overall [OpenShift Demo](OpenShiftDemo.md) and needs to have
