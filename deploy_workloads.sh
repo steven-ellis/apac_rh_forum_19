@@ -34,7 +34,8 @@ deploy_apps ()
 
     # Start the new machines and monitor their creation
     ./scale_workers.sh start
-    ./scale_workers.sh status
+    # we monitor as part of the start script so this is redundant
+    # ./scale_workers.sh status
 
     # Deploy the Quarkus Demo
     ./quarkus.sh setup
