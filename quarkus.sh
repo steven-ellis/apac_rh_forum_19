@@ -23,6 +23,9 @@ setup_quarkus()
 {
     printInfo "Create the ${OCP_NAMESPACE} namespace"
     oc new-project ${OCP_NAMESPACE}
+    
+    printInfo "Add SCC to User"
+    oc adm policy add-scc-to-user privileged -z default -n ${OCP_NAMESPACE}
 
     printInfo "Deploy big fat java"
     oc apply -f ${REPO_URL}/deploy-big-fat-java-to-race-track.yaml
