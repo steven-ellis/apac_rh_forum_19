@@ -12,7 +12,7 @@ source ./functions
 OCP_NAMESPACE=openshift-machine-api
 OCP_REGION=${OCP_REGION:-us-east-2}
 
-OUT_DIR=quarkus_clusters
+OUT_DIR=scale_clusters
 
 pre_setup ()
 {
@@ -228,13 +228,12 @@ case "$1" in
         machineset_status
         ;;
   *)
-        echo "Usage: $N {status|up|down|aza|azb|azc}" >&2
+        echo "Usage: $N {status|quarkus|java|ocs|start|stop}" >&2
         echo " status - Show the current status of our worker nodes" >&2
         echo " quarkus - create machineset for quarkus workload" >&2
         echo " java - create machineset for big fat java workload" >&2
         echo " start - start our workload specific machinesets" >&2
         echo " stop - stop/delete our workload specific machinesets" >&2
-        echo " status - Show the current status of our worker nodes" >&2
         echo " Old options - ignore" >&2
         echo "   up - scale to 2 replicas for all worker nodes" >&2
         echo "   down - scale to 1 replica for all worker nodes" >&2

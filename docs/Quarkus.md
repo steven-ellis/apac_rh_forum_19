@@ -16,6 +16,20 @@ Deployment of the demo and resource scaling is all managed under
 This is part of our overall [OpenShift Demo](OpenShiftDemo.md) and needs to have
 additional tagged worker nodes to host the quarkus and java applications.
 
+```
+# Create additional machine-sets for quarkus and java
+./scale_workers.sh quarkus
+./scale_workers.sh java
+
+# Start the new machines and monitor their creation
+./scale_workers.sh start
+./scale_workers.sh status
+
+# When finishe clean up the environment to save on resources
+./scale_workers.sh stop
+./scale_workers.sh status
+```
+
 ## Deploying / Removing Demo
 
 ```
