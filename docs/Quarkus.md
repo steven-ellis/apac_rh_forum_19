@@ -14,13 +14,13 @@ Deployment of the demo and resource scaling is all managed under
 ## Typical Demo
 
 * Scale additional worker nodes to isolate java and quarkus pods
-* Scale workload to 100 pods of java and quarkus, and monitor the output
+* Scale workload to 50 pods of java and quarkus, and monitor the output
 ```
-./quarkus.sh scale 100
+./quarkus.sh scale 50
 ```
 
-Java should fail to scale to 100 due to lack of compute resources,
-Quarkus should scale faster and be able to hit 100 pods
+Java should fail to scale to 50 due to lack of compute resources,
+Quarkus should scale faster and be able to hit 50 pods
 
 
 ## Pre-requisites
@@ -54,7 +54,7 @@ additional tagged worker nodes to host the quarkus and java applications.
 ## Scaling the Demo
 
 ```
-# Scale all workloads to 100
+# Scale all workloads to 50
 ./quarkus.sh scale_up
 
 # Scale both workloads to N instances

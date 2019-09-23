@@ -91,15 +91,15 @@ case "$1" in
         ;;
   scale_java)
         oc_login
-        scale_java 100
+        scale_java 50
         ;;
   scale_quarkus)
         oc_login
-        scale_quarkus 100
+        scale_quarkus 50
         ;;
   scale_up|scale)
         oc_login
-        COUNT=${100:-$2}
+        COUNT=${50:-$2}
         scale_quarkus $COUNT
         scale_java $COUNT
         rc_watch
