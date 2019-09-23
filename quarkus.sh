@@ -1,6 +1,10 @@
 #!/bin/bash
 #
 # Deploy or cleanup a quarkus install
+# 
+# See demo docs under
+#  docs/Quarkus.md
+#
 
 # Step 0 - Our master environment
 source ./ocp.env
@@ -61,7 +65,16 @@ scale_quarkus()
     oc scale --replicas=${1} deployment.apps supersonic-subatomic-java -n ${OCP_NAMESPACE}
 }
 
-
+rc_watch()
+{
+    watch oc get replicaset -n ${OCP_NAMESPACE}
+}
+        
+rc_status()
+{
+    oc get replicaset -n ${OCP_NAMESPACE}
+}
+        
 case "$1" in
   setup|deploy)
         oc_login
@@ -71,6 +84,7 @@ case "$1" in
         oc_login
         scale_java 1
         scale_quarkus 1
+        rc_status
         ;;
   scale_java)
         oc_login
@@ -80,17 +94,25 @@ case "$1" in
         oc_login
         scale_quarkus 100
         ;;
-  scale_up)
+  scale_up|scale)
         oc_login
-        scale_java 100
-        scale_quarkus 100
+        COUNT=${100:-$2}
+        scale_quarkus $COUNT
+        scale_java $COUNT
+        rc_watch
+        ;;
+  status)
+        rc_status
+        ;;
+  watch)
+        rc_watch
         ;;
   delete|remove)
         oc_login
         delete_quarkus
         ;;
   *)
-        echo "Usage: $N {setup|scale_java|scale_quarkus|scale_up|scale_down|delete}" >&2
+        echo "Usage: $N {setup|scale_java|scale_quarkus|scale_up|scale N|scale_down|status|watch|delete}" >&2
         exit 1
         ;;
 esac
