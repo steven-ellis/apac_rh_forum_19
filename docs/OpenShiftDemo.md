@@ -7,7 +7,8 @@ Red Hat OpenShift Container Platform 4.x
 * 3Scale
 * Istio Service Mesh
 * Kubernetes Operators
-* Codeready Workspaces
+* [Quarkus and Java](./Quarkus.md)
+* [Codeready Workspaces](./CodeReadyWorkspaces.md)
 
 Currently the deployment needs to be staged due to pod/container dependencies.
 
@@ -98,7 +99,18 @@ This requires Istio / Service Mesh to be deployed
 ./couchbase.sh setup
 ```
 
-## Stage 6 - Configure environment for Quarkus and Java Demo
+## Stage 6a - Create additional worker nodes required for [Quarkus/Java](./Quarkus.md) Demo
+```
+# Create additional machine-sets for quarkus and java
+./scale_workers.sh quarkus
+./scale_workers.sh java
+
+# Start the new machines and monitor their creation
+./scale_workers.sh start
+./scale_workers.sh status
+```
+
+## Stage 6b - Configure environment for Quarkus and Java Demo
 ```
 ./quarkus.sh setup
 ```
@@ -128,11 +140,12 @@ Remove the Quarkus and Java environment
 ./quarkus.sh delete
 ```
 
-Make sure we scale back down the compute workers
+Delete the additional worker nodes created for  for [Quarkus/Java](./Quarkus.md) Demo
 including any custom workload nodes
 ```
 ./scale_workers.sh stop
 ./scale_workers.sh down
+./scale_workers.sh status
 ```
 
 Remove Couchbase Operator and Instances

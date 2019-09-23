@@ -25,7 +25,7 @@ additional tagged worker nodes to host the quarkus and java applications.
 ./scale_workers.sh start
 ./scale_workers.sh status
 
-# When finishe clean up the environment to save on resources
+# When finished clean up the environment to save on resources
 ./scale_workers.sh stop
 ./scale_workers.sh status
 ```
