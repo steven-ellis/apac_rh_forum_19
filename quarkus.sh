@@ -63,7 +63,7 @@ scale_quarkus()
 
 
 case "$1" in
-  setup)
+  setup|deploy)
         oc_login
         setup_quarkus
         ;;
@@ -80,12 +80,17 @@ case "$1" in
         oc_login
         scale_quarkus 100
         ;;
+  scale_up)
+        oc_login
+        scale_java 100
+        scale_quarkus 100
+        ;;
   delete|remove)
         oc_login
         delete_quarkus
         ;;
   *)
-        echo "Usage: $N {setup|scale_java|scale_quarkus|scale_down|delete}" >&2
+        echo "Usage: $N {setup|scale_java|scale_quarkus|scale_up|scale_down|delete}" >&2
         exit 1
         ;;
 esac
