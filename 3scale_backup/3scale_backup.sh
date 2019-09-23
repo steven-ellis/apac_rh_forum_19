@@ -21,7 +21,7 @@ OCP_NAMESPACE=${2:-$API_MANAGER_NS}
 oc_login
 
 if ( ! projectExists ${OCP_NAMESPACE}); then
-    printERROR "No 3scale service deployed under ${OCP_NAMESPACE} - ${1} Exiting"
+    printError "No 3scale service deployed under ${OCP_NAMESPACE} - ${1} Exiting"
     exit -1
 fi  
 
