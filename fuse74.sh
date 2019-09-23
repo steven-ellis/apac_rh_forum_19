@@ -35,6 +35,22 @@ printInfo "Installing Fuse Templates"
 	oc create -n openshift -f https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-740025-redhat-00003/fis-console-namespace-template.json
 }
 
+remove_fuse_templates()
+{
+        printInfo "Removing Fuse Console Templates" 
+
+	# Remove the templates for the Fuse Console.
+	oc delete -n openshift -f https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-740025-redhat-00003/fis-console-namespace-template.json
+	oc delete -n openshift -f https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-740025-redhat-00003/fis-console-cluster-template.json
+
+        printInfo "Removing Fuse Templates" 
+	# Remove Quick Start Templates.
+	for template in eap-camel-amq-template.json eap-camel-cdi-template.json eap-camel-cxf-jaxrs-template.json eap-camel-cxf-jaxws-template.json eap-camel-jpa-template.json   karaf-camel-amq-template.json karaf-camel-log-template.json karaf-camel-rest-sql-template.json karaf-cxf-rest-template.json spring-boot-camel-amq-template.json spring-boot-camel-config-template.json spring-boot-camel-drools-template.json spring-boot-camel-infinispan-template.json spring-boot-camel-rest-sql-template.json spring-boot-camel-template.json spring-boot-camel-xa-template.json spring-boot-camel-xml-template.json spring-boot-cxf-jaxrs-template.json spring-boot-cxf-jaxws-template.json;
+	do
+	oc delete -n openshift -f https://raw.githubusercontent.com/jboss-fuse/application-templates/application-templates-2.1.fuse-740025-redhat-00003/quickstarts/${template}
+	done;
+}
+
 update_sample_operator_config()
 {
         printInfo "Updating the sample Fuse Operator config"
@@ -91,9 +107,10 @@ case "$1" in
         install_fuse_templates
         ;;
   delete|cleanup|remove)
-        printError "WARNING - Fuse cleanup not implemented yet"
+        printError "WARNING - Fuse cleanup fully implemented yet"
         #pre_setup 
         #cleanup_fuse
+        remove_fuse_templates
         ;;
   *)
         echo "Usage: $N {setup|cleanup}" >&2
