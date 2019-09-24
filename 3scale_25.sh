@@ -7,37 +7,12 @@ source ./functions
 # Step 1 - 3scale specific settings
 source ./3scale.2.5.env
 
-# And login as the kubeadmin user
-
-oc_login
+# We only login as the kubeadmin user if we've got a valid command line
 
 OCP_NAMESPACE=$API_MANAGER_NS
 
-# Need a way to make sure pods are running before we continue
-#
-# $1 = app-name
-#
-# EG
-#    confirm_pods_running rook-ceph-mon
-#
-confirm_pods_running ()
+deploy_3scale ()
 {
-
-   for i in {1..12}
-   do
-      echo "checking status of pod $1 attempt $i"
-      status=` oc get pods -o json --selector=app=${1} -n ${OCP_NAMESPACE} |\
-               jq ".items[].status.phase" | uniq`
-      if [ ${status} == '"Running"' ] ; then
-         return;
-      fi
-      sleep 10s
-   done
-   echo "Pod $1 not in Running state" >&2
-   exit
-}
-
-
 # Step2: A Cluster Admin of a production OpenShift environment typically applies clusterquotas and limitranges.
 # NOTE Not needed for our Demo Environment
 
@@ -101,7 +76,8 @@ spec:
     min:
       memory: 6Mi
     type: Pod
-"| oc create -n $API_MANAGER_NS -f -
+" | oc create --as=system:admin -n $API_MANAGER_NS -f -
+
 
 # Step 5: Annotate the API Manager project such that its resources are managed by a cluster quota
 
@@ -176,6 +152,7 @@ watch "echo 'Look for running system-app'; oc get pods -n $API_MANAGER_NS | grep
 # This should be the preferred approach
 #confirm_pods_running system-app
 oc_wait_for  pod system-app deploymentconfig ${API_MANAGER_NS}
+oc_wait_for  pod system-app name ${API_MANAGER_NS}
 
 # Make sure the other pods are all running
 oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
@@ -234,5 +211,35 @@ Tenant Admin Console:"
 echo -en "\nhttps://`oc get route system-provider-admin -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
 
 echo "Credentials: admin/admin"
+}
 
+cleanup_3scale ()
+{
+    #  This has a simple cleanup
+    echo "Deleting the project ${OCP_NAMESPACE}"
+    echo "This might take a couple of minutes to return"
+
+    oc delete project ${OCP_NAMESPACE}
+}
+
+case "$1" in
+  setup)
+        oc_login
+        if (projectExists ${OCP_NAMESPACE}); then
+	    printWarning "Service 3scale already deployed in ${OCP_NAMESPACE} - Exiting"
+        else
+            deploy_3scale
+        fi
+        ;;
+  delete|cleanup|remove)
+        oc_login
+        if (projectExists ${OCP_NAMESPACE}); then
+            cleanup_3scale
+        fi
+        ;;
+  *)
+	echo "Usage: $1 {setup|delete|cleanup|remove}" >&2
+        exit 1
+        ;;
+esac
 
