@@ -194,23 +194,29 @@ sleep 30s
 oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 #watch "echo 'Confirm state of 3scale pods'; oc get pods -n $API_MANAGER_NS --as=system:admin | grep Running | grep -v -i deploy"
 
-# Step 15: Accessing the Admin console:
+}
 
-echo "Two admin consoles are available with 3scale. One is the Master admin console which is used to manage the tenants. The second admin console is the Tenant Admin console which is used to manage the APIs and audiences.
+3scale_status ()
+{
+    printInfo "3scale 2.5 deployed into namespace ${API_MANAGER_NS}"
+
+    # Step 15: Accessing the Admin console:
+
+    echo "Two admin consoles are available with 3scale. One is the Master admin console which is used to manage the tenants. The second admin console is the Tenant Admin console which is used to manage the APIs and audiences.
 
 Execute the below commands to get the URL of the master and tenant admin consoles.
 
 Master Admin console: "
 
-echo -en "\nhttps://`oc get route system-master -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
+    echo -en "\nhttps://`oc get route system-master -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
 
-echo "Credentials: master/master
+    echo "Credentials: master/master
 
 Tenant Admin Console:"
 
-echo -en "\nhttps://`oc get route system-provider-admin -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
+    echo -en "\nhttps://`oc get route system-provider-admin -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
 
-echo "Credentials: admin/admin"
+    echo "Credentials: admin/admin"
 }
 
 cleanup_3scale ()
@@ -229,6 +235,13 @@ case "$1" in
 	    printWarning "Service 3scale already deployed in ${OCP_NAMESPACE} - Exiting"
         else
             deploy_3scale
+            3scale_status
+        fi
+        ;;
+  status)
+        oc_login
+        if (projectExists ${OCP_NAMESPACE}); then
+            3scale_status
         fi
         ;;
   delete|cleanup|remove)
