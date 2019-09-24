@@ -23,6 +23,7 @@ The scripts make use of “watch” to keep an eye on the environment and you’
     * use `ocp.env.sample` as an example of the data required
 1. Valid `3scale.env` for the 3scale deployment 
 1. Valid `amps3.yml` for the 3scale deployment
+1. Valid `ocpfuse74.env` for the fuse deployment
 1. Admin OpenShift [username/password](./OpenShiftUserAuth.md)
 
 
