@@ -64,8 +64,8 @@ remove_apps ()
 
     # Cleanup the quarkus deployment
     ./quarkus.sh delete
-    ./scale_workers.sh stop
     ./scale_workers.sh down
+    ./scale_workers.sh stop
 
     ./couchbase.sh delete
 
