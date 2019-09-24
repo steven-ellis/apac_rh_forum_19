@@ -81,7 +81,11 @@ rc_status()
 case "$1" in
   setup|deploy)
         oc_login
-        setup_quarkus
+        if (projectExists ${OCP_NAMESPACE}); then
+	    printWarning "Project supersonic-subatomic-java is already deployed - Exiting"
+        else
+            setup_quarkus
+        fi
         ;;
   scale_down)
         oc_login
@@ -99,20 +103,31 @@ case "$1" in
         ;;
   scale_up|scale)
         oc_login
-        COUNT=${50:-$2}
+        if [ "${2}a" == "a" ]; then
+          COUNT=50
+        else
+          COUNT=${2}
+        fi
+        #COUNT=${50:-$2}
         scale_quarkus $COUNT
         scale_java $COUNT
         rc_watch
         ;;
   status)
-        rc_status
+        if (projectExists  ${OCP_NAMESPACE}); then
+            rc_status
+        fi
         ;;
   watch)
-        rc_watch
+        if (projectExists  ${OCP_NAMESPACE}); then
+            rc_watch
+        fi
         ;;
   delete|remove)
         oc_login
-        delete_quarkus
+        if (projectExists  ${OCP_NAMESPACE}); then
+            delete_quarkus
+        fi
         ;;
   *)
         echo "Usage: $N {setup|scale_java|scale_quarkus|scale_up|scale N|scale_down|status|watch|delete}" >&2
