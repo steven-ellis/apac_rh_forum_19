@@ -51,110 +51,110 @@ deploy_3scale ()
 # Step 4: Create Limit Range for 3scale Resources
 #         and create the project
 
-oc new-project ${API_MANAGER_NS}
+	oc new-project ${API_MANAGER_NS}
 
 echo "
-apiVersion: v1
-kind: LimitRange
-metadata:
-  name: ${API_MANAGER_NS}-core-resource-limits
-spec:
-  limits:
-  - default:
+	apiVersion: v1
+	kind: LimitRange
+	metadata:
+name: ${API_MANAGER_NS}-core-resource-limits
+      spec:
+limits:
+      - default:
       cpu: 250m
       memory: 128Mi
-    defaultRequest:
-      cpu: 50m
-      memory: 64Mi
-    max:
-      memory: 6Gi
-    min:
-      memory: 10Mi
-    type: Container
-  - max:
-      memory: 12Gi
-    min:
-      memory: 6Mi
-    type: Pod
-" | oc create --as=system:admin -n $API_MANAGER_NS -f -
+      defaultRequest:
+cpu: 50m
+     memory: 64Mi
+     max:
+memory: 6Gi
+	min:
+memory: 10Mi
+	type: Container
+	- max:
+	memory: 12Gi
+	min:
+memory: 6Mi
+	type: Pod
+	" | oc create --as=system:admin -n $API_MANAGER_NS -f -
 
 
 # Step 5: Annotate the API Manager project such that its resources are managed by a cluster quota
 
 
-oc annotate namespace $API_MANAGER_NS openshift.io/requester=$OCP_AMP_ADMIN_ID --overwrite --as=system:admin
+	oc annotate namespace $API_MANAGER_NS openshift.io/requester=$OCP_AMP_ADMIN_ID --overwrite --as=system:admin
 
 # Step 6: Provide the user, $OCP_USERNAME, with view access to this namespace and create a secret
 
-oc adm policy add-role-to-user view $OCP_USERNAME -n $API_MANAGER_NS --as=system:admin
+	oc adm policy add-role-to-user view $OCP_USERNAME -n $API_MANAGER_NS --as=system:admin
 
 
-oc create secret docker-registry threescale-registry-auth --docker-server=registry.redhat.io --docker-username=$rht_service_token_user --docker-password=$rht_service_token_password -n $API_MANAGER_NS --as=system:admin
+	oc create secret docker-registry threescale-registry-auth --docker-server=registry.redhat.io --docker-username=$rht_service_token_user --docker-password=$rht_service_token_password -n $API_MANAGER_NS --as=system:admin
 
 
 
 # Step 7: Install 3scale setup using the template amps3.yml.
 
-oc new-app \
-  -f ./amps3.yml \
-  -p "MASTER_NAME=$API_MASTER_NAME" \
-  -p "MASTER_PASSWORD=$API_MASTER_PASSWORD" \
-  -p "MASTER_ACCESS_TOKEN=$API_MASTER_ACCESS_TOKEN" \
-  -p "ADMIN_PASSWORD=$API_TENANT_PASSWD" \
-  -p "ADMIN_ACCESS_TOKEN=$API_TENANT_ACCESS_TOKEN" \
-  -p "TENANT_NAME=$TENANT_NAME" \
-  -p "WILDCARD_DOMAIN=$OCP_WILDCARD_DOMAIN" \
-  -n $API_MANAGER_NS \
-  --as=system:admin | tee ./3scale_amp_provision_details.txt
+	oc new-app \
+	-f ./amps3.yml \
+	-p "MASTER_NAME=$API_MASTER_NAME" \
+	-p "MASTER_PASSWORD=$API_MASTER_PASSWORD" \
+	-p "MASTER_ACCESS_TOKEN=$API_MASTER_ACCESS_TOKEN" \
+	-p "ADMIN_PASSWORD=$API_TENANT_PASSWD" \
+	-p "ADMIN_ACCESS_TOKEN=$API_TENANT_ACCESS_TOKEN" \
+	-p "TENANT_NAME=$TENANT_NAME" \
+	-p "WILDCARD_DOMAIN=$OCP_WILDCARD_DOMAIN" \
+	-n $API_MANAGER_NS \
+	--as=system:admin | tee ./3scale_amp_provision_details.txt
 
 
-echo 'You should see  - deploymentconfig "zync-database" created
---> Success'
-sleep 10s
+	echo 'You should see  - deploymentconfig "zync-database" created
+	--> Success'
+	sleep 10s
 
 
 # Check on the deployment
-oc status -n $API_MANAGER_NS
+	oc status -n $API_MANAGER_NS
 
 # Step 8:Resume the database tier deployments: 
 
 #
-for x in backend-redis system-memcache system-mysql system-redis zync-database; do
-    echo Resuming dc:  $x
-    sleep 2
-    oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
-done
+	for x in backend-redis system-memcache system-mysql system-redis zync-database; do
+		echo Resuming dc:  $x
+			sleep 2
+			oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
+			done
 
 
 # check our pods are running
-oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+			oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 #oc_wait_for  pod zync-database name ${API_MANAGER_NS}
 
 #watch "echo 'wait for all pods to be running'; oc get pods -n $API_MANAGER_NS --as=system:admin|grep Running|grep -v -i deploy"
 
 # Step 9:Resume backend listener and worker deployments:
- 
+
 for x in backend-listener backend-worker; do
-   echo Resuming dc:  $x
-   sleep 2
-   oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
-done
+	echo Resuming dc:  $x
+		sleep 2
+		oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
+		done
 
 
 # Step 10: Resume the system-app and its two containers
 
-oc rollout resume dc system-app -n $API_MANAGER_NS --as=system:admin
+		oc rollout resume dc system-app -n $API_MANAGER_NS --as=system:admin
 
 # Confirm pods are running
 # Could automate this one
-sleep 30s
-oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+		sleep 30s
+		oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 sleep 10s
-watch "echo 'Look for running system-app'; oc get pods -n $API_MANAGER_NS | grep system-app|grep Running| grep -v -i deploy"
+	watch "echo 'Look for running system-app'; oc get pods -n $API_MANAGER_NS | grep system-app|grep Running| grep -v -i deploy"
 
 # This should be the preferred approach
 #confirm_pods_running system-app
-oc_wait_for  pod system-app deploymentconfig ${API_MANAGER_NS}
+	oc_wait_for  pod system-app deploymentconfig ${API_MANAGER_NS}
 oc_wait_for  pod system-app name ${API_MANAGER_NS}
 
 # Make sure the other pods are all running
@@ -162,29 +162,29 @@ oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 
 # Look at logs
 echo "Wait 10 seconds and then look at the logs"
-sleep 10s
-oc logs $(oc get pod -l app=3scale-api-management | grep system-app | grep Running | awk '{print $1}')  -c system-developer | tail -200
+	sleep 10s
+	oc logs $(oc get pod -l app=3scale-api-management | grep system-app | grep Running | awk '{print $1}')  -c system-developer | tail -200
 
 
 # Step 11: Resume additional system and backend application utilities.
 
-for x in system-sidekiq backend-cron system-sphinx; do
-  echo Resuming dc:  $x
-  sleep 2
-  oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
-done
+	for x in system-sidekiq backend-cron system-sphinx; do
+		echo Resuming dc:  $x
+			sleep 2
+			oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin
+			done
 
 #  Resume remaining deployments 
-for x in zync zync-que; do 
-	echo Resuming dc:  $x; 
-	sleep 2; 
-	oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin; 
+			for x in zync zync-que; do 
+				echo Resuming dc:  $x; 
+sleep 2; 
+oc rollout resume dc $x -n $API_MANAGER_NS --as=system:admin; 
 done
 
 
 # Step 13: Verify the state of the 3scale pods:
-sleep 30s
-oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
+	sleep 30s
+	oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 #watch "echo 'Confirm state of 3scale pods'; oc get pods -n $API_MANAGER_NS --as=system:admin | grep Running | grep -v -i deploy"
 
 # Step 14: Create the routes.
@@ -194,36 +194,39 @@ oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 oc create route edge $API_TENANT_USERNAME-system-provider-admin --service=system-provider --hostname=$API_TENANT_USERNAME-$API_MANAGER_NS-admin.$OCP_WILDCARD_DOMAIN -n $API_MANAGER_NS --as=system:admin
 
 # Create Developer Portal route
-oc create route edge $API_TENANT_USERNAME-system-developer --service=system-developer --hostname=$API_TENANT_USERNAME-$API_MANAGER_NS.$OCP_WILDCARD_DOMAIN -n $API_MANAGER_NS --as=system:admin
+	oc create route edge $API_TENANT_USERNAME-system-developer --service=system-developer --hostname=$API_TENANT_USERNAME-$API_MANAGER_NS.$OCP_WILDCARD_DOMAIN -n $API_MANAGER_NS --as=system:admin
+}
 
+3scale_status ()
+{
+	printInfo "3scale 2.6 deployed into namespace ${API_MANAGER_NS}"
 
 # Step 15: Accessing the Admin console:
 
-echo "Two admin consoles are available with 3scale. One is the Master admin console which is used to manage the tenants. The second admin console is the Tenant Admin console which is used to manage the APIs and audiences.
+	echo "Two admin consoles are available with 3scale. One is the Master admin console which is used to manage the tenants. The second admin console is the Tenant Admin console which is used to manage the APIs and audiences.
 
-Execute the below commands to get the URL of the master and tenant admin consoles.
+Execute the below commands to get the URL of the master and tenant admin consoles."
 
-Master Admin console: "
-
-echo -en "\nhttps://`oc get route | grep "^zync-3scale-master" | awk '{print $2}'` \n\n"
-
-
-echo "Credentials: master/master
-
-Tenant Admin Console:"
-
-echo -en "\nhttps://`oc get route $API_TENANT_USERNAME-system-provider-admin -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
-
-echo "Credentials: admin/redhatdemo"
+        echo ""
+        echo "Master Admin console: "
+	echo "    https://`oc get route -n $API_MANAGER_NS | grep "^zync-3scale-master" | awk '{print $2}'` "
+	echo "    Credentials: master/master"
+        echo ""
+	echo "Tenant Admin Console:"
+	echo "    https://`oc get route $API_TENANT_USERNAME-system-provider-admin -n $API_MANAGER_NS --template "{{.spec.host}}"`"
+	echo "    Credentials: admin/redhatdemo"
+        echo ""
+	echo "Developer Portal:"
+	echo "    https://`oc get route $API_TENANT_USERNAME-system-developer -n $API_MANAGER_NS --template "{{.spec.host}}"`"
 }
 
 cleanup_3scale ()
 {
-    #  This has a simple cleanup
-    echo "Deleting the project ${OCP_NAMESPACE}"
-    echo "This might take a couple of minutes to return"
+#  This has a simple cleanup
+	echo "Deleting the project ${OCP_NAMESPACE}"
+		echo "This might take a couple of minutes to return"
 
-    oc delete project ${OCP_NAMESPACE}
+		oc delete project ${OCP_NAMESPACE}
 }
 
 case "$1" in
@@ -233,6 +236,13 @@ case "$1" in
 	    printWarning "Service 3scale already deployed in ${OCP_NAMESPACE} - Exiting"
         else
             deploy_3scale
+            3scale_status
+        fi
+        ;;
+  status)
+        oc_login
+        if (projectExists ${OCP_NAMESPACE}); then
+            3scale_status
         fi
         ;;
   delete|cleanup|remove)
@@ -242,7 +252,7 @@ case "$1" in
         fi
         ;;
   *)
-	echo "Usage: $1 {setup|delete|cleanup|remove}" >&2
+	echo "Usage: $1 {setup|status|delete|cleanup|remove}" >&2
         exit 1
         ;;
 esac
