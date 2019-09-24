@@ -5,7 +5,7 @@ source ./ocp.env
 source ./functions
 
 # Step 1 - 3scale specific settings
-source ./3scale.env
+source ./3scale.2.5.env
 
 # And login as the kubeadmin user
 
@@ -117,7 +117,7 @@ oc adm policy add-role-to-user view $OCP_USERNAME -n $API_MANAGER_NS --as=system
 # Step 7: Install 3scale setup using the template amps3.yml.
 
 oc new-app \
-  -f ./amps3.yml \
+  -f ./amps3.25.yml \
   -p "MASTER_NAME=$API_MASTER_NAME" \
   -p "MASTER_PASSWORD=$API_MASTER_PASSWORD" \
   -p "ADMIN_PASSWORD=$API_TENANT_PASSWD" \
