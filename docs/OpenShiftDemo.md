@@ -112,7 +112,9 @@ This requires Istio / Service Mesh to be deployed
 ```
 
 ## Stage 6b - Configure environment for Quarkus and Java Demo
+Note we need to taint the workers to avoid other pods being scheduled
 ```
+./quarkus.sh taint
 ./quarkus.sh setup
 ```
 
@@ -139,6 +141,7 @@ Remove the bigpharm app - Can't currently clean up the Fuse deployment
 Remove the Quarkus and Java environment
 ```
 ./quarkus.sh delete
+./quarkus.sh untaint
 ```
 
 Delete the additional worker nodes created for  for [Quarkus/Java](./Quarkus.md) Demo
