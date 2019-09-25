@@ -32,7 +32,7 @@
       masked: no
 
   - name: Add additional demo dependancies for virtual machine management
-    yum: name={{item}} state=present
+    yum: 
       name: ['cockpit-machines', 'virt-viewer', 'virt-install']
       state: present
 
