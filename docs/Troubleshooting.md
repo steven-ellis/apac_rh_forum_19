@@ -1,7 +1,9 @@
 # Demo / Environment Troubleshooting
 Some tips / trips for troubleshooting potential issues
 
-Insert Index HERE
+* [Quarkus workloads won't scale to 50](#quarkus-workloads-wont-scale)
+* [Node Evacuation](#evacuating-a-node-before-removing) before deletion
+* [Stock on oc wait](#stuck-on-a-an-oc-wait)
 
 =======
 
@@ -42,6 +44,8 @@ done | egrep -v supersonic-subatomic-java | wc -l
 This can usually be resolved by making sure you have correct taints/tollerances
 
 https://docs.openshift.com/container-platform/4.1/nodes/scheduling/nodes-scheduler-taints-tolerations.html
+
+We have updated [quarkus.sh](../quarkus.sh) to allow setting of taints - Reference [Quarkus.md](./Quarkus.md)
 
 ## Evacuating a node before removing
 

@@ -7,9 +7,14 @@ The deployment configs for the demo are hosted under
 
 - https://github.com/jumperwire/supersonic-subatomic-java
 
-Deployment of the demo and resource scaling is all managed under
+Deployment of the demo and resource scaling is all managed under [quarkus.sh](../quarkus.sh)
 
-* [quarkus.sh](../quarkus.sh)
+* [Typical Demo](#typical-demo)
+* [Pre-requisites](#pre-requisites)
+* [Stock on oc wait](#stuck-on-a-an-oc-wait)
+* [Deploying / Removing Demo](#deploying-/-removing-demo)
+* [Scaling the Demo](#scaling-the-demo)
+* [Working with Taints](#working-with-taints)
 
 ## Typical Demo
 
@@ -69,4 +74,19 @@ additional tagged worker nodes to host the quarkus and java applications.
 # Watch the replica set  
 ./quarkus.sh watch
 
+```
+
+## Working with Taints
+For more details on using Taints and Tollerances see
+
+- https://docs.openshift.com/container-platform/4.1/nodes/scheduling/nodes-scheduler-taints-tolerations.html
+
+We use taints to make sure other workloads don't occupy the quarkus and java nodes
+
+```
+# Enable the taint
+./quarkus.sh taint
+
+# Clear the taint
+./quarkus.sh untaint
 ```
