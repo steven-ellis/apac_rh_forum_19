@@ -8,7 +8,7 @@
 
   vars:
     region: us-east-2
-    demo_tag: cockpit
+    demo_tag: mycockpit
 
   vars_files:
     - ./secrets.yaml
