@@ -12,3 +12,4 @@ of the 2019 APAC Red Hat forum Events
 
 * [AWS Tips](./docs/AWS_Tips.md)
 * Deployment via AgnosticD
+* [Toubleshooting Tips](./docs/Troubleshooting.md)
