@@ -68,6 +68,24 @@ scale_quarkus()
     oc scale --replicas=${1} deployment.apps supersonic-subatomic-java -n ${OCP_NAMESPACE}
 }
 
+# taint workers
+#
+# We use taints to manage workload assignment
+# This prevents other workloads consuming out quarkus and java worker nodes
+# 
+# $1 = node role
+# $2 = taint - eg racetrack:NoExecute
+#
+taint_workers ()
+{
+    oc adm taint nodes -l role=${1}-node  ${2}
+}
+
+untaint_workers ()
+{
+    oc adm taint nodes -l role=${1}-node  ${2}-
+}
+
 rc_watch()
 {
     watch oc get replicaset -n ${OCP_NAMESPACE}
@@ -79,7 +97,7 @@ rc_status()
 }
         
 case "$1" in
-  setup|deploy)
+  setup|deploy|create)
         oc_login
         if (projectExists ${OCP_NAMESPACE}); then
 	    printWarning "Project supersonic-subatomic-java is already deployed - Exiting"
@@ -123,6 +141,14 @@ case "$1" in
             rc_watch
         fi
         ;;
+  taint)
+        taint_workers quarkus "racetrack=true:NoExecute"
+        taint_workers java "racetrack=true:NoExecute"
+        ;;
+  untaint)
+        untaint_workers quarkus racetrack
+        untaint_workers java racetrack
+        ;;
   delete|remove)
         oc_login
         if (projectExists  ${OCP_NAMESPACE}); then
@@ -131,6 +157,10 @@ case "$1" in
         ;;
   *)
         echo "Usage: $N {setup|scale_java|scale_quarkus|scale_up|scale N|scale_down|status|watch|delete}" >&2
+        echo " status - shows the current replicaset value"
+        echo " watch  - is the same a status but uses watch to monitor output"
+        echo " taint|untaint set/clear taints against nodes tagged quarkus-role and java-node"
+        echo "               These taints are used to make sure maximum resources are available for the demo"
         exit 1
         ;;
 esac

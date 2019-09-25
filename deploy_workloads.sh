@@ -28,6 +28,7 @@ deploy_apps ()
 
     ./couchbase.sh setup
 
+    printInfo "Deploying all required components for our Quarkus Demo"
     # Create additional machine-sets for quarkus and java
     ./scale_workers.sh quarkus
     ./scale_workers.sh java
@@ -37,9 +38,11 @@ deploy_apps ()
     # we monitor as part of the start script so this is redundant
     # ./scale_workers.sh status
 
+    # Taint our additional workers to avoid pods being scheduled
+    ./quarkus.sh taint
+
     # Deploy the Quarkus Demo
     ./quarkus.sh setup
-
 
     printInfo "Deploying all CRW elements into cluster ${OCP_DOMAIN}"
     ./deploy_crw_ocp4.sh -d -p=codeready-workspaces
@@ -62,8 +65,9 @@ remove_apps ()
 
     ./3scale.sh cleanup
 
-    # Cleanup the quarkus deployment
+    printInfo "Cleanup the quarkus deployment components"
     ./quarkus.sh delete
+    ./quarkus.sh untaint
     ./scale_workers.sh down
     ./scale_workers.sh stop
 
