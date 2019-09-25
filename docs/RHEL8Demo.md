@@ -55,10 +55,16 @@ The deployment script will return with the public address details of your new RH
 "Deployed Instance: ec2-18-99-33-255.us-east-2.compute.amazonaws.com available over SSH"
 ```
 
-Add this public name to the ```hosts``` file for our [cockpit_demo] group
+In addition if you've specified a Route53 entry it will create a CNAME based on the demo_tag and output
+```
+"Route53 Entry : demo_tag.<your domain>"
+```
+
+Add either public name to the ```hosts``` file for our [cockpit_demo] group, but only add one entry
 ```
 [cockpit_demo]
 ec2-AAA-BBB-CCC-DDD.us-east-2.compute.amazonaws.com
+demo_tag.<your domain>
 ```
 
 Deploy the Cockpit requirements

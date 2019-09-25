@@ -85,3 +85,7 @@
     debug: 
       msg: "Deployed Instance: {{ item.public_dns_name }} available over SSH"
     loop: "{{ ec2.instances }}"
+
+  - name: Display the Route53 details
+    debug: 
+      msg: "Route53 Entry : {{demo_tag}}.{{route53_zone}}"
