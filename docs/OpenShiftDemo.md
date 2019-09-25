@@ -4,7 +4,7 @@ Demo deployment scripts for Red Hat APAC Forum 2019
 The Demo covers a broad range of Red Hat technologies running on 
 Red Hat OpenShift Container Platform 4.x
 
-* 3Scale
+* 3Scale (2.5 at present)
 * Istio Service Mesh
 * Kubernetes Operators
 * [Quarkus and Java](./Quarkus.md)
@@ -21,8 +21,8 @@ The scripts make use of “watch” to keep an eye on the environment and you’
     * [AWS deployed](./OpenShiftInstaller.md) vanilla environment via openshift-installer
 1. Updated `ocp.env` with login details for above environment
     * use `ocp.env.sample` as an example of the data required
-1. Valid `3scale.env` for the 3scale deployment 
-1. Valid `amps3.yml` for the 3scale deployment
+1. Valid `3scale.2.5.env` for the 3scale 2.5 deployment 
+1. Valid `amps3.25.yml` for the 3scale 2.5 deployment
 1. Valid `ocpfuse74.env` for the fuse deployment
 1. Admin OpenShift [username/password](./OpenShiftUserAuth.md)
 
@@ -81,7 +81,7 @@ This can also take about 40 minutes - and you'll need to interact occasionally
 ## Stage 2b- Deploy 3 Scale
 This can also take about 20 minutes but the Istio deployment can happen in parallel.
 ```
-./3scale.sh
+./3scale_25.sh
 ```
 
 ## Stage 3 - Deploy Istio
@@ -169,7 +169,7 @@ Remove Istio / Service Mesh
 
 Remove 3scale
 ```
-./cleanup_3scale.sh
+./3scale_25.sh cleanup
 ```
 
 Confirm all storage PVs have been removed 

@@ -194,6 +194,13 @@ sleep 30s
 oc_wait_for  pod 3scale-api-management app ${API_MANAGER_NS}
 #watch "echo 'Confirm state of 3scale pods'; oc get pods -n $API_MANAGER_NS --as=system:admin | grep Running | grep -v -i deploy"
 
+# Step 15: Create additional routes.
+printInfo "Create BigPharm routes on 3scale 2.5 in namespace ${API_MANAGER_NS}"
+
+oc create route edge bigpharm-stgng-route --service=apicast-staging --hostname=bigpharm-staging.apps.$OCP_WILDCARD_DOMAIN -n $API_MANAGER_NS --as=system:admin
+
+oc create route edge bigpharm-prod-route --service=apicast-production --hostname=bigpharm-prod.$OCP_WILDCARD_DOMAIN -n $API_MANAGER_NS --as=system:admin
+
 }
 
 3scale_status ()
@@ -216,7 +223,7 @@ Tenant Admin Console:"
 
     echo -en "\nhttps://`oc get route system-provider-admin -n $API_MANAGER_NS --template "{{.spec.host}}"` \n\n"
 
-    echo "Credentials: admin/admin"
+    echo "Credentials: admin/redhatdemo"
 }
 
 cleanup_3scale ()
