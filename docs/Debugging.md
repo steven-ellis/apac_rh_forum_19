@@ -27,6 +27,15 @@ You can then dig a bit deeper into a specific node via
 oc describe node <node-name>
 ```
 
+## Where are my pods running
+One issue is to know where all of the workloads for a given project are running
+``
+get pod -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName 
+
+# or
+get pod -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName  -n namespace
+```
+
 ## Deploy Kube Ops View
 
 Documented under
