@@ -27,7 +27,7 @@ projectExists() {
   oc get project $1 > /dev/null 2>&1
   OUT=$?
   if [ ${OUT} -ne 0 ]; then
-    printInfo "Project $1 is not present"
+    printWarning "Project $1 is not present"
     false
   else
     true
