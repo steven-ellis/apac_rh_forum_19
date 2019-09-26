@@ -5,6 +5,8 @@ Some tips / trips for troubleshooting potential issues
 * [Node Evacuation](#evacuating-a-node-before-removing) before deletion
 * [Stock on oc wait](#stuck-on-a-an-oc-wait)
 
+Also refernce our guide on [Debugging](./Debugging.md)
+
 =======
 
 ## Quarkus workloads won't scale
