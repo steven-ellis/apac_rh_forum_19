@@ -19,7 +19,12 @@ For Example
 oc adm top pods -n rook-ceph
 
 # Look at 3scale 2.5
-3scale25-mt-api0
+oc adm top pods -n 3scale25-mt-api0
+```
+
+You can then dig a bit deeper into a specific node via
+```
+oc describe node <node-name>
 ```
 
 ## Deploy Kube Ops View
