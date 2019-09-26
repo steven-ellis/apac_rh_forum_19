@@ -21,15 +21,19 @@ deploy_kubeops ()
     oc adm policy add-scc-to-user anyuid -z default -n ocp-ops-view
     oc apply -f https://raw.githubusercontent.com/raffaelespazzoli/kube-ops-view/master/ocp-ops-view.yaml
 
+    oc_wait_for  pod kube-ops-view-stable-kube-ops-view app ${OCP_NAMESPACE}
+
     oc expose svc kube-ops-view-stable-kube-ops-view
+
 }
 
 cleanup_kubeops ()
 {
-    oc delete -n ${OCP_NAMESPACE} \
-       -f //raw.githubusercontent.com/raffaelespazzoli/kube-ops-view/master/ocp-ops-view.yaml
-    
     oc delete svc kube-ops-view-stable-kube-ops-view
+
+    oc delete -n ${OCP_NAMESPACE} \
+       -f https://raw.githubusercontent.com/raffaelespazzoli/kube-ops-view/master/ocp-ops-view.yaml
+    
 
     echo "Deleting the project ${OCP_NAMESPACE}"
     echo "This might take a couple of minutes to return"
@@ -39,8 +43,9 @@ cleanup_kubeops ()
 
 status_kubeops ()
 {
-    oc get route -n ${OCP_NAMESPACE} | grep kube-ops-view | awk '{print $2}'
-    #oc get route -n ${OCP_NAMESPACE} --template "{{.spec.host}}"
+    printInfo "Checking on route for kube-ops-view-stable-kube-ops-view"
+    #oc get route -n ${OCP_NAMESPACE} | grep kube-ops-view | awk '{print $2}'
+    echo "    http://`oc get route kube-ops-view-stable-kube-ops-view -n ${OCP_NAMESPACE} --template "{{.spec.host}}"`"
 }
 
 case "$1" in

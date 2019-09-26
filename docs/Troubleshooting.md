@@ -3,7 +3,7 @@ Some tips / trips for troubleshooting potential issues
 
 * [Quarkus workloads won't scale to 50](#quarkus-workloads-wont-scale)
 * [Node Evacuation](#evacuating-a-node-before-removing) before deletion
-* [Stock on oc wait](#stuck-on-a-an-oc-wait)
+* [Stuck on oc wait](#stuck-on-a-an-oc-wait)
 
 Also refernce our guide on [Debugging](./Debugging.md)
 
