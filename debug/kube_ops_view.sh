@@ -29,14 +29,15 @@ deploy_kubeops ()
 
 cleanup_kubeops ()
 {
-    oc delete svc kube-ops-view-stable-kube-ops-view
+    printInfo "Starting cleanup of deployed resources in ${OCP_NAMESPACE}"
+    oc delete route kube-ops-view-stable-kube-ops-view -n ${OCP_NAMESPACE}
 
     oc delete -n ${OCP_NAMESPACE} \
        -f https://raw.githubusercontent.com/raffaelespazzoli/kube-ops-view/master/ocp-ops-view.yaml
     
 
-    echo "Deleting the project ${OCP_NAMESPACE}"
-    echo "This might take a couple of minutes to return"
+    printInfo "Deleting the project ${OCP_NAMESPACE}"
+    printInfo "This might take a couple of minutes to return"
 
     oc delete project ${OCP_NAMESPACE}
 }
