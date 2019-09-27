@@ -49,6 +49,9 @@ deploy_apps ()
     ./crw_imagestream.sh
     ./crw_create_quarkus_workspace.sh
     ./crw_create_nodejs_workspace.sh
+
+    printWarning "Need to resolve the Loadbalancer Timeout for CRW Manually"
+    ./crw_lb_timeout.sh
 }
 
 remove_apps ()
