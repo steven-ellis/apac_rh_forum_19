@@ -10,7 +10,7 @@ Red Hat OpenShift Container Platform 4.x
 * [Quarkus and Java](./Quarkus.md)
 * [Codeready Workspaces](./CodeReadyWorkspaces.md)
 
-Currently the deployment needs to be staged due to pod/container dependencies.
+Currently the deployment needs to be staged due to pod/container dependencies, and is dependent on a numer of [External Git Respositories](./ExternalGitRepos.md)
 
 The scripts make use of “watch” to keep an eye on the environment and you’ll have to occasionally press CTRL-C to continue.
 

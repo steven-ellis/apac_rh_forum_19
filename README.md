@@ -14,3 +14,4 @@ of the 2019 APAC Red Hat forum Events
 * Deployment via AgnosticD
 * [Troubleshooting Tips](./docs/Troubleshooting.md)
 * [Debugging](./docs/Debugging.md)
+* [External Git Repos](./docs/ExternalGitRepos.md)
