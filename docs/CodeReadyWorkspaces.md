@@ -75,3 +75,33 @@ We simply need to update our ```crw-custom-resource.yaml``` with
       # keep blank unless you need to use a non default storage class for workspace PVC(s)
       workspacePVCStorageClassName: 'csi-cephfs'
 ```
+
+## CRW Loadbalancer Timout
+We’ve got an issue where the Load Balancer settings are causing a timeout for the CRW console. The following process need scripting.
+
+An initial wrapper script has been writter under ```crw_lb_timeout.sh```, but the manual steps are
+
+- using the “ssh” command given in the rhpds email, log into your Bastion Host using ssh
+- set the default AWS CLI region configuration using the following command:
+
+```sudo -u ec2-user aws configure```
+
+just press “enter” for all prompts except the prompt for region, which for our RHPDS environmen should be “us-east-2”.
+
+After configuring the region, discover the name of your specific load balancer for your ocp instance using:
+```
+sudo -u ec2-user aws elb describe-load-balancers |\
+  jq '.LoadBalancerDescriptions |\
+  map(select( .DNSName == "'$(oc get svc router-default \
+    -n openshift-ingress \
+    -o jsonpath='{.status.loadBalancer.ingress[].hostname}')'" ))' |\
+  grep LoadBalancerName
+```
+Then using the name of the load balancer, run:
+```
+sudo -u ec2-user aws elb modify-load-balancer-attributes \
+  --load-balancer-name <name> \
+  --load-balancer-attributes "{\"ConnectionSettings\":{\"IdleTimeout\":300}}"
+```
+Replace <name> with the name of *your* load balancer. This sets the default elastic loadbalancer timeout to 5 minutes.
+
