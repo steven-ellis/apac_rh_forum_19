@@ -90,12 +90,9 @@ just press “enter” for all prompts except the prompt for region, which for o
 
 After configuring the region, discover the name of your specific load balancer for your ocp instance using:
 ```
-sudo -u ec2-user aws elb describe-load-balancers |\
-  jq '.LoadBalancerDescriptions |\
-  map(select( .DNSName == "'$(oc get svc router-default \
-    -n openshift-ingress \
-    -o jsonpath='{.status.loadBalancer.ingress[].hostname}')'" ))' |\
-  grep LoadBalancerName
+sudo -u ec2-user aws elb describe-load-balancers | \\
+jq '.LoadBalancerDescriptions | map(select( .DNSName == "'\$(oc get svc router-default -n openshift-ingress -o jsonpath='{.status.loadBalancer.ingress[].hostname}')'" ))' | \\
+grep LoadBalancerName
 ```
 Then using the name of the load balancer, run:
 ```
