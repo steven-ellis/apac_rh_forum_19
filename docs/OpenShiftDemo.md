@@ -4,9 +4,10 @@ Demo deployment scripts for Red Hat APAC Forum 2019
 The Demo covers a broad range of Red Hat technologies running on 
 Red Hat OpenShift Container Platform 4.x
 
+* [OpenShift Container Storage](./OpenShiftContainerStorage.md)
 * 3Scale (2.5 at present)
 * Istio Service Mesh
-* Kubernetes Operators
+* Kubernetes Operators - via Couchbase
 * [Quarkus and Java](./Quarkus.md)
 * [Codeready Workspaces](./CodeReadyWorkspaces.md)
 

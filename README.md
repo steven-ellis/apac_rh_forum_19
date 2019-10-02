@@ -15,3 +15,4 @@ of the 2019 APAC Red Hat forum Events
 * [Troubleshooting Tips](./docs/Troubleshooting.md)
 * [Debugging](./docs/Debugging.md)
 * [External Git Repos](./docs/ExternalGitRepos.md)
+* [OpenShift Container Storage](./docs/OpenShiftContainerStorage.md) Architecture and Deployment
