@@ -58,3 +58,35 @@ Install - will provide a route you can browse to
 # cleanup
 ./debug/kube_ops_view.sh cleanup
 ```
+
+## Deploy Kubernetes Dashboard
+
+References
+
+- https://github.com/kubernetes/dashboard
+
+Install
+```
+# Make sure we're logged into the OpenShift Cluster
+./setup.sh
+
+oc apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+
+oc proxy
+```
+
+You can then access the dashboard via
+
+- http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+
+For Authentication select **Token** based, then to get the API Token browse to your OpenShift Console and selecct
+
+- User Name 
+- Copy Login Command
+- Display token
+- copy the API token
+
+Using the Kubernetes Dashboard
+
+- A good starting point is **Overview** with all namespaces selected.
+- The node level view is also great a visualising node health
