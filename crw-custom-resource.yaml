@@ -23,9 +23,9 @@ objects:
       pvcStrategy: 'per-workspace'
       pvcClaimSize: 1Gi
       # keep blank unless you need to use a non default storage class for Postgres PVC
-      postgresPVCStorageClassName: ''
+      postgresPVCStorageClassName: 'ocs-storagecluster-ceph-rbd'
       # keep blank unless you need to use a non default storage class for workspace PVC(s)
-      workspacePVCStorageClassName: 'csi-cephfs'
+      workspacePVCStorageClassName: 'ocs-storagecluster-cephfs'
 
     database:
       externalDb: false
