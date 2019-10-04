@@ -61,7 +61,7 @@ worker_config()
           node-role.kubernetes.io/worker: \"\"" > ${OUT_DIR}/${clusterid}.${type}.yaml
 
     if [ "${1}" == "ocs" ]; then
-        sed -i "s/m4.large/m5a.2xlarge/" ${OUT_DIR}/${clusterid}.${type}.yaml
+        sed -i "s/m4.large/m5a.4xlarge/" ${OUT_DIR}/${clusterid}.${type}.yaml
     fi
 }
 
