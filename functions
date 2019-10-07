@@ -66,3 +66,10 @@ oc_login ()
     printInfo "Console access at https://console-openshift-console.apps.${OCP_DOMAIN}/"
 }
 
+#
+# Confirm our version of OpenShift
+#
+oc_version ()
+{
+    oc get clusterversion | grep version | awk '{print $2}'
+}
