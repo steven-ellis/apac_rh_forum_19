@@ -26,7 +26,7 @@ cleanup_couchbase()
     printInfo "Remove couchbase subscription"
     #oc delete subscriptions couchbase-enterprise-certified -n ${OCP_NAMESPACE}
     oc delete subscriptions -l csc-owner-name=installed-certified-couchbase -n ${OCP_NAMESPACE}
-    oc delete clusterserviceversion couchbase-operator.v1.1.0 -n ${OCP_NAMESPACE}
+    oc delete clusterserviceversion couchbase-operator.v1.2.1 -n ${OCP_NAMESPACE}
 
     printInfo "Make sure we've remove couchbase from our cataloge sources"
     oc delete catalogsourceconfig -n openshift-marketplace installed-certified-couchbase

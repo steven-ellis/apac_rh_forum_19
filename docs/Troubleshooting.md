@@ -4,6 +4,7 @@ Some tips / trips for troubleshooting potential issues
 * [Quarkus workloads won't scale to 50](#quarkus-workloads-wont-scale)
 * [Node Evacuation](#evacuating-a-node-before-removing) before deletion
 * [Stuck on oc wait](#stuck-on-a-an-oc-wait)
+* [Operators Missing from Operator Hub](#operators-missing-from-operator-hub)
 
 Also refernce our guide on [Debugging](./Debugging.md)
 
@@ -62,3 +63,18 @@ ps -eaf  | grep "oc wait"
 kill <pid>
 ```
 
+## Operators Missing from Operator Hub
+
+This can happen if one of the catalogue sources isn't working correcly. Some additional
+tips have been documened under [Operator Marketplace Debugging](https://github.com/operator-framework/operator-marketplace/blob/master/docs/troubleshooting.md)
+
+All pods should be in a running state
+```
+oc get pods -n openshift-marketplace
+```
+If any of the pods aren't in the correct state inspect via
+```
+oc logs <name of pod>
+```
+We currently havd an outstanding issue with the **certified-operators** container and 
+OpenShift 4.1.3 which can be resolved via [operator_fix.sh](../operator_fix.sh)
