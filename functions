@@ -57,12 +57,22 @@ oc_wait_for ()
 
 # oc_login
 #
-# Login to our Openshift instance as an admin user
+# Login to our Openshift instance as an admin user,
+# but first check to see if we're already authenticated correctly
 #
 oc_login ()
 {
-    oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
-    printInfo "Login to OpenShift at ${OCP_ENDPOINT}"
+    #OC_TOKEN=`oc whoami -t`
+    MY_USER=`oc whoami | sed "s/://"`
+    MY_SERVER=`oc whoami --show-server`
+
+    if [ "${OCP_USER}" == "${MY_USER}" ] && [ "${MY_SERVER}" == "${OCP_ENDPOINT}" ]; then
+      printInfo "Already logged into ${OCP_ENDPOINT}"
+    else
+
+      oc login -u ${OCP_USER} -p ${OCP_PASS} ${OCP_ENDPOINT} --insecure-skip-tls-verify=false
+      printInfo "Login to OpenShift at ${OCP_ENDPOINT}"
+    fi
     printInfo "Console access at https://console-openshift-console.apps.${OCP_DOMAIN}/"
 }
 
