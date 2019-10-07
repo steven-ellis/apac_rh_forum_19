@@ -1,7 +1,10 @@
 # OpenShift 4.2
 
 Need to test/validate that our demo still works correctly with 
-OpenShift 4.2, and ideally with the GA of OCS 4.2
+OpenShift 4.2, and ideally with the GA of [OCS 4.2](./OCS_4.2.md).
+
+Baseline installation of installer OpenShift on AWS is covered under
+[OpenShift Installer](OpenShiftInstaller.md).
 
 ## Version Testing 
 - 4.2.0-rc1

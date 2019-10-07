@@ -89,6 +89,14 @@ OPENSHIFT_INSTALL_RELEASE_IMAGE_OVERRIDE=quay.io/openshift-release-dev/ocp-relea
 
 This will return with the cluster details and credentials after 20-30 minutes
 
+
+If the install times out you can use the openshift-install tool to wait for the
+installationt to complete
+```
+./openshift-install wait-for bootstrap-complete --dir ocp_<version>
+```
+
+
 ### Monitoring the AWS Build
 In the configuration directory an installer log will be created
 ```
