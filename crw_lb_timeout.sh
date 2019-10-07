@@ -13,8 +13,6 @@ source ./functions
 # And login as the kubeadmin user
 #oc_login
 
-#OCP_DOMAIN=rhte.openshift.steven.geek.nz
-OCP_DOMAIN=cluster-akl-d12b.sandbox1049.opentlc.com
 BASTION=${OCP_DOMAIN/cluster-/bastion.}
 
 printInfo "We’ve got an issue where the Load Balancer settings are causing a timeout for the CRW console."
