@@ -44,7 +44,7 @@ copy your ssh-key to the bastion host
 ssh-copy-id <lab-user> <bastion node>
 ```
 
-### Recommended
+### Stage 0.1 - enable the admin user
 Switch from using the **kubeadmin** default user to an **admin** user setup
 via an [OpenShift Auth Provider](./OpenShiftUserAuth.md)
 ```
@@ -61,6 +61,14 @@ Re-Run Setup to confirm our login works and your user is **admin**
 ``` 
 ./setup.sh
 ```
+
+### Stage 0.2 - Fix up the certified-operators image
+We've got an issue with the default certified operators image if we're running
+OpenShift 4.1.3
+``` 
+./operator_fix.sh
+```
+
 
 ## Stage 1 - Deploy Storage
 This takes approx 20 minutes

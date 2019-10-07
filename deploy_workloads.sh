@@ -16,6 +16,9 @@ deploy_apps ()
     printInfo "Create our htpass based users on cluster ${OCP_DOMAIN}"
     ./ocp_htpass.sh
 
+    printInfo "Make sure we can support certified operators"
+    ./operator_fix.sh
+
     printInfo "Deploying all apps and services into cluster ${OCP_DOMAIN}"
 
     ./service_mesh.sh setup
