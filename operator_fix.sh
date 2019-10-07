@@ -1,9 +1,10 @@
 #!/bin/bash
 # 
-# 
+# Reference docs/Troubleshooting.md for background
 #
-# If you want to create your own 
-#  htpasswd -c -B demo.admin.htpasswd admin
+# We need to update the container version for the certified-operators container
+# if we're running OpenShift 4.1.3
+#
 
 source ocp.env
 source functions
@@ -21,11 +22,13 @@ OC_VERSION=`oc_version`
 if [ "${OC_VERSION}" == "${PATCH_VERSION}" ]; then
     
     printInfo "We have OpenShift ${PATCH_VERSION}"
-    printInfo "  - patching the deployment for certified-operators to container from 4.1.17"
+    printInfo "  - patching the deployment for certified-operators to container image from 4.1.17"
     oc patch deployment certified-operators --patch='{"spec":{"template":{"spec":{"containers":[{"name": "certified-operators", "image":"quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:21fb64b516e6d592ae925a8196f31f6ebe6c5c84c3dbee095c034bdd62ff132f"}]}}}}' -n openshift-marketplace
 
 else
     printWarning "We have OpenShift ${OC_VERSION}"
     printInfo "  - deployment for certified-operators will not be patched"
+    printInfo "  - double check the statue of the pods in the openshift-marketplace namespace"
+    printInfo "  - oc get pods -n openshift-marketplace"
 fi
 
