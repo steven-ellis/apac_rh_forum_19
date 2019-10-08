@@ -106,7 +106,7 @@ You need to scale the machine count for one of the OCS Machine Sets so we have a
 
 ### Deploying the ceph toolbox for debugging
 Default deployment of OCS 4.x doesn't include the Ceph-toolbox pod which can be used for debugging.
-In ordet to use the deployment from upstream rook we need to rename the namespace
+In order to use the deployment from upstream rook we need to rename the namespace
 
 ```
 cat rook.master/cluster/examples/kubernetes/ceph/toolbox.yaml |\
