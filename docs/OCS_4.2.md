@@ -25,7 +25,7 @@ Use [OpenShift Installer](OpenShiftInstaller.md) for AWS Install
 ## Scale additional Storage Worker Nodes
 We can use the scale_workers.sh script from our APAC RH Forum Demo to scale
 up 3 additional storage specific worker nodes. We currently recommend 
-***m5.4xlarge*** but for our demo we're running ***m5a.2xlarge***.
+**m5.4xlarge** but for our demo we're running **m5a.2xlarge**.
 
 Update ocp.env to include our environment created via the
 [OpenShift Installer](OpenShiftInstaller.md)
@@ -75,6 +75,23 @@ oc get csv -n openshift-storage
 # In particular the Ceph OSDs becoming Ready
 watch -n 5 oc get pods -n openshift-storage 
 ```
+
+### Make Ceph-RBD default storage class
+
+```
+# Confirm our storage classes
+oc get sc
+
+# take default tag off gp2
+oc annotate sc gp2 storageclass.kubernetes.io/is-default-class="false" --overwrite
+
+# If we're running upstream
+oc annotate sc example-storagecluster-ceph-rbd storageclass.kubernetes.io/is-default-class="true"
+
+# If we're running downstream
+oc annotate sc ocs-storagecluster-ceph-rbd storageclass.kubernetes.io/is-default-class="true"
+```
+
 
 ## Deployment issues
 
@@ -126,7 +143,7 @@ oc create -n openshift-storage -f -
 
 # If we're running downstream
 cat cephfs_pvc.yaml |\
-sed "s/storageClassName: csi-cephfs/storageClassName: example-storagecluster-cephfs/" |\
+sed "s/storageClassName: csi-cephfs/storageClassName: ocs-storagecluster-cephfs/" |\
 oc create -n openshift-storage -f -
 
 
