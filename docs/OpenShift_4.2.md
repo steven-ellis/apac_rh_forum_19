@@ -9,7 +9,19 @@ Baseline installation of installer OpenShift on AWS is covered under
 ## Version Testing 
 - 4.2.0-rc1
     - Ongoing base enironment size issue
-    - OCS 4.2 upstream 
+    - OCS 4.2 downstream
+        - ocs-4.2-rhel-8 / 5380e5fcb267eedf6951cbd6c1e07bc55159c992
+        - Ended up with two OSDs on the same Node
+        - Means we've got some AZ quorum issue
+        - no storage has been allocatedin AZ-c
+        - NooBaa **won't** complete deployment
+        - **Can't create** a sample cephfs pv
+    - OCS 4.2 upstream - 4.2
+        - release-4.2 / 16e48adca0e6dc162ab6d33e277680362304013b
+        - Also had two OSDs on same Node
+        - NooBaa completed deployment
+        - Can create a sample cephfs pv
+
 
 - 4.2.0-0.nightly-2019-10-02-150642
     - Potential base enironment size issue
