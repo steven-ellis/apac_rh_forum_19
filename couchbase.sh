@@ -60,11 +60,17 @@ cleanup_couchbase()
 case "$1" in
   setup)
         oc_login
-        setup_couchbase
+        if projectExists ${OCP_NAMESPACE}; then
+	    printWarning "Project ${OCP_NAMESPACE} already deployed - Exiting"
+        else
+            setup_couchbase
+        fi
         ;;
   delete|cleanup|remove)
         oc_login
-        cleanup_couchbase
+        if projectExists ${OCP_NAMESPACE}; then
+            cleanup_couchbase
+        fi
         ;;
   *)
         echo "Usage: $N {setup|delete}" >&2
