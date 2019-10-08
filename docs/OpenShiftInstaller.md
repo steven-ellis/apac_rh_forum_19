@@ -61,7 +61,8 @@ compute:
   name: worker
   platform: {}
   replicas: 3
-  type: m5.2xlarge
+  aws:
+    type: m5.2xlarge
 ```
 
 Then create a backup of our configured install directory so we can re-use for repeatable
@@ -119,9 +120,9 @@ ssh core@<public_dns>
 ### Clean up / Delete Cluster on AWS
 To clean up your environment run
 ```
-./openshift-install delete cluster 
+./openshift-install destroy cluster 
 # OR
-./openshift-install delete cluster --dir ocp_<version>
+./openshift-install destroy cluster --dir ocp_<version>
 ```
 
 ## Azure Deployment

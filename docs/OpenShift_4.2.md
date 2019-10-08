@@ -7,6 +7,14 @@ Baseline installation of installer OpenShift on AWS is covered under
 [OpenShift Installer](OpenShiftInstaller.md).
 
 ## Version Testing 
+- 4.2.0-rc2
+    - Ongoing base enironment size issue
+        - Tried tweaking instance type in install-config.yam
+    - OCS 4.2 downstream
+        - ocs-4.2-rhel-8 / 5380e5fcb267eedf6951cbd6c1e07bc55159c992
+        - Ended up with two OSDs on the same Node
+        - NooBaa **won't** complete deployment
+        - **Can't create** a sample cephfs pv
 - 4.2.0-rc1
     - Ongoing base enironment size issue
     - OCS 4.2 downstream
