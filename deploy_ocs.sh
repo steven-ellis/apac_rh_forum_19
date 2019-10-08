@@ -280,6 +280,59 @@ oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user
 sleep 2
 }
 
+# Delete an OCS 4.x environment
+delete_ocs_4x ()
+{
+    printError "$0 not fully implemented yet"
+
+    printInfo "Confirm the OCS Subscription and clean it up"
+    oc get subscription  -n openshift-storage
+
+    # Confirm the CSVs
+    oc get subscription local-storage-operator-stable-local-storage-manifests-openshift-marketplace \
+      -n openshift-storage -o yaml | grep currentCSV
+    oc get subscription ocs-subscription -n openshift-storage -o yaml | grep currentCSV
+
+
+    printInfo "Delete the subscription"
+    oc delete subscription local-storage-operator-stable-local-storage-manifests-openshift-marketplace -n openshift-storage
+    oc delete subscription ocs-subscription  -n openshift-storage
+
+    printInfo "Delete the CSVs"
+    oc delete clusterserviceversion local-storage-operator.v4.2.0 -n openshift-storage
+    oc delete clusterserviceversion ocs-operator.v0.0.1 -n openshift-storage
+
+
+    printInfo "Delete the operator"
+    oc delete -f ../ocs-operator/deploy/deploy-with-olm.yaml
+    #oc delete -f ../ocs-registry/deploy-with-olm.yaml
+
+    printInfo "See if the project is stuck at terminating"
+    while oc get ns|grep -E "openshift-storage|local-storage"; do sleep 1; done
+
+    printInfo "See if we've got any pods or pvcs "
+    oc get pv,pvc -n openshift-storage
+
+    printInfo "We may need to delete some PVCs or pods"
+    oc delete -n openshift-storage pv --all
+
+    printInfo "Clean up any lingering noobaa services"
+    oc delete -n openshift-storage pod/noobaa-core-0 --force --grace-period=0
+
+    printInfo "We may need to clean up Ceph"
+    oc patch cephcluster -n openshift-storage $(oc get cephcluster -n openshift-storage \
+      -o jsonpath='{ .items[*].metadata.name }') -p '{"metadata":{"finalizers":[]}}' --type=merge
+
+    printInfo "Force delete remaining pods"
+    oc delete pods --all --force --grace-period=0 -n openshift-storage
+
+    printWarning "You may still need to delete your additional worker nodes"
+    printWarning "  ./scale_workers.sh stop-ocs"
+    printWarning "or untag / taint them manually"
+
+
+}
+
 case "$1" in
   all)
         oc_login
@@ -316,11 +369,21 @@ case "$1" in
         oc_login
         enable_object
         ;;
+  delete)
+        oc_login
+        if projectExists openshift-storage; then
+            OCP_NAMESPACE=openshift-storage
+            delete_ocs_4x
+        elif projectExists ${OCP_NAMESPACE}; then
+            ./cleanup_ocs.sh
+        fi
+        ;;
   *)
-        echo "Usage: $N {all:base:storage:rook:rbd:cephfs:object}" >&2
+        echo "Usage: $N {all:base:storage:rook:rbd:cephfs:object|delete}" >&2
         echo " all - perform all storage setup tasks" >&2
         echo " base - excludes object storage setup" >&2
         echo " storage and rook are a pre-requisite for rbd/cephfs/object" >&2
+        echo " Delete rook-ceph or OCS 4.x environment" >&2
         exit 1
         ;;
 esac

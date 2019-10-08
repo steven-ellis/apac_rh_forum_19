@@ -152,7 +152,14 @@ oc get pv,pvc -n openshift-storage
 ```
 
 ## Removing the instace
+A large part of this has now been scripted as part of [deploy_ocs.sh](../deploy_ocs.sh).
+Currently we don't remove the enviroment labels/taints or delete the additional worker nodes via the delete script.
+This can be invoked via
+```
+./deploy_ocs.sh delete
+```
 
+### Manual OCS 4.x removal
 First delete the subscriptions
 ```
 oc get subscription  -n openshift-storage
