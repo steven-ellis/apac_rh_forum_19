@@ -118,12 +118,14 @@ start_workers ()
 }
 
 # stop workers
+# 
+# $1 = list of workers to stop
 #
 stop_workers ()
 {
     for i in ${CLUSTER_A} ${CLUSTER_B} ${CLUSTER_C}
     do
-      for j in quarkus java ocs
+      for j in $1
       do
         machine_set_file=${OUT_DIR}/${i}.${j}.yaml
         if [ -f ${machine_set_file} ]; then
@@ -221,7 +223,11 @@ case "$1" in
         ;;
   stop)
         pre_setup
-        stop_workers
+        stop_workers "java quarkus"
+        ;;
+  stop-ocs)
+        pre_setup
+        stop_workers ocs
         ;;
   status)
         pre_setup
@@ -233,7 +239,8 @@ case "$1" in
         echo " quarkus - create machineset for quarkus workload" >&2
         echo " java - create machineset for big fat java workload" >&2
         echo " start - start our workload specific machinesets" >&2
-        echo " stop - stop/delete our workload specific machinesets" >&2
+        echo " stop - stop/delete our workload specific machinesets for quarkus/java" >&2
+        echo " stop-ocs - stop/delete our workload specific machinesets for ocs" >&2
         echo " Old options - ignore" >&2
         echo "   up - scale to 2 replicas for all worker nodes" >&2
         echo "   down - scale to 1 replica for all worker nodes" >&2
