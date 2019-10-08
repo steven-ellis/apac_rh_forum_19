@@ -16,3 +16,9 @@ of the 2019 APAC Red Hat forum Events
 * [Debugging](./docs/Debugging.md)
 * [External Git Repos](./docs/ExternalGitRepos.md)
 * [OpenShift Container Storage](./docs/OpenShiftContainerStorage.md) Architecture and Deployment
+
+## OCS / OCP 4.2 validation
+
+* [OpenShift Installer](./OpenShiftInstaller.md) based deployment on AWS
+* [OpenShift 4.2](./OpenShift_4.2.md) centric testing
+* [OCS 4.2](./OCS_4.2.md) installation / configuration
