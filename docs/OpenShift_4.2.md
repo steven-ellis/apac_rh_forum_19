@@ -21,6 +21,13 @@ Baseline installation of installer OpenShift on AWS is covered under
         - Also had two OSDs on same Node
         - NooBaa completed deployment
         - Can create a sample cephfs pv
+    - 3Scale (2.5) ***Deployed*** - need Balaji to Verify
+    - Istio Service Mesh **WORKED**
+    - Product Info App **WORKED**
+    - BigPharm Fuse App **WORKED**
+    - Kubernetes Operators - via Couchbase **WORKED**
+    - [Quarkus and Java](./Quarkus.md) **WORKED**
+    - Codeready Workspaces](./CodeReadyWorkspaces.md) **WORKED**
 
 
 - 4.2.0-0.nightly-2019-10-02-150642
