@@ -68,6 +68,8 @@ kill <pid>
 This can happen if one of the catalogue sources isn't working correcly. Some additional
 tips have been documened under [Operator Marketplace Debugging](https://github.com/operator-framework/operator-marketplace/blob/master/docs/troubleshooting.md)
 
+Potential BZ - https://bugzilla.redhat.com/show_bug.cgi?id=1700100
+
 All pods should be in a running state
 ```
 oc get pods -n openshift-marketplace
@@ -78,3 +80,39 @@ oc logs <name of pod>
 ```
 We currently havd an outstanding issue with the **certified-operators** container and 
 OpenShift 4.1.3 which can be resolved via [operator_fix.sh](../operator_fix.sh)
+
+
+### Analysis of Operator Hub Issue
+Reference - https://blog.openshift.com/openshift-4-install-experience/
+
+This may releate to Cluster Version Operator (CVO) replacing the modified container image
+
+Look at the environment
+```
+oc describe clusterversion
+
+
+# Use the release info to dig deeper - for 4.1.3 it should be
+#  quay.io/openshift-release-dev/ocp-release@sha256:f852f9d8c2e81a633e874e57a7d9bdd52588002a9b32fc037dba12b67cf1f8b0
+
+oc adm release info  quay.io/openshift-release-dev/ocp-release@sha256:f852f9d8c2e81a633e874e57a7d9bdd52588002a9b32fc037dba12b67cf1f8b0
+```
+
+We now have the sha256 sums for all of the components we're supposed to be running. I suspect that this issue resides with operator-marketplace
+```
+oc adm release info  quay.io/openshift-release-dev/ocp-release@sha256:f852f9d8c2e81a633e874e57a7d9bdd52588002a9b32fc037dba12b67cf1f8b0 | grep operator-marketplace
+  operator-marketplace                          sha256:52d81af840ea9e77347c31593bd65f6cc6171e7b35cf8fd620e8a16238d96330
+```
+
+
+Critical error we're seeing after a re-depoyment is **Liveness probe errored**. Taking a look at the pods
+````
+oc describe pod certified-operators -n openshift-marketplace
+
+# Critical part is
+    Liveness:       exec [grpc_health_probe -addr=localhost:50051] delay=5s timeout=1s period=10s #success=1 #failure=30
+    Readiness:      exec [grpc_health_probe -addr=localhost:50051] delay=5s timeout=1s period=10s #success=1 #failure=30
+ 
+```
+
+
