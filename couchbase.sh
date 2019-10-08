@@ -23,10 +23,10 @@ cleanup_couchbase()
 {
     printInfo "Clean up our Couchbase environments and remove the Operator"
     printInfo "Don't worry if your see - No resources found"
-    printInfo "Remove couchbase subscription"
-    #oc delete subscriptions couchbase-enterprise-certified -n ${OCP_NAMESPACE}
-    oc delete subscriptions -l csc-owner-name=installed-certified-couchbase -n ${OCP_NAMESPACE}
+    printInfo "Remove couchbase Cluster Service Version"
     oc delete clusterserviceversion couchbase-operator.v1.2.1 -n ${OCP_NAMESPACE}
+
+    #oc delete subscriptions -l csc-owner-name=installed-certified-couchbase -n ${OCP_NAMESPACE}
 
     printInfo "Make sure we've remove couchbase from our cataloge sources"
     oc delete catalogsourceconfig -n openshift-marketplace installed-certified-couchbase
@@ -50,17 +50,27 @@ cleanup_couchbase()
     printInfo "Remove the Couchbase namespace"
     oc delete namespace ${OCP_NAMESPACE}
 
+    printInfo "Remove couchbase subscription from the openshift-operators namespace"
+    oc delete replicaset -l app=couchbase-operator -n openshift-operators
+    oc delete deployment,replicaset couchbase-operator -n openshift-operators
+    oc delete subscription couchbase-enterprise-certified -n openshift-operators
 }
 
 
 case "$1" in
   setup)
         oc_login
-        setup_couchbase
+        if projectExists ${OCP_NAMESPACE}; then
+	    printWarning "Project ${OCP_NAMESPACE} already deployed - Exiting"
+        else
+            setup_couchbase
+        fi
         ;;
   delete|cleanup|remove)
         oc_login
-        cleanup_couchbase
+        if projectExists ${OCP_NAMESPACE}; then
+            cleanup_couchbase
+        fi
         ;;
   *)
         echo "Usage: $N {setup|delete}" >&2
