@@ -280,6 +280,46 @@ oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user
 sleep 2
 }
 
+
+# Deploy the rook-ceph-tools pod if it isn't running
+#
+# Make sure this works with two namespaces
+#  rook-ceph and openshift-storage
+#
+toolbox ()
+{
+    # Do we have an existing toolbox deployed
+    toolbox=$(oc -n ${OCP_NAMESPACE} get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+    
+    if [ "a${toolbox}" == "a" ]; then
+        printInfo "Deploy Toolbox into the namespace ${OCP_NAMESPACE}"
+        if [ "${OCP_NAMESPACE}" == "rook-ceph" ]; then
+            oc create -f ./rook.master/cluster/examples/kubernetes/ceph/toolbox.yaml
+        else
+            cat ./rook.master/cluster/examples/kubernetes/ceph/toolbox.yaml |\
+            sed "s/namespace: rook-ceph/namespace: openshift-storage/" |\
+            oc create -f -
+        fi
+        sleep 5s
+        oc_wait_for pod rook-ceph-tools
+
+        export toolbox=$(oc -n ${OCP_NAMESPACE} get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}')
+    else
+        printInfo "Using existing toolbox pod ${toolbox} in namespace ${OCP_NAMESPACE}"
+        export toolbox
+
+    fi
+
+    printInfo "Now Run"
+    echo "ceph status"
+    echo "ceph osd status"
+    echo "ceph osd tree"
+    echo "ceph df"
+    echo "rados df"
+    echo "exit"
+    oc -n ${OCP_NAMESPACE} rsh ${toolbox}
+}
+
 # Delete an OCS 4.x environment
 delete_ocs_4x ()
 {
@@ -368,6 +408,17 @@ case "$1" in
   object)
         oc_login
         enable_object
+        ;;
+  toolbox)
+        oc_login
+        if projectExists openshift-storage; then
+            OCP_NAMESPACE=openshift-storage
+            toolbox
+        elif projectExists ${OCP_NAMESPACE}; then
+            toolbox
+        else
+            printError "No valid OCS environment - can't deploy toolbox"
+        fi
         ;;
   delete)
         oc_login
