@@ -109,20 +109,7 @@ oc logs $OPERATOR -n rook-ceph | grep "get clusters.ceph.rook.io"
 oc create -f ./content/support/cluster.yaml
 
 watch "oc get pods -n rook-ceph | egrep -v -e rook-discover -e rook-ceph-agent"
-
-# Deploy Toolbox
-oc create -f ./content/support/toolbox.yaml
-
-export toolbox=$(oc -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}')
-oc -n rook-ceph rsh $toolbox
-ceph status
-ceph osd status
-ceph osd tree
-ceph df
-rados df
-exit
 }
-
 
 
 # Use the Upstream where possible
@@ -179,22 +166,8 @@ watch "echo 'wait for the osd pods to be Running'; oc get pods -n rook-ceph | eg
 # We need the watch here has the OSD pods can take quite a while to appear
 oc_wait_for  pod rook-ceph-osd
 
-#
+# We now have a seperate function for deploying the toolbox
 
-# Deploy Toolbox
-oc create -f ./rook.master/cluster/examples/kubernetes/ceph/toolbox.yaml
-sleep 2s
-oc_wait_for  pod rook-ceph-tools
-
-export toolbox=$(oc -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}')
-printInfo "Now Run"
-echo "ceph status"
-echo "ceph osd status"
-echo "ceph osd tree"
-echo "ceph df"
-echo "rados df"
-echo "exit"
-oc -n rook-ceph rsh $toolbox
 }
 
 
@@ -348,13 +321,16 @@ delete_ocs_4x ()
     #oc delete -f ../ocs-registry/deploy-with-olm.yaml
 
     printInfo "See if the project is stuck at terminating"
-    while oc get ns|grep -E "openshift-storage|local-storage"; do sleep 1; done
+    for i in 1 2 3 4 5 6 7 8 9 10
+    do
+        oc get ns|grep -E "openshift-storage|local-storage";
+        sleep 1
+    done
+    #while oc get ns|grep -E "openshift-storage|local-storage"; do sleep 1; done
 
     printInfo "See if we've got any pods or pvcs "
     oc get pv,pvc -n openshift-storage
 
-    printInfo "We may need to delete some PVCs or pods"
-    oc delete -n openshift-storage pv --all
 
     printInfo "Clean up any lingering noobaa services"
     oc delete -n openshift-storage pod/noobaa-core-0 --force --grace-period=0
@@ -362,6 +338,9 @@ delete_ocs_4x ()
     printInfo "We may need to clean up Ceph"
     oc patch cephcluster -n openshift-storage $(oc get cephcluster -n openshift-storage \
       -o jsonpath='{ .items[*].metadata.name }') -p '{"metadata":{"finalizers":[]}}' --type=merge
+
+    printInfo "We may need to delete some PVCs or pods"
+    oc delete -n openshift-storage pv --all
 
     printInfo "Force delete remaining pods"
     oc delete pods --all --force --grace-period=0 -n openshift-storage
@@ -378,6 +357,7 @@ case "$1" in
         oc_login
         create_ceph_storage_cluster
         deploy_rook_csi_version 
+        toolbox
         enable_rbd
         enable_cephfs
         enable_object
@@ -386,6 +366,7 @@ case "$1" in
         oc_login
         create_ceph_storage_cluster
         deploy_rook_csi_version 
+        toolbox
         enable_rbd
         enable_cephfs
         ;;
@@ -396,6 +377,7 @@ case "$1" in
   rook)
         oc_login
         deploy_rook_csi_version 
+        toolbox
         ;;
   rbd)
         oc_login
