@@ -90,3 +90,7 @@ Using the Kubernetes Dashboard
 
 - A good starting point is **Overview** with all namespaces selected.
 - The node level view is also great a visualising node health
+
+## Namespace / Project stuck at terminating
+
+- https://github.com/VeerMuchandi/ocp4-extras/tree/master/cleanupHangingObjects#cleaning-up-projects-hanging-in-terminating-state

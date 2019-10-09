@@ -10,6 +10,17 @@ Baseline installation of installer OpenShift on AWS is covered under
 - 4.2.0-rc2
     - Ongoing base enironment size issue
         - Tried tweaking instance type in install-config.yam
+    - Rook-Ceph 1.1.0-beta0
+        - Deployment of storage fails
+    - Rook-Ceph 1.1.2
+        - Deployment of storage works
+    - OCS 4.2 downstream
+        - ocs-4.2-rhel-8 / 38bbf13c730bf3201d21d6115299f088be2a0a59
+        - Issue appears to be that the CSI pods aren't deploying
+```
+2019-10-08 23:19:46.382969 E | op-cluster: failed to start Ceph csi drivers: failed to load rbdplugin template: failed to load daemonset template. template: rbdplugin:59:32: executing "rbdplugin" at <.RBDGRPCMetricsPort>: can't evaluate field RBDGRPCMetricsPort in type csi.templateParam
+```
+        - BZ - https://bugzilla.redhat.com/show_bug.cgi?id=1758934
     - OCS 4.2 downstream
         - ocs-4.2-rhel-8 / 5380e5fcb267eedf6951cbd6c1e07bc55159c992
         - Ended up with two OSDs on the same Node

@@ -106,7 +106,13 @@ You need to scale the machine count for one of the OCS Machine Sets so we have a
 
 ### Deploying the ceph toolbox for debugging
 Default deployment of OCS 4.x doesn't include the Ceph-toolbox pod which can be used for debugging.
-In order to use the deployment from upstream rook we need to rename the namespace
+
+The [deploy_ocs.sh](../deploy_ocs.sh) script has been updated to enable and run the toolbox via
+```
+./deploy_ocs.sh toolbox
+```
+
+If you want to deploy it manually you can use the the deployment from upstream rook, but we need to rename the namespace in the yaml.
 
 ```
 cat rook.master/cluster/examples/kubernetes/ceph/toolbox.yaml |\
@@ -115,6 +121,7 @@ oc create -f -
 ```
 
 We can then access the toolbox via
+
 ```
 export toolbox=$(oc -n openshift-storage get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}')
 
@@ -151,13 +158,19 @@ oc create -n openshift-storage -f -
 oc get pv,pvc -n openshift-storage
 ```
 
-## Removing the instace
+## Removing the OCS Deployment
 A large part of this has now been scripted as part of [deploy_ocs.sh](../deploy_ocs.sh).
 Currently we don't remove the enviroment labels/taints or delete the additional worker nodes via the delete script.
 This can be invoked via
 ```
 ./deploy_ocs.sh delete
 ```
+
+You can then delete the additional worker nodes via
+```
+./scale_workers.sh stop-ocs
+```
+
 
 ### Manual OCS 4.x removal
 First delete the subscriptions
