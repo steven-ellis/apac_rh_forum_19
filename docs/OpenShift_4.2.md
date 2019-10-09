@@ -9,11 +9,16 @@ Baseline installation of installer OpenShift on AWS is covered under
 ## Version Testing 
 - 4.2.0-rc2
     - Ongoing base enironment size issue
-        - Tried tweaking instance type in install-config.yam
+        - Tried tweaking instance type in install-config.yaml
     - Rook-Ceph 1.1.0-beta0
         - Deployment of storage fails
     - Rook-Ceph 1.1.2
         - Deployment of storage works
+    - OCS 4.2 downstream
+        - ocs-4.2-rhel-8 / c9fc0da263cc11984ece432660bad2443d03de95
+        - Deployment of OCS 4.2 worked
+        - Working NooBaa out of the box
+        - test deploy of CephFS using tips from [OCS_4.2.md][./OCS_4.2.md] worked
     - OCS 4.2 downstream
         - ocs-4.2-rhel-8 / 38bbf13c730bf3201d21d6115299f088be2a0a59
         - Issue appears to be that the CSI pods aren't deploying
