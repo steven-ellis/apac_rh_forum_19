@@ -59,10 +59,10 @@ Edit ocp_<version>/install-config.yaml and update the instance size for the work
 compute:
 - hyperthreading: Enabled
   name: worker
-  platform: {}
+  platform:
+    aws:
+      type: m5.2xlarge
   replicas: 3
-  aws:
-    type: m5.2xlarge
 ```
 
 Then create a backup of our configured install directory so we can re-use for repeatable
