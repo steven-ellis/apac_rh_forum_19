@@ -145,7 +145,8 @@ sleep 10s
 printInfo "Create the cluster using the lab definiton but with ceph v14.2.2-20190722"
 #oc create -f ./content/support/cluster.yaml
 #cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.2-20190722/ > ./storage_cluster/cluster.yaml
-cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.2-20190826/ > ./storage_cluster/cluster.yaml
+#cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.2-20190826/ > ./storage_cluster/cluster.yaml
+cat ./content/support/cluster.yaml | sed s/v13.2.5-20190410/v14.2.4-20190917/ > ./storage_cluster/cluster.yaml
 oc create -f ./storage_cluster/cluster.yaml
 
 oc_wait_for  pod rook-ceph-agent
