@@ -7,6 +7,18 @@ Baseline installation of installer OpenShift on AWS is covered under
 [OpenShift Installer](OpenShiftInstaller.md).
 
 ## Version Testing 
+- 4.2.0
+    - Using the GA of OCP 4.2
+    - OCS 4.2 downstream
+        - commit 9721d9285fa181d950d4cceeaa9d0ab478a854a7 (HEAD -> ocs-4.2-rhel-8, origin/ocs-4.2-rhel-8)
+        - Environment appears to deploy correctly
+        - we have CSI pods
+        - CephFS PVC deployment works
+        - NooBaa stuck in pending waiting on RBD backed storage
+        - Ceph RBD backed storage stuck at pending
+    - OCS 4.2 Upstream
+        - Commit d76c4c137f68d21266ac7fee4cda39a5696add4f (HEAD -> release-4.2, origin/release-4.2)
+        - Same NooBaa Issues
 - 4.2.0-rc2
     - Ongoing base enironment size issue
         - Tried tweaking instance type in install-config.yaml
