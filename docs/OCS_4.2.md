@@ -118,9 +118,13 @@ oc annotate sc ocs-storagecluster-ceph-rbd storageclass.kubernetes.io/is-default
     - NooBaa requires 4 CPU / 8GB RAM
     - Still stuck in CrashLoopBackOff
 
-### Additional Compute resource for NooBaa
+### New RHPDS OCP 4.2 Workshop only has 2 worker nodes
 
-You need to scale the machine count for one of the OCS Machine Sets so we have additional compute capacity to run NooBaa
+Documented work around for this issue above
+
+### Additional Compute resource for NooBaa - **No longer an Issue**
+
+We originally needed to scale the machine count for one of the OCS Machine Sets so we have additional compute capacity to run NooBaa. It appears we can now deploy it with a default set of worker nodes
 
 ### Deploying the ceph toolbox for debugging
 Default deployment of OCS 4.x doesn't include the Ceph-toolbox pod which can be used for debugging.

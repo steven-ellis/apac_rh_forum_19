@@ -10,6 +10,8 @@ Baseline installation of installer OpenShift on AWS is covered under
 - 4.2.0 RHPDS Workshop
     - Using the GA of OCP 4.2
         - Need to scale up machinesets as we've only got 2 workers to start with
+        - As we're not using the kubeadmin user issues loading our admin account
+        - because this deletes the existing management account we're logged in under
     - OCS 4.2 downstream
         - commit 461a87710078cdd0b96188240f72ae5452835858 (HEAD -> ocs-4.2-rhel-8, origin/ocs-4.2-rhel-8)
 
