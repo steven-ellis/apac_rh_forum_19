@@ -7,6 +7,12 @@ Baseline installation of installer OpenShift on AWS is covered under
 [OpenShift Installer](OpenShiftInstaller.md).
 
 ## Version Testing 
+- 4.2.0 RHPDS Workshop
+    - Using the GA of OCP 4.2
+        - Need to scale up machinesets as we've only got 2 workers to start with
+    - OCS 4.2 downstream
+        - commit 461a87710078cdd0b96188240f72ae5452835858 (HEAD -> ocs-4.2-rhel-8, origin/ocs-4.2-rhel-8)
+
 - 4.2.0
     - Using the GA of OCP 4.2
     - OCS 4.2 downstream

@@ -189,7 +189,7 @@ case "$1" in
         pre_setup
         scale_up
         ;;
-  down)
+  down|baseline)
         pre_setup
         scale_down
         ;;

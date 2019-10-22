@@ -8,6 +8,13 @@ OCS 4.2
 Baseline installation of installer OpenShift on AWS is covered under
 [OpenShift Installer](OpenShiftInstaller.md).
 
+If you have access to the updated OCS 4.2 RHPDS hosted workshop make
+sure that your **ocp.env** has the correct values for
+```
+OCP_USER=
+OCP_PASS=
+OCP_REGION=
+```
 
 ## Key Refs
 
@@ -18,9 +25,20 @@ Baseline installation of installer OpenShift on AWS is covered under
 
 # OCS Installation
 
-## Pre Work - Deploy OCP 4.2 on AWS / VMWare
+## Pre Work - Deploy OCP 4.2 on AWS / VMWare / RHPDS
 
 Use [OpenShift Installer](OpenShiftInstaller.md) for AWS Install
+
+## Confirm we have 3 Worker Nodes
+Default AWS deployment has 3 worker nodes, but default RHPDs deployment might
+have a smaller number of worker nodes
+```
+oc get machinesets -n openshift-machine-api
+```
+If you only have workers in 2 AZs you need to correct this before performing subsequent steps
+```
+./scale_workers.sh baseline
+```
 
 ## Scale additional Storage Worker Nodes
 We can use the scale_workers.sh script from our APAC RH Forum Demo to scale
