@@ -35,6 +35,27 @@ projectExists() {
 }
 
 
+# resourceExists
+#
+# $1 = resource_type
+# $2 = resource_name
+#
+resourceExists()
+{
+
+  oc get ${1} ${2} > /dev/null 2>&1
+  OUT=$?
+  if [ ${OUT} -ne 0 ]; then
+    printWarning "Resource $2 of $1 is not present"
+    false
+  else
+    true
+  fi
+}
+
+
+
+
 # oc_wait_for 
 #
 # $1 = [pod|node]

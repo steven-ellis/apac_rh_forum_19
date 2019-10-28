@@ -185,6 +185,7 @@ oc -n rook-ceph create -f ./rook.master/cluster/examples/kubernetes/ceph/csi/rbd
 
 
 # and make it the default Class
+# NOTE we should be able to use our new function default_sc now
 oc annotate sc gp2 storageclass.kubernetes.io/is-default-class="false" --overwrite
 
 oc annotate sc rook-ceph-block storageclass.kubernetes.io/is-default-class="true"
@@ -353,6 +354,40 @@ delete_ocs_4x ()
 
 }
 
+# default_sc
+#
+# Make OCS our default storage class
+#
+
+default_sc ()
+{
+
+    printInfo "Current storage Classes"
+    oc get sc
+    if resourceExists sc ocs-storagecluster-ceph-rbd; then
+        # take default tag off gp2
+        oc annotate sc gp2 storageclass.kubernetes.io/is-default-class="false" --overwrite
+        # If we're running downstream
+        printInfo "Running downstream with sc ocs-storagecluster-ceph-rbd"
+        oc annotate sc ocs-storagecluster-ceph-rbd storageclass.kubernetes.io/is-default-class="true"
+    elif resourceExists sc example-storagecluster-ceph-rbd; then
+        # take default tag off gp2
+        oc annotate sc gp2 storageclass.kubernetes.io/is-default-class="false" --overwrite
+        # If we're running upstream
+        printInfo "Running upstream with sc example-storagecluster-ceph-rbd"
+        oc annotate sc example-storagecluster-ceph-rbd storageclass.kubernetes.io/is-default-class="true"
+    elif resourceExists sc rook-ceph-block; then
+        # take default tag off gp2
+        oc annotate sc gp2 storageclass.kubernetes.io/is-default-class="false" --overwrite
+        printInfo "Running Rook with sc rook-ceph-block"
+        oc annotate sc rook-ceph-block storageclass.kubernetes.io/is-default-class="true"
+    else
+        printError "No valid storage class found - making no changes"
+    fi
+    printInfo "Updated storage class state"
+    oc get sc
+}
+
 case "$1" in
   all)
         oc_login
@@ -403,6 +438,10 @@ case "$1" in
             printError "No valid OCS environment - can't deploy toolbox"
         fi
         ;;
+  default)
+        oc_login
+        default_sc
+        ;;
   delete)
         oc_login
         if projectExists openshift-storage; then
@@ -413,11 +452,13 @@ case "$1" in
         fi
         ;;
   *)
-        echo "Usage: $N {all:base:storage:rook:rbd:cephfs:object|delete}" >&2
+        echo "Usage: $N {all:base:storage:rook:rbd:cephfs:object|delete|toolbox}" >&2
         echo " all - perform all storage setup tasks" >&2
         echo " base - excludes object storage setup" >&2
         echo " storage and rook are a pre-requisite for rbd/cephfs/object" >&2
         echo " Delete rook-ceph or OCS 4.x environment" >&2
+        echo " toolbox - Deploys the toolbox pod and executes it" >&2
+        echo " default - Makes sure OCS or rook-ceph is the default storag class" >&2
         exit 1
         ;;
 esac
