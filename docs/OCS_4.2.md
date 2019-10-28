@@ -27,7 +27,9 @@ OCP_REGION=
 
 ## Pre Work - Deploy OCP 4.2 on AWS / VMWare / RHPDS
 
-Use [OpenShift Installer](OpenShiftInstaller.md) for AWS Install
+Follow [OpenShift Installer](OpenShiftInstaller.md) for AWS Install.
+
+For RHPDS seletec the "OpenShift 4.2 Workshop"
 
 ## Confirm we have 3 Worker Nodes
 Default AWS deployment has 3 worker nodes, but default RHPDs deployment might
@@ -76,38 +78,44 @@ oc adm taint nodes <NodeNames> node.ocs.openshift.io/storage=true:NoSchedule
 # only until we're in Operator Hub
 oc create -f ../ocs-registry/deploy-with-olm.yaml
 
+
 # Keep an eye on the operators starting
 watch -n 5 oc get pods -n openshift-storage 
 
 # wait for operator to be active - may take 5-6 minutes
 oc get csv -n openshift-storage
+```
 
+We have an option of creating the Storage Cluster via the OpenShift OCS
+Operator console or via a custom resource definition
+
+For a CR based approach follow
+```
 # Create our base storage cluster
 # We can create via a CRD or create via the OpenShift Console
 # Using Upstream
 # oc create -f ../ocs-operator/deploy/crds/ocs_v1_storagecluster_cr.yaml
 # or the downstream 
 # oc create -f ../ocs-registry/ocs_v1_storagecluster_cr.yaml
+```
 
-# Keep an eye on the pods being created
-# In particular the Ceph OSDs becoming Ready
+If your using the operator console first confirm the names of the tagges OCS
+worker nodes
+```
+oc get nodes --show-labels | grep ocs
+```
+
+
+Keep an eye on the pods being created - in particular the Ceph OSDs becoming Ready.
+In addition the noobaa-core container won't become active until the storage is working correctly.
+```
 watch -n 5 oc get pods -n openshift-storage 
 ```
 
 ### Make Ceph-RBD default storage class
 
 ```
-# Confirm our storage classes
-oc get sc
-
-# take default tag off gp2
-oc annotate sc gp2 storageclass.kubernetes.io/is-default-class="false" --overwrite
-
-# If we're running upstream
-oc annotate sc example-storagecluster-ceph-rbd storageclass.kubernetes.io/is-default-class="true"
-
-# If we're running downstream
-oc annotate sc ocs-storagecluster-ceph-rbd storageclass.kubernetes.io/is-default-class="true"
+./deploy_ocs default
 ```
 
 
