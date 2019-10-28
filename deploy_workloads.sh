@@ -13,8 +13,12 @@ source ./functions
 deploy_apps ()
 {
 
-    printInfo "Create our htpass based users on cluster ${OCP_DOMAIN}"
-    ./ocp_htpass.sh
+    if [ "${OCP_USER}" == "kubeadmin" ]
+        printInfo "Create our htpass based users on cluster ${OCP_DOMAIN}"
+        ./ocp_htpass.sh
+    else
+        printInfo "Already running as ${OCP_USER} - no need to update htpass"
+    fi
 
     printInfo "Make sure we can support certified operators"
     ./operator_fix.sh
