@@ -13,7 +13,7 @@ source ./functions
 deploy_apps ()
 {
 
-    if [ "${OCP_USER}" == "kubeadmin" ]
+    if [ "${OCP_USER}" == "kubeadmin" ]; then
         printInfo "Create our htpass based users on cluster ${OCP_DOMAIN}"
         ./ocp_htpass.sh
     else
