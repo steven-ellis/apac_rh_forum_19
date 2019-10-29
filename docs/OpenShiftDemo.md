@@ -140,7 +140,10 @@ Note we need to taint the workers to avoid other pods being scheduled
 ./crw_create_quarkus_workspace.sh
 ./crw_create_nodejs_workspace.sh
 
-# Then output the tips to resolve the [CRW Load Balancer](./CodeReadyWorkspaces.md) issue
+```
+
+## Then output the tips to resolve the [CRW Load Balancer](./CodeReadyWorkspaces.md) issue
+```
 ./crw_lb_timeout.sh
 ```
 
