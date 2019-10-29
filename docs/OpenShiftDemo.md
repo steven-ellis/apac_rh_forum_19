@@ -134,13 +134,15 @@ Note we need to taint the workers to avoid other pods being scheduled
 ```
 
 ## Stage 8 Deploy CRW and the sample workspaces
+```
 ./deploy_crw_ocp4.sh -d -p=codeready-workspaces
 ./crw_imagestream.sh
 ./crw_create_quarkus_workspace.sh
 ./crw_create_nodejs_workspace.sh
 
-## Then output the tips to resolve the [CRW Load Balancer](./CodeReadyWorkspaces.md) issue
+# Then output the tips to resolve the [CRW Load Balancer](./CodeReadyWorkspaces.md) issue
 ./crw_lb_timeout.sh
+```
 
 
 # Clean up Deployment
@@ -152,7 +154,9 @@ We also recommend you remove all services that are consuming storage before
 removing the ocs components
 
 Remove the Code Ready Workspaces - this can take a while
+```
 ./cleanup_crw_ocp4.sh -c -p=codeready-workspaces
+```
 
 Remove the bigpharm app - Can't currently clean up the Fuse deployment
 ```
