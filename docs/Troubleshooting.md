@@ -5,6 +5,7 @@ Some tips / trips for troubleshooting potential issues
 * [Node Evacuation](#evacuating-a-node-before-removing) before deletion
 * [Stuck on oc wait](#stuck-on-a-an-oc-wait)
 * [Operators Missing from Operator Hub](#operators-missing-from-operator-hub)
+* [Stuck namespaces that are always 'Terminating'](stock-namespaces-that-are-always-'terminating')
 
 Also refernce our guide on [Debugging](./Debugging.md)
 
@@ -106,7 +107,7 @@ oc adm release info  quay.io/openshift-release-dev/ocp-release@sha256:f852f9d8c2
 
 
 Critical error we're seeing after a re-depoyment is **Liveness probe errored**. Taking a look at the pods
-````
+```
 oc describe pod certified-operators -n openshift-marketplace
 
 # Critical part is
@@ -115,4 +116,23 @@ oc describe pod certified-operators -n openshift-marketplace
  
 ```
 
+
+## Stuck namespaces that are always 'Terminating'
+This is based on a [note](https://github.com/rht-labs/enablement-codereadyworkspaces/blob/master/HELP.md) from the codeready workspaces lab
+
+Sometimes CRW doesn't release resources correctly when cleaning up and you need to force a cleanup
+
+```
+# First confirm we've got some namespaces/projects stuck at Terminating
+oc get ns | grep Terminating 
+
+
+# Then setup our environment do we have the correct OCP API Endpoint
+source ./ocp.env
+
+# Cleanup the stuck namespaces
+for i in $( oc get ns | grep Terminating | awk '{print $1}'); do echo $i; oc get ns $i -o json| jq "del(.spec.finalizers[0])"> "$i.json"; curl -k -H "Authorization: Bearer $(oc whoami -t)" -H "Content-Type: application/json" -X PUT --data-binary @"$i.json" "${OCP_ENDPOINT}/api/v1/namespaces/$i/finalize"; done
+for i in $(oc get pvc | grep Terminating| awk '{print $1}'); do oc patch pvc $i --type='json' -p='[{"op": "replace", "path": "/metadata/finalizers", "value":[]}]'; done
+for i in $(oc get pv | grep Released| awk '{print $1}'); do oc patch pv $i --type='json' -p='[{"op": "replace", "path": "/metadata/finalizers", "value":[]}]'; done
+```
 
