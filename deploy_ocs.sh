@@ -42,8 +42,25 @@ confirm_pods_running ()
 }
 
 # Create the storage cluster
+# 
+# On OCP 4.1 we use the upstream operator and some pre-defined machinesets
+#
+# On OCP 4.2 we use our scale up script to create the machines and then
+# deploy the OCS operator
+#
 create_ceph_storage_cluster ()
 {
+  if is_ocp 4.2; then
+    OCP_NAMESPACE=openshift-storage
+
+    printInfo "Configuring OpenShift 4.2 for deployment of the OCS 4.2 operator"
+    printInfo "Make sure we have the correct number of standard workers"
+    ./scale_workers.sh baseline
+    printInfo "Create our OCS specific workers"
+    ./scale_workers.sh ocs
+    ./scale_workers.sh start
+
+  elif is_ocp 4.1; then
     oc get machinesets -n openshift-machine-api
 
     CLUSTERID=$(oc get machineset -n openshift-machine-api -o jsonpath='{.items[0].metadata.labels.machine\.openshift\.io/cluster-api-cluster}')
@@ -81,9 +98,10 @@ create_ceph_storage_cluster ()
     oc get node -l role=storage-node
     sleep 2s
     #watch "echo 'wait for the rest of the nodes to reach Ready'; oc get nodes -l node-role.kubernetes.io/worker"
-
-
-
+  else
+    printError "create_ceph_storage_cluster not tested with this version of OCP"
+    exit 1
+  fi
 
 }
 
@@ -169,6 +187,47 @@ oc_wait_for  pod rook-ceph-osd
 
 # We now have a seperate function for deploying the toolbox
 
+}
+
+# Deploy the OCS 4.2 downstream or upstream operator
+##
+deploy_ocs_operator ()
+{
+
+    # We should only need this until we GA the operator into Operator Hub
+    #if [ -f ../ocs-registry/deploy-with-olm.yaml ]; then
+        #printInfo "Deploy our local copy of the downstream meta operator"
+        #oc create -f ../ocs-registry/deploy-with-olm.yaml
+    #elif [ -f ../ocs-operator/deploy/deploy-with-olm.yaml ]; then
+        #printInfo "Deploy our local copy of the upstream operator"
+        #oc create -f ../ocs-operator/deploy/deploy-with-olm.yaml
+    #else 
+        printInfo "Deploy the meta operator out of GIT"
+        oc apply -f https://raw.githubusercontent.com/openshift/ocs-operator/release-4.2/deploy/deploy-with-olm.yaml
+    #fi
+
+    watch -n 5 "echo 'wait for some nodes to appear in openshift-storage'; oc get pods -n openshift-storage "
+
+
+    printInfo "Confirming the status of the operator - should say Succeeded"
+    oc get csv -n openshift-storage
+
+    sleep 5s
+    oc get csv -n openshift-storage
+
+    printInfo "If the Operator hasn't succeeded, wait a couple of minutes and re-run"
+    printInfo "oc get csv -n openshift-storage"
+
+    # We now configur via the WEB-UI
+    printInfo "Operator deploying" 
+    printInfo "Now follow instructions from"
+    printInfo " - https://github.com/steven-ellis/apac_rh_forum_19/blob/master/docs/OCS_4.2.md"
+    printInfo "or follow the WebUI section of"
+    printInfo " - https://github.com/steven-ellis/ocs-training/blob/region-neutral/ocp4ocs4/ocs4.adoc#installing-the-ocs-operator"
+    printInfo ""
+    printInfo "Your list of OCS specific worker nodes is "
+    oc get nodes --show-labels | grep ocs | cut -f 1 -d " "
+    
 }
 
 
@@ -298,8 +357,6 @@ toolbox ()
 # Delete an OCS 4.x environment
 delete_ocs_4x ()
 {
-    printError "$0 not fully implemented yet"
-
     printInfo "Confirm the OCS Subscription and clean it up"
     oc get subscription  -n openshift-storage
 
@@ -388,44 +445,68 @@ default_sc ()
     oc get sc
 }
 
+
 case "$1" in
+  check)
+        echo $OCP_NAMESPACE
+        ;;
   all)
         oc_login
         create_ceph_storage_cluster
-        deploy_rook_csi_version 
-        toolbox
-        enable_rbd
-        enable_cephfs
-        enable_object
+        if is_ocp 4.1; then
+            deploy_rook_csi_version 
+            toolbox
+            enable_rbd
+            enable_cephfs
+            enable_object
+        elif is_ocp 4.2; then
+            OCP_NAMESPACE=openshift-storage
+            deploy_ocs_operator
+            toolbox
+        fi
         ;;
   base)
         oc_login
         create_ceph_storage_cluster
-        deploy_rook_csi_version 
-        toolbox
-        enable_rbd
-        enable_cephfs
+        if is_ocp 4.1; then
+            deploy_rook_csi_version 
+            toolbox
+            enable_rbd
+            enable_cephfs
+        fi
         ;;
   storage)
         oc_login
         create_ceph_storage_cluster
         ;;
-  rook)
+  rook|operator)
         oc_login
-        deploy_rook_csi_version 
-        toolbox
+        if is_ocp 4.1; then
+            deploy_rook_csi_version 
+            toolbox
+        elif is_ocp 4.2; then
+            OCP_NAMESPACE=openshift-storage
+            deploy_ocs_operator
+            toolbox
+        fi
         ;;
   rbd)
         oc_login
-        enable_rbd
+        if is_ocp 4.1; then
+            enable_rbd
+        fi
         ;;
   cephfs)
         oc_login
-        enable_cephfs
+        if is_ocp 4.1; then
+            enable_cephfs
+        fi
         ;;
   object)
         oc_login
-        enable_object
+        if is_ocp 4.1; then
+            enable_object
+        fi
         ;;
   toolbox)
         oc_login
@@ -455,6 +536,7 @@ case "$1" in
         echo "Usage: $N {all:base:storage:rook:rbd:cephfs:object|delete|toolbox}" >&2
         echo " all - perform all storage setup tasks" >&2
         echo " base - excludes object storage setup" >&2
+        echo " operator - OCP 4.2 specific operator" >&2
         echo " storage and rook are a pre-requisite for rbd/cephfs/object" >&2
         echo " Delete rook-ceph or OCS 4.x environment" >&2
         echo " toolbox - Deploys the toolbox pod and executes it" >&2
