@@ -104,3 +104,18 @@ oc_version ()
 {
     oc get clusterversion | grep version | awk '{print $2}'
 }
+
+# Version check on OCP so we can deploy the correct OCP version
+# $1 = 4.1 or 4.2
+is_ocp ()
+{
+OC_VERSION=`oc_version`
+
+if [[ "${OC_VERSION}" =~ ^${1}.* ]]; then
+    true
+  else
+    false
+fi
+
+}
+
