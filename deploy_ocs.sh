@@ -255,6 +255,32 @@ oc -n rook-ceph describe secret rook-ceph-object-user-my-store-my-user
 sleep 2
 }
 
+# We need to enable correct monitoring of rook-ceph if we're
+# running the upstream rook code based on
+#  https://github.com/rook/rook/issues/4636
+# and
+#  https://github.com/rook/rook/blob/release-1.2/Documentation/ceph-monitoring.md
+#
+enable_monitoring ()
+{
+    
+    if [ "${OCP_NAMESPACE}" == "rook-ceph" ]; then
+        printInfo "Enable monitoring for ${OCP_NAMESPACE}"
+        oc label namespace rook-ceph "openshift.io/cluster-monitoring=true"
+        oc create -f ./rook.master/cluster/examples/kubernetes/ceph/monitoring/rbac.yaml
+        oc create -f ./rook.master/cluster/examples/kubernetes/ceph/monitoring/service-monitor.yaml
+
+        printInfo "Enable the prometheus components into ${OCP_NAMESPACE}"
+        oc create -f ./rook.master/cluster/examples/kubernetes/ceph/monitoring/service-monitor.yaml
+        oc create -f ./rook.master/cluster/examples/kubernetes/ceph/monitoring/prometheus.yaml
+        oc create -f ./rook.master/cluster/examples/kubernetes/ceph/monitoring/prometheus-service.yaml
+
+
+    else
+        printInfo "Monitoring should already be enabled for ${OCP_NAMESPACE}"
+    fi   
+
+}
 
 # Deploy the rook-ceph-tools pod if it isn't running
 #
@@ -427,6 +453,10 @@ case "$1" in
         oc_login
         enable_object
         ;;
+  monitoring)
+        oc_login
+        enable_monitoring
+        ;;
   toolbox)
         oc_login
         if projectExists openshift-storage; then
@@ -452,11 +482,12 @@ case "$1" in
         fi
         ;;
   *)
-        echo "Usage: $N {all:base:storage:rook:rbd:cephfs:object|delete|toolbox}" >&2
+        echo "Usage: $N {all:base:storage:rook:rbd:cephfs:object|delete|monitoring|toolbox}" >&2
         echo " all - perform all storage setup tasks" >&2
         echo " base - excludes object storage setup" >&2
         echo " storage and rook are a pre-requisite for rbd/cephfs/object" >&2
         echo " Delete rook-ceph or OCS 4.x environment" >&2
+        echo " monitoring - Enable prometheus monitoring for upstream rook" >&2
         echo " toolbox - Deploys the toolbox pod and executes it" >&2
         echo " default - Makes sure OCS or rook-ceph is the default storag class" >&2
         exit 1
