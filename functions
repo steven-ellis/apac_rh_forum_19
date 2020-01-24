@@ -119,3 +119,16 @@ fi
 
 }
 
+# Does the supplied storage class exist
+#
+has_sc ()
+{
+
+    if [[ `oc get sc ${1} 2>/dev/null` ]]; then
+       true
+    else
+       false
+    fi
+}
+  
+

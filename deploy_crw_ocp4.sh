@@ -1,4 +1,6 @@
 #!/bin/bash
+source functions
+
 BASE_DIR=$(cd "$(dirname "$0")"; pwd)
 
 DEFAULT_OPENSHIFT_PROJECT="codeready-workspaces"
@@ -515,12 +517,20 @@ createCustomResource() {
     printWarning "${OC_BINARY} delete checlusters/codeready -n ${OPENSHIFT_PROJECT}"
   fi
   # ddoyle: moved from "oc new-app" to "oc process | oc create"
+  # sellis: adjusted to work with OCS 4.2 Storage Classes"
+  if has_sc ocs-storagecluster-cephfs; then
+      WORKSPACE_PVCS=ocs-storagecluster-cephfs
+  else
+      WORKSPACE_PVCS=csi-cephfs
+  fi
+
   ${OC_BINARY} process -f ${BASE_DIR}/crw-custom-resource.yaml \
                -p SERVER_IMAGE_NAME=${SERVER_IMAGE_NAME} \
                -p SERVER_IMAGE_TAG=${SERVER_IMAGE_TAG} \
                -p TLS_SUPPORT=${TLS_SUPPORT} \
                -p ENABLE_OPENSHIFT_OAUTH=${ENABLE_OPENSHIFT_OAUTH} \
                -p SELF_SIGNED_CERT=${SELF_SIGNED_CERT} \
+               -p WORKSPACE_PVCS=${WORKSPACE_PVCS} \
                -n="${OPENSHIFT_PROJECT}" | ${OC_BINARY} create -f - > /dev/null
   OUT=$?
   if [ ${OUT} -ne 0 ]; then

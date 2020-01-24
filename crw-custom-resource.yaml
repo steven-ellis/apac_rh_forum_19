@@ -25,7 +25,7 @@ objects:
       # keep blank unless you need to use a non default storage class for Postgres PVC
       postgresPVCStorageClassName: ''
       # keep blank unless you need to use a non default storage class for workspace PVC(s)
-      workspacePVCStorageClassName: 'csi-cephfs'
+      workspacePVCStorageClassName: ${WORKSPACE_PVCS}
 
     database:
       externalDb: false
@@ -60,4 +60,8 @@ parameters:
   - name: SELF_SIGNED_CERT
     displayName: Self signed cert
     description: Use of self signed router certs
+    required: true
+  - name: WORKSPACE_PVCS
+    displayName: Storage Class for Workspace PVCS
+    description: Specify PVCS for Workspace
     required: true
