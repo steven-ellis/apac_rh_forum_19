@@ -173,7 +173,7 @@ scale_down ()
     oc scale --replicas=1 machineset ${CLUSTER_C} -n ${OCP_NAMESPACE}
 
     # We now need to wait for them to all be created
-    watch "echo 'wait for our environment to scale down'; oc get machinesets -n openshift-machine-api"
+    watch "echo 'wait for our environment to scale to baseline'; oc get machinesets -n openshift-machine-api"
 }
 
 
