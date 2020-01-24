@@ -29,7 +29,7 @@ OCP_REGION=
 
 Follow [OpenShift Installer](OpenShiftInstaller.md) for AWS Install.
 
-For RHPDS seletec the "OpenShift 4.2 Workshop"
+For RHPDS select the "OpenShift 4.2 Workshop"
 
 ## Confirm we have 3 Worker Nodes
 Default AWS deployment has 3 worker nodes, but default RHPDs deployment might
@@ -55,7 +55,36 @@ Update ocp.env to include our environment created via the
 ./scale_workers.sh start
 ```
 
-## OCS 4.2 Alpha Deployment Steps
+## OCS 4.2 GA Deployment
+The operator is now in Operator Hub and can be installed directly
+from the OpenShift web console. Install this into the openshift-storage
+project/namespace.
+
+You can confirm the names of the workers you should use for the OCS deployment via
+```
+oc get nodes --show-labels | grep ocs
+```
+
+See below if you want to make OCS the default block storage class
+
+## OCS 4.2 Automated Operator deployment
+
+Most of this process has now been automated and rolled into the standard 
+deployment script. Simply execute
+```
+deploy_ocs.sh base
+deploy_ocs.sh operator
+```
+or
+```
+deploy_ocs.sh all
+```
+
+Once the Operator is installed you can enable a Storage Cluster via
+the Operator in the openshift-storage namespace following the instuctions
+for the GA Operator.
+
+## OCS 4.x Upstream manual operator deployment
 
 ### Potentially redundant step
 This is now performed by the operator and my no longer be required
@@ -112,7 +141,7 @@ In addition the noobaa-core container won't become active until the storage is w
 watch -n 5 oc get pods -n openshift-storage 
 ```
 
-### Make Ceph-RBD default storage class
+## Make Ceph-RBD default storage class
 
 ```
 ./deploy_ocs default
