@@ -42,6 +42,16 @@ If you only have workers in 2 AZs you need to correct this before performing sub
 ./scale_workers.sh baseline
 ```
 
+## Make sure you have the correct region
+When you check the machinesets above you will see details of the AWS region
+your environment is using. The default regions tend to be us-east-1 and us-east-2.
+Make sure you've updated your **ocp.env**
+```
+OCP_REGION=<region-value>
+```
+
+
+
 ## Scale additional Storage Worker Nodes
 We can use the scale_workers.sh script from our APAC RH Forum Demo to scale
 up 3 additional storage specific worker nodes. We currently recommend 
@@ -60,9 +70,22 @@ The operator is now in Operator Hub and can be installed directly
 from the OpenShift web console. Install this into the openshift-storage
 project/namespace.
 
+We recommend you confirm that the version of OCP aligns with the OCS Operator
+via the following compatibilty matrix, or the deployment might have issues.
+
+* https://access.redhat.com/articles/4731161
+
 You can confirm the names of the workers you should use for the OCS deployment via
 ```
 oc get nodes --show-labels | grep ocs
+```
+
+In addition make sure you have followed the **Before Subscription** steps
+in the operator install notes
+
+While the cluster is being build you can watch the associated pods via
+```
+watch -n 5 oc get pods -n openshift-storage
 ```
 
 See below if you want to make OCS the default block storage class

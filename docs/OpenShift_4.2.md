@@ -7,6 +7,18 @@ Baseline installation of installer OpenShift on AWS is covered under
 [OpenShift Installer](OpenShiftInstaller.md).
 
 ## Version Testing 
+
+- 4.2.1 OpenShift Workshop in RHPDS
+    - Using the GA of OCS 4.2.1 on OCP 4.2.13
+        - Need to scale up machinesets as we've only got 2 workers to start with
+        - No deployment issues as we meet the compatibility matrix for [OCS 4.2](./OCS_4.2.md).
+ 
+- 4.2.0 "OCP and Container Storage for Admins" in RHPDS
+    - Using the GA of OCS 4.2.0 on OCP 4.2.7
+        - Some deployment issues as we don't meet the compatibility matrix for [OCS 4.2](./OCS_4.2.md).
+        - Storage Cluster tab of operator didn't deploy correctly
+        - Deployment ultimately works, but some issues
+
 - 4.2.0 RHPDS Workshop
     - Using the GA of OCP 4.2
         - Need to scale up machinesets as we've only got 2 workers to start with
