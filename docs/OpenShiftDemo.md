@@ -16,8 +16,9 @@ Currently the deployment needs to be staged due to pod/container dependencies, a
 The scripts make use of “watch” to keep an eye on the environment and you’ll have to occasionally press CTRL-C to continue.
 
 ## Pre-requisites
-1. OpenShift 4.1 instance created via
+1. OpenShift 4.1 or 4.2 instance created via
     * RHPDS deployed "OCP and Container Storage for Admins"
+    * RHPDS deployed "OpenShift 4.2 Workshop"
     * AgnosticD deployed OCP4 environment
     * [AWS deployed](./OpenShiftInstaller.md) vanilla environment via openshift-installer
 1. Updated `ocp.env` with login details for above environment
@@ -45,6 +46,9 @@ ssh-copy-id <lab-user> <bastion node>
 ```
 
 ### Stage 0.1 - enable the admin user
+Note this isn't required for some of the workshops as we're already using
+the **openopentlc-mgr** user.
+
 Switch from using the **kubeadmin** default user to an **admin** user setup
 via an [OpenShift Auth Provider](./OpenShiftUserAuth.md)
 ```
@@ -64,22 +68,27 @@ Re-Run Setup to confirm our login works and your user is **admin**
 
 ### Stage 0.2 - Fix up the certified-operators image
 We've got an issue with the default certified operators image if we're running
-OpenShift 4.1.3
+OpenShift 4.1.3 - No longer required for OCP 4.2.x
 ``` 
 ./operator_fix.sh
 ```
 
 
 ## Stage 1 - Deploy Storage
-This takes approx 20 minutes
+This takes approx 20 minutes for OCP 4.1
 ```
 ./deploy_ocs.sh base
 ```
 You’ll need to press CTRL-C a couple of times once some of the pods have started
 
+On OCP 4.2 the step simply configures the additional workers required.
+You can then deploy the operator manually via the OpenShift console.
+
 
 ## Stage 2a - Deploy all the RH Forum demo workloads and apps
-This can also take about 40 minutes - and you'll need to interact occasionally
+This can also take about 40 minutes - and you'll need to interact occasionally.
+This provess has been updated to fully support upstream Rook-Ceph on OCP 4.1
+and our GA OCA 4.2 operator on OCP 4.2.x
 ```
 ./deploy_workloads.sh setup
 ```
@@ -220,6 +229,14 @@ Remove the storage nodes and rook-ceph
 ```
 
 # Known Issues
+## OCS & OCP Compatibility
+We have an OCS and OCP compatibility matrix. Due to the way RHPDS and OPEN
+environments are managed the version of OCP might not always align with
+the OCS Operator version. Storage will usually deploy, but it might take
+a little longer than expeced. Reference
+
+* https://access.redhat.com/articles/4731161
+
 ## Storage issues for Code Ready Workspaces demo
 This usually mans that CRW was deployed to use the default Storage Class which is Ceph RBD (RWO). We need to  update the config to utilise out CephFS (RWX) Storage class
 
