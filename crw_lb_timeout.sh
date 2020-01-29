@@ -20,12 +20,21 @@ printInfo "The following process need scripting."
 printWarning "You will need the “ssh” command given in the rhpds email, log into your Bastion Host using ssh"
 printInfo "If your using RHPDS your bastion should be ${BASTION}"
 echo "ssh ${OCP_USERNAME}@${BASTION}"
+printInfo "If your environment was the standard OpenShift 4.2 Workshop"
+printInfo "Doule check the bastion details as you might need to use"
+printInfo "your RHPDS user name and a custom password"
+echo ""
 printInfo "set the default AWS CLI region configuration using the following command:"
 
 echo "sudo -u ec2-user aws configure"
 echo ""
 
-printInfo "just press “enter” for all prompts except the prompt for region, which for our RHPDS environmen should be “us-east-2”."
+printInfo "just press “enter” for all prompts except the prompt for region."
+printInfo "For the RHPDS CNS Lab environmen should be “us-east-2”."
+printInfo "Where your lab has a selectable region scroll back through"
+printInfo "The Environment build to confirm the region details"
+echo ""
+
 
 printInfo "After configuring the region, discover the name of your specific load balancer for your ocp instance using:"
 echo ""
