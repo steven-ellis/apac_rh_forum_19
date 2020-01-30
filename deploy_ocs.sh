@@ -230,6 +230,18 @@ deploy_ocs_operator ()
     
 }
 
+# ocs_operator_prerequistes
+# 
+# The current GA OCS operator has a couple of pre-requiste steps
+ocs_operator_prerequistes ()
+{
+
+    printInfo "Creating the OCS4 namespace ${OCP_NAMESPACE}"
+    oc create -f ocs_4/rhocs-namespace.yaml
+
+    printInfo "And the OCS4 operator group"
+    oc create -f ocs_4/rhocs-operatorgroup.yaml
+}
 
 
 # Reference
@@ -473,6 +485,9 @@ case "$1" in
             toolbox
             enable_rbd
             enable_cephfs
+        elif is_ocp 4.2; then
+            OCP_NAMESPACE=openshift-storage
+            ocs_operator_prerequistes
         fi
         ;;
   storage)
