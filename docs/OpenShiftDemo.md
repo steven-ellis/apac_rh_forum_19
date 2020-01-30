@@ -83,7 +83,17 @@ You’ll need to press CTRL-C a couple of times once some of the pods have start
 
 On OCP 4.2 the step simply configures the additional workers required.
 You can then deploy the operator manually via the OpenShift console.
+**NOTE** you don't need to perform the pre-requisites for the operator as the
+```deploy_ocs.sh``` script takes care of the Namespace and OperatorGroup setup.
 
+We highly recommend you use the GA OCS 4.x Operator where available.
+
+If you want to monitor the environment while the Operator comes up run the
+following in a terminal.
+
+```
+watch oc get pods -n openshift-storage
+```
 
 ## Stage 2a - Deploy all the RH Forum demo workloads and apps
 This can also take about 40 minutes - and you'll need to interact occasionally.
