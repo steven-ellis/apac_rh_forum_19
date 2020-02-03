@@ -22,7 +22,12 @@ Baseline installation of installer OpenShift on AWS is covered under
         - Some deployment issues as we don't meet the compatibility matrix for [OCS 4.2](./OCS_4.2.md).
         - Storage Cluster tab of operator didn't deploy correctly
         - Deployment ultimately works, but some issues
-
+- 4.2.0 Updated "OCP and Container Storage for Admins" Workshop
+    - The lab has been updated to GA OCP 4.2.7
+        - We can still deploy cleanly using upstream Rook
+        - Only issue is we don't have monitoring enabled due to missing operator
+        - Operator based OCS deployment includes monitoring as a default
+        - Add an additional option to deploy_ocs.sh
 - 4.2.0 RHPDS Workshop
     - Using the GA of OCP 4.2
         - Need to scale up machinesets as we've only got 2 workers to start with
