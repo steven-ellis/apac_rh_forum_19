@@ -75,13 +75,24 @@ OpenShift 4.1.3 - No longer required for OCP 4.2.x
 
 
 ## Stage 1 - Deploy Storage
+
+### OCP 4.1 and Upstream OCS / Rook-Ceph
 This takes approx 20 minutes for OCP 4.1
 ```
 ./deploy_ocs.sh base
 ```
 You’ll need to press CTRL-C a couple of times once some of the pods have started
 
-On OCP 4.2 the step simply configures the additional workers required.
+### OCP 4.2 and OCS 4.2(.1)
+
+On OCP 4.2 this step simply configures the additional workers required.
+```
+./deploy_ocs.sh base
+```
+
+We strongly recommend you make sure your OCP Cluster verision is 4.2.13 or newer.
+For more details on cluster compability with OCS see https://access.redhat.com/articles/4731161
+
 You can then deploy the operator manually via the OpenShift console.
 **NOTE** you don't need to perform the pre-requisites for the operator as the
 ```deploy_ocs.sh``` script takes care of the Namespace and OperatorGroup setup.

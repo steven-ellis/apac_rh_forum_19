@@ -8,6 +8,10 @@ Baseline installation of installer OpenShift on AWS is covered under
 
 ## Version Testing 
 
+- 4.2.1 "OCP and Container Storage for Admins" in RHPDS
+    - Using the GA of OCS 4.2.1 on OCP 4.2.7
+        - Upgrade OCP to 4.2.13 before deploying the storage operator
+
 - 4.2.1 OpenShift Workshop in RHPDS
     - Using the GA of OCS 4.2.1 on OCP 4.2.13
         - Need to scale up machinesets as we've only got 2 workers to start with
