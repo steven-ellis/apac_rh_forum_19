@@ -50,7 +50,7 @@ confirm_pods_running ()
 #
 create_ceph_storage_cluster ()
 {
-  if is_ocp 4.2; then
+  if (is_ocp 4.2) || (is_ocp 4.3); then
     OCP_NAMESPACE=openshift-storage
 
     printInfo "Configuring OpenShift 4.2 for deployment of the OCS 4.2 operator"
@@ -511,7 +511,7 @@ case "$1" in
             toolbox
             enable_rbd
             enable_cephfs
-        elif is_ocp 4.2; then
+        elif (is_ocp 4.2) || (is_ocp 4.3); then
             OCP_NAMESPACE=openshift-storage
             ocs_operator_prerequistes
         fi
