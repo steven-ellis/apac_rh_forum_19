@@ -5,7 +5,7 @@ Demo deployment script for various OCS centic demos
 * [Simple File Demo](#simple-file-demo)
 
 ## Pre-requisites
-1. OpenShift 4.1 / 4.2 4.3 instance created via
+1. OpenShift 4.1 / 4.2 / 4.3 instance created via
     * RHPDS deployed "OCP and Container Storage for Admins"
     * RHPDS deployed "OpenShift 4.2 Workshop"
     * AgnosticD deployed OCP4 environment
@@ -54,7 +54,7 @@ re-deploy as we've changed the storage configuration. Once we got
 **three** updated file-uploader pods hit *CTRL-C* to continue.
 
 Browse back to the file uploader or type
-```/ocs_demos/simple_file.sh status ```
+```./ocs_demos/simple_file.sh status ```
 if you need to confirm the URL.
 Now upload some files again before re-running
 
