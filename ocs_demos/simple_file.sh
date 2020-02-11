@@ -18,10 +18,17 @@ deploy_simple_file ()
     printInfo "Deploying our Simple File Demo into ${OCP_NAMESPACE}"
     oc new-project my-shared-storage
     oc new-app openshift/php:7.1~https://github.com/christianh814/openshift-php-upload-demo --name=file-uploader
-    oc logs bc/file-uploader
-    sleep 5s
+    printInfo "Monitor the application logs while the code deploys"
+    sleep 2
+    oc logs -f bc/file-uploader
+
+    printInfo "We should see some initial build/deploy pods active"
+    oc get pods  -n ${OCP_NAMESPACE}
+    printInfo "Take a short pause while we wait for the app to start"
+    # We need an additional sleep here to make sure
+    # the file-uploader pod is starting up
+    sleep 7
     oc_wait_for  pod file-uploader app ${OCP_NAMESPACE}
-    oc logs bc/file-uploader
     
     oc project ${OCP_NAMESPACE}
     oc expose svc/file-uploader
