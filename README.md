@@ -8,6 +8,9 @@ of the 2019 APAC Red Hat forum Events
 * Ansible Tower Demo - https://github.com/nicholas-chia/aotdemo2019.git
 * [OpenShift Demos](./docs/OpenShiftDemo.md) which use RHPDS (or AWS via AgnosticD)
 
+## Additional Demos
+* [OCS Demos](./docs/OCS_Demos.md) which show of various OpenShift Container Storage features
+
 ## Additional Documentation
 
 * [AWS Tips](./docs/AWS_Tips.md)
