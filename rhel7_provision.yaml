@@ -1,0 +1,91 @@
+#
+# ansible-playbook  ./rhel7_provision.yaml
+# 
+# Additional AMIs
+#  RHEL-7.7_HVM-20191119-x86_64-2-Access2-GP2 - ami-0a2af046b8ba7bb31
+#  RHEL-7.8_HVM_GA-20200225-x86_64-1-Access2-GP2 - ami-057c3802e217d611a
+#
+# Building with a specific AMI
+#   ansible-playbook  ./rhel7_provision.yaml  -e "ami_id=ami-0639904607e0eeb10"
+#
+# To override the demo tag
+#   ansible-playbook  ./rhel7_provision.yaml  -e "demo_tag=my_demo"
+#   
+# Note on instance_types
+#  - For running the Image Builder Demo we need more CPU/RAM
+#    than a t3.micro instance can offer
+# 
+- hosts: localhost
+  gather_facts: False
+
+  vars:
+    instance_type: t3a.large # Could also be a t3.large for Intel
+    security_group: sg-245ef447
+    ami_id: ami-0a2af046b8ba7bb31 # Cloud Access RHEL-7.7_HVM-20191119-x86_64-2-Access2-GP2
+    region: us-east-2
+    demo_tag: mycockpit
+
+  vars_files:
+    - ./secrets.yaml
+
+  tasks:
+  - name: Provision a set of instances
+    ec2:
+       key_name: "{{key_name}}"
+       group_id: "{{security_group}}"
+       instance_type: "{{instance_type}}"
+       image: "{{ ami_id }}"
+       wait: true
+       wait_timeout: 300
+       region: "{{ region }}"
+       #assign_public_ip: yes
+       volumes:
+         - device_name: /dev/sda1
+           volume_type: gp2
+           volume_size: 30
+           delete_on_termination: true
+         - device_name: /dev/sdb
+           volume_type: gp2
+           volume_size: 10
+           delete_on_termination: true
+       instance_tags:
+          Name: "RHEL8 APAC RH Forum Demo"
+          Owner: "{{email}}"
+          Demo: "{{demo_tag}}"
+    register: ec2
+
+# - name: Add all instance public IPs to host group
+#   add_host: hostname={{ item.public_ip }} groups=ec2hosts
+#   loop: "{{ ec2.instances }}"
+
+
+  - name: Wait for SSH to come up
+    wait_for:
+      host: "{{ item.public_dns_name }}"
+      port: 22
+      delay: 60
+      timeout: 320
+      state: started
+    with_items: "{{ ec2.instances }}"
+
+  - name: Add Route53
+    route53:
+      state: present
+      zone: "{{route53_zone}}"
+      record: "{{demo_tag}}.{{route53_zone}}"
+      type: CNAME
+      ttl: 30
+      value: "{{ item.public_dns_name }}"
+      wait: yes
+      overwrite: true
+    with_items: "{{ ec2.instances }}"
+    when: route53_zone is defined
+
+  - name: Display the Public Instance
+    debug: 
+      msg: "Deployed Instance: {{ item.public_dns_name }} available over SSH"
+    loop: "{{ ec2.instances }}"
+
+  - name: Display the Route53 details
+    debug: 
+      msg: "Route53 Entry : {{demo_tag}}.{{route53_zone}}"

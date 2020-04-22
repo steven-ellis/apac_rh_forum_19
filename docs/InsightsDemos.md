@@ -6,7 +6,7 @@ RHEL7 Demo instances
 
 ## Stage 0 - Validate Environment
 
-Follow steps from [RHE8 Demos](./docs/RHEL8Demo.md)
+Follow pre-requiste steps from Stage 0 under [RHE8 Demos](./docs/RHEL8Demo.md)
 
 
 ## Stage 1 - Deploy AWS Instances
@@ -14,16 +14,22 @@ Follow steps from [RHE8 Demos](./docs/RHEL8Demo.md)
 ```
 ansible-playbook rhel8_provision.yaml -e "demo_tag=rhel8insights"
 
-# TBC
 #ansible-playbook rhel7_provision.yaml -e "demo_tag=rhel7insights"
 ```
 
-Add additional SSH Keys
+Update your hosts file with new host instances we've just provisioned
+under the group
+```
+[insights_demo]
+
+```
+
+Add additional SSH Keys for your team
 ```
 ansible-playbook  -i ./hosts ./rhel8_add_keys.yaml
 ```
 
-Update your hosts file with new host domains and
+Enable Insights
 ```
 ansible-playbook  -i ./hosts ./rhel_insights.yaml
 ```
