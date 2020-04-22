@@ -22,6 +22,12 @@
     include_role: name=register-rhel-subscription
     when: rh_org_activationkey is defined
 
+  - name: Make sure rhel-7-server-htb-rpms is disabled on RHEL7
+    rhsm_repository:
+      name: rhel-7-server-htb-rpms
+      state: disabled
+    when: (ansible_distribution == "RedHat" and ansible_distribution_major_version == "7")
+
   - name: Install the insights software and dependancies
     yum:
       name: ['insights-client']
