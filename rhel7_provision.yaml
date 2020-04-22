@@ -19,7 +19,7 @@
   gather_facts: False
 
   vars:
-    instance_type: t3a.large # Could also be a t3.large for Intel
+    instance_type: t3a.small # Could also be a t3.large for Intel
     security_group: sg-245ef447
     ami_id: ami-0a2af046b8ba7bb31 # Cloud Access RHEL-7.7_HVM-20191119-x86_64-2-Access2-GP2
     region: us-east-2
