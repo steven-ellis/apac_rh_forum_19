@@ -33,6 +33,11 @@
       name: ['insights-client']
       state: present
 
+  - name: Install the OpenSCAP requirements
+    yum:
+      name: ['openscap-scanner']
+      state: present
+    when: has_openscap is defined
 
   - name: Check status of Insights .unregister file
     stat: path=/etc/insights-client/.unregistered
