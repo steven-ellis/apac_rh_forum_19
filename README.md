@@ -10,6 +10,7 @@ of the 2019 APAC Red Hat forum Events
 
 ## Additional Demos
 * [OCS Demos](./docs/OCS_Demos.md) which show of various OpenShift Container Storage features
+* [Insights Demos](./docs/InsightsDemos.md) which require an AWS Instance
 
 ## Additional Documentation
 

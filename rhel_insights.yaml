@@ -1,0 +1,25 @@
+#
+# ansible-playbook  -i ./hosts ./rhel8_insights.yaml
+# 
+---
+- hosts: insights_demo
+  become: True
+  become_user: root
+  vars:
+    ansible_user: ec2-user
+  vars_files:
+    - ./secrets.yaml
+  tasks:
+
+  - name: Need to remove the AWS RHUI Config before installing ImageBuilder
+    yum: name=rh-amazon-rhui-client state=absent
+    when: rh_org_activationkey is defined
+
+  - name: Enable Red Hat Subscription
+    include_role: name=register-rhel-subscription
+    when: rh_org_activationkey is defined
+
+  - name: Install the insights software and dependancies
+    yum:
+      name: ['insights-client']
+      state: present
