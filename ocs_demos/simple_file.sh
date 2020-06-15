@@ -54,7 +54,7 @@ cleanup_simple_file ()
 status_simple_file ()
 {
     printInfo "Current pods for file-uploader in ${OCP_NAMESPACE}"
-    oc get pods -l app=file-uploader
+    oc get pods -l deploymentconfig=file-uploader
 
     printInfo "Checking on route for file-uploader in ${OCP_NAMESPACE}"
     echo "    http://`oc get route file-uploader -n ${OCP_NAMESPACE} --template "{{.spec.host}}"`"
@@ -67,13 +67,13 @@ file_check ()
     oc project ${OCP_NAMESPACE}
 
     # Check for files
-    for pod in $(oc get pod -l app=file-uploader --no-headers | awk '{print $1}'); do echo $pod; oc rsh $pod ls -hl uploaded; done
+    for pod in $(oc get pod -l deploymentconfig=file-uploader --no-headers | awk '{print $1}'); do echo $pod; oc rsh $pod ls -hl uploaded; done
 }
 
 watch_pods ()
 {
     oc project ${OCP_NAMESPACE}
-    oc get pods -l app=file-uploader
+    oc get pods -l deploymentconfig=file-uploader
     watch "echo 'wait for the file-uploaded pods to be Running'; oc get pods -n ${OCP_NAMESPACE}"
 }
 
