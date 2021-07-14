@@ -5,7 +5,7 @@ Some tips / trips for troubleshooting potential issues
 * [Node Evacuation](#evacuating-a-node-before-removing) before deletion
 * [Stuck on oc wait](#stuck-on-a-an-oc-wait)
 * [Operators Missing from Operator Hub](#operators-missing-from-operator-hub)
-* [Stuck namespaces that are always 'Terminating'](stock-namespaces-that-are-always-'terminating')
+* [Stuck namespaces that are always 'Terminating'](#stock-namespaces-that-are-always-'terminating')
 
 Also refernce our guide on [Debugging](./Debugging.md)
 
@@ -128,7 +128,7 @@ oc get ns | grep Terminating
 
 
 # Then setup our environment do we have the correct OCP API Endpoint
-source ./ocp.env
+OCP_ENDPOINT=`oc whoami --show-server`
 
 # Cleanup the stuck namespaces
 for i in $( oc get ns | grep Terminating | awk '{print $1}'); do echo $i; oc get ns $i -o json| jq "del(.spec.finalizers[0])"> "$i.json"; curl -k -H "Authorization: Bearer $(oc whoami -t)" -H "Content-Type: application/json" -X PUT --data-binary @"$i.json" "${OCP_ENDPOINT}/api/v1/namespaces/$i/finalize"; done
